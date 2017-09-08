@@ -4,7 +4,7 @@
 # **************************************************************************** #
            
 # Author:      Dominick Lemas 
-# Date:        Aug 30 2017
+# Date:        Sept 09 2017
 # IRB:
 # Description: compute infant "date to occurance" variables for import to RedCap
 
@@ -45,24 +45,12 @@ library(lubridate)
 
 # file parameters
 data.file.name="UFHealth_Dates_DATA_30Aug17.csv";data.file.name
-# data.file.name="example.csv";data.file.name
-
 
 # load data 1
 baby.data <- read.csv(paste(data.dir,data.file.name,sep=""))
 head(baby.data)
 str(baby.data);dim(baby.data)
 names(baby.data)
-
-# load data 2
-# data.file.name2="baby.baby.csv";data.file.name
-# baby.dob <- read.csv(paste(data.dir,data.file.name2,sep=""))
-# head(baby.dob)
-# str(baby.dob);dim(baby.dob)
-# names(baby.dob)
-  # clip data 2
-  # baby.dob.final=baby.dob[,c(1,4)]; head(baby.dob.final);dim(baby.dob.final)
-  # length(unique(baby.dob.final$baby_id))
 
 # **************************************************************************** #
 # ***************                # FORMAT VARIABLE                                             
@@ -118,11 +106,16 @@ head(dat);names(dat)
 # test
 test1=dat[,c(1,3:29)];names(test1);head(test1)
 
+# *******************************************c*********************************#
+# ***************                # format date of birth                                            
+# **************************************************************************** # 
+
 # melt data
 mdata <- melt(test1, id=c("baby_id","redcap_repeat_instrument","redcap_repeat_instance","dob"))
 head(mdata)[3];str(mdata);dim(mdata)
 length(unique(mdata$baby_id))
 length(is.na(mdata$value)==F)
+mdata[1:50,]
 
 # remove 
 mdata.d=subset(mdata, is.na(value)==F);dim(mdata.d)
@@ -135,6 +128,8 @@ str(mdata.d)
 mdata.d1=mdata.d
 head(mdata.d1);
 dim(mdata.d1)
+mdata.d1$redcap_repeat_instrument2=mdata.d1$redcap_repeat_instrument
+mdata.d1$dob2=mdata.d1$dob
 
 # drop duplicate: Baby-0004
 mdata.d2=mdata.d1[-122281,]
@@ -142,74 +137,33 @@ mdata.d2=mdata.d1[-122281,]
 dat.new=mdata.d2 %>%
   group_by(baby_id) %>%
   spread(redcap_repeat_instrument, dob) %>%  # makes this variable into its own columns (long to wide)
-  select(baby_id, redcap_repeat_instance, variable, value, babybaby) %>%
+  select(baby_id, redcap_repeat_instrument2,redcap_repeat_instance, variable, value,dob2, babybaby) %>%
   mutate(birth = first(babybaby))  # Repeat the first observation for birth within each baby
 
 # check
 head(dat.new)
+dat.new[1,]
 
-
-
-
-
-# subset baby_id & dob  
-id.unique=as.character(unique(baby.dob.final$baby_id));length(id.unique) # 16684 observations
-length(unique(mdata.d$baby_id)) # 145 observations
-baby.dob.final.key=subset(baby.dob.final, baby.dob.final$baby_id%in%mdata.d$baby_id);dim(baby.dob.final.key)
-length(unique(baby.dob.final.key$baby_id)) # 145 observations
-str(baby.dob.final.key)
-baby.dob.final.key$baby_id=as.character(baby.dob.final.key$baby_id)
-baby.dob.final.key$dob=as.character(baby.dob.final.key$dob)
-
-# test2=mdata.d[1:1000,]
-# mdata=test2
-
-# create loop
-id.index=as.character(unique(baby.dob.final.key$baby_id));id.index
-total.index<-length(mdata.d$baby_id);total.index
-mdata.d[,"dob.new"]=NA
-str(mdata.d)
-head(mdata.d)
-dim(mdata.d)
-
-
-# start loops
-for(i in 1:length(id.index)){
-  for (j in 1:total.index){ 
-  # Create column index
-    mdata.d$dob.new[j]=ifelse(mdata.d$baby_id[j]%in%baby.dob.final.key$baby_id[i], baby.dob.final.key$dob[i], mdata.d$dob.new[j])
-  }
-}
-
-# check output
-head(mdata.d)
-mdata[1:60,]
-str(mdata.d)
-
-# format new variables for time
-mdata.d$dob.new=as.Date(mdata$dob.new, "%m/%d/%Y")
-
-# calculate days to measure
-mdata$days_to_measure=mdata$value-mdata$dob.new
-
-head(mdata)
-
-# *******************************************c********************************* #
+# **************************************************************************** #
 # ***************                # days_to variable(s)                                             
 # **************************************************************************** #      
 
-        
-
+dat.new$days_to_meas=dat.new$value-dat.new$birth
+head(dat.new)
+range(dat.new$days_to_meas)
 
 # **************************************************************************** #
 # ***************                # EXPORT DATA                                              
 # **************************************************************************** #      
 
+dat.new$redcap_event_name=paste("visit_",dat.new$redcap_repeat_instance,"_arm_1",sep="")
+head(dat.new)
+dat.new[,4:10]
+
 # file parameters
 data.file.name.export="baby.dates_07Sept17.csv";data.file.name.export
-head(mdata.d)
+head(dat.new)
 
 # write file
-write.table(mdata.d, file =(paste(data.dir,data.file.name.export,sep="")),row.names=F, sep=";")
-
+write.table(dat.new, file =(paste(data.dir,data.file.name.export,sep="")),row.names=F, sep=";")
 
