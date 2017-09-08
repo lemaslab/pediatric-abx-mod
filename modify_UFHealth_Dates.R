@@ -35,6 +35,7 @@ library(tidyr)
 library(tidyverse)
 library(reshape2)
 library(lubridate)
+library(dplyr)
 
 # **************************************************************************** #
 # ***************                # LOAD DATA                                              
@@ -53,7 +54,7 @@ str(baby.data);dim(baby.data)
 names(baby.data)
 
 # **************************************************************************** #
-# ***************                # FORMAT VARIABLE                                             
+# ***************                # FORMAT DATE VARIABLE(S)                                             
 # **************************************************************************** # 
 
 # baby_id
@@ -107,7 +108,7 @@ head(dat);names(dat)
 test1=dat[,c(1,3:29)];names(test1);head(test1)
 
 # *******************************************c*********************************#
-# ***************                # format date of birth                                            
+# ***************                # FORMAT DATE OF BIRTH                                            
 # **************************************************************************** # 
 
 # melt data
@@ -153,17 +154,60 @@ head(dat.new)
 range(dat.new$days_to_meas)
 
 # **************************************************************************** #
-# ***************                # EXPORT DATA                                              
+# ***************                # MODIFY FOR REDCAP IMPORT                                              
 # **************************************************************************** #      
 
-dat.new$redcap_event_name=paste("visit_",dat.new$redcap_repeat_instance,"_arm_1",sep="")
-head(dat.new)
-dat.new[,4:10]
+# drop
+names(dat.new)
+dat.new2=dat.new[,c(1:4,9)]
+head(dat.new2)
 
+# cast
+dat.new3=dcast(dat.new2, baby_id+redcap_repeat_instrument2+redcap_repeat_instance~variable)
+head(dat.new3)
+
+# add
+dat.new3$redcap_event_name=paste("visit_",dat.new3$redcap_repeat_instance,"_arm_1",sep="")
+head(dat.new3)
+names(dat.new3)
+
+# modify names
+dat.new4=rename(dat.new3, redcap_repeat_instrument=redcap_repeat_instrument2,
+                          days2_admit=admit_date,
+                          days2_vaccine=immune_date,
+                          days2_wellvisit=observation_date,
+                          days2_ht1=first_height_date,
+                          days2_hc1=first_head_circumf_date,
+                          days2_meds=med_date,
+                          days2_meds_ip=med_ip_date,
+                          days2_asthma_clinic=asthma_charge_date,
+                          days2_fa_clinic=food_allergy_charge_date,
+                          days2_ear_clinic=ear_infect_charge_date,
+                          days2_eczema_clinic=eczema_charge_date,
+                          days2_dermatitis_clinic=dermatitis_charge_date,
+                          days2_erythema_clinic=erythema_charge_date,
+                          days2_sebaceous_clinic=sebaceous_charge_date,
+                          days2_hemangioma_clinic=hemangioma_charge_date,
+                          days2_asthma_hosp=asthma_hospital_admit_date,
+                          days2_dermatitis_hosp=dermatitis_hosp_admit_date,
+                          days2_ear_hosp=ear_hospital_admit_date,
+                          days2_eczema_hosp=eczema_hospital_admit_date,
+                          days2_fa_hosp=food_allergy_hosp_admit_date,
+                          days2_hemangioma_hosp=hemangioma_hosp_admit_date,
+                          days2_sebaceous_hosp=sebaceous_hosp_admit_date,
+                          days2_obesity_hosp=obesity_hospital_admit_date,
+                          days2_erythema_hosp=toxicum_hosp_admit_date);names(dat.new4)
+head(dat.new4)
+dat.new5=dat.new4[,c(1:3,28,4:27)];names(dat.new5)
+head(dat.new5)
+
+# **************************************************************************** #
+# ***************                # EXPORT DATA                                              
+# **************************************************************************** #
 # file parameters
-data.file.name.export="baby.dates_07Sept17.csv";data.file.name.export
-head(dat.new)
+data.file.name.export="baby.dates_08Sept17.csv";data.file.name.export
+head(dat.new5)
 
 # write file
-write.table(dat.new, file =(paste(data.dir,data.file.name.export,sep="")),row.names=F, sep=";")
+write.table(dat.new5, file =(paste(data.dir,data.file.name.export,sep="")),row.names=F, sep=";")
 
