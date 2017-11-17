@@ -4,10 +4,10 @@
 # **************************************************************************** #
            
 # Author:      Dominick Lemas 
-# Date:        November 13 2017 
+# Date:        November 16 2017 
 # IRB:
 # Description: Analysis of UFHealth data. 
-# Data: C:\Users\Dominick\Dropbox (UFL)\IRB\UF\UFHealth\data6
+# Data: C:\Users\Dominick\Dropbox (UFL)\IRB\UF\UFHealth\redcap_import
 
 # **************************************************************************** #
 # ***************                Directory Variables           *************** #
@@ -18,9 +18,8 @@
 # location="Dominick";location
 
 # Directory Locations
-work.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\data6\\",sep="");work.dir
-data.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\data6\\",sep="");data.dir
-
+work.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\raw_data\\",sep="");work.dir
+data.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\raw_data\\",sep="");data.dir
 
 # Set Working Directory
 setwd(work.dir)
@@ -31,8 +30,10 @@ list.files()
 # **************************************************************************** #
 
 library(readxl)
+library(data.table)
+library(tidyr)
+library(dplyr)
 # library(plyr)
-
 
 # **************************************************************************** #
 # ***************                Mom Prenatals.xlsx                                              
@@ -42,77 +43,101 @@ library(readxl)
 n_max=10000
 data.file.name="Mom Prenatals.xlsx";data.file.name
 
+#----------------
 # mom 
-#-----
-mom.mom.dat=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Mom", range = NULL, col_names = TRUE,
+#----------------
+
+mom.dat=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Mom", range = NULL, col_names = TRUE,
           col_types = NULL, na = "", trim_ws = TRUE, skip = 0, n_max = Inf,
-          guess_max = min(1000, n_max));mom.mom.dat
+          guess_max = min(1000, n_max));mom.dat
 
 # format variables
 #----------------
 # redcap_repeat_instrument
-  mom.mom.dat$redcap_repeat_instrument="mom_demography"
+mom.dat$redcap_repeat_instrument="mom_demography"
 # redcap_repeat_instance
-  mom.mom.dat$redcap_repeat_instance=1
+mom.dat$redcap_repeat_instance=1
 # redcap_event_name
-  mom.mom.dat$redcap_event_name="visit_1_arm_1"
+mom.dat$redcap_event_name="visit_1_arm_1"
 
-# sort columns
+# sort/rename columns
+#--------------------
+mom.dat.FINAL=mom.dat[,c(1,4:6,2:3)];mom.dat.FINAL
+head(mom.dat.FINAL)
+names(mom.dat.FINAL)=tolower(names(mom.dat.FINAL))
+colnames(mom.dat.FINAL)[colnames(mom.dat.FINAL) == 'mom-id'] <- 'part_id'
+
+# export data
 #-------------
-  mom.mom.dat.FINAL=mom.mom.dat[,c(1,4:6,2:3)]
+batchSize=10000; # number of rows in single output file
+data.file.name.export=as.character(mom.dat.FINAL[2,2]);data.file.name.export
+out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\02_redcap_import_Nov17\\",sep="");out.dir
 
+chunks=split(mom.dat.FINAL, floor(0:(nrow(mom.dat.FINAL)-1)/batchSize))
+for (i in 1:length(chunks))
+  { # second loop
+  write.table(chunks[[i]],paste0(out.dir,data.file.name.export,i,'.csv'),row.names=F, sep="\t")
+  } # end second loop
+
+#----------------
 # mom apt
-#--------
-mom.prenatal.dat=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Prenatals by Appt", range = NULL, col_names = TRUE,
+#----------------
+prenat.dat=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Prenatals by Appt", range = NULL, col_names = TRUE,
                    col_types = NULL, na = "", trim_ws = TRUE, skip = 0, n_max = Inf,
-                   guess_max = min(1000, n_max));mom.prenatal.dat
+                   guess_max = min(1000, n_max));prenat.dat
 
-# **************************************************************************** #
-# ***************                Mom Medications.xlsx                                              
-# **************************************************************************** # 
+# format variables
+#----------------
 
-# file parameters
-n_max=10000
-data.file.name="Mom Medications.xlsx";data.file.name
+# dates
+prenat.dat$`Appt Time`=as.character(prenat.dat$`Appt Time`)
+prenat.dat$mom_apt_date = strptime(prenat.dat$`Appt Time`,format='%Y-%m-%d %H:%M:%S')
+prenat.dat$date=as.POSIXlt(prenat.dat$`Appt Time`)
+prenat.dat$mom_apt_date = strptime(prenat.dat$`Appt Time`,format='%Y-%m-%d %H:%M:%S')
+str(prenat.dat)
+head(prenat.dat)
 
-# mom abx ip
-#-----------
-mom.abxip.dat=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Mom Antibiotics IP Admin", range = NULL, col_names = TRUE,
-                      col_types = NULL, na = "", trim_ws = TRUE, skip = 0, n_max = Inf,
-                      guess_max = min(1000, n_max));mom.abxip.dat
+# create new data.frame
+test=prenat.dat
 
-# mom abx script
-#---------------
-mom.abxscript.dat=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Mom Antibiotics Prescription", range = NULL, col_names = TRUE,
-                        col_types = NULL, na = "", trim_ws = TRUE, skip = 0, n_max = Inf,
-                        guess_max = min(1000, n_max));mom.abxscript.dat
+# sort by id and date
+newdata=rename(test, part_id = `Mom ID`, mom_apt_time= `Appt Time`, enc_type= `Enc Type`)
+newdata2 <- newdata[order(newdata$part_id, newdata$date),]
+newdata3=subset(newdata2, select=1:5)
+names(newdata3)=tolower(names(newdata3))
+newdata3$redcap_repeat_instrument="mom_prenat_apt"
 
-# mom meds ip
-#-----------
-mom.medip1.dat=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Mom IP Medications", range = NULL, col_names = TRUE,
-                        col_types = NULL, na = "", trim_ws = TRUE, skip = 0, n_max = Inf,
-                        guess_max = min(1000, n_max));mom.medip1.dat
+# create "redcap_repeat_instance" variable
+dt <- as.data.table(newdata3)            # Create data.table
+setkeyv(dt, c("part_id", "mom_apt_time","height","weight","enc_type","redcap_repeat_instrument"))  # Create key for data.table
 
+# create "redcap_event_name" variabledt2 <- unique(dt)                                           # Get only unique rows by key
+dt3 <- dt[, redcap_repeat_instance := seq_len(.N), by = "part_id"]        # Create new variable
+head(dt3)
+range(dt3$redcap_repeat_instance) 
+dt3$redcap_event_name=paste("visit_",dt3$redcap_repeat_instance,"_arm_1",sep="")
+head(dt3)
+unique(dt3$redcap_event_name)
+names(dt3)
+# order columns for export
+dt4=dt3[,c(1,6:8,2:5)];names(dt4)
+dt4$height2=sapply(strsplit(as.character(dt4$height),"'|\""), function(x){12*as.numeric(x[1]) + as.numeric(x[2])})
+dt4$height1=paste0("&",dt4$height,"&")
+dt4$height1=gsub(" ","_",dt4$height1) 
 
-# mom abx ip 2
-#-----------
-mom.medip2.dat=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Mom IP Medications(1)", range = NULL, col_names = FALSE,
-                        col_types = NULL, na = "", trim_ws = TRUE, skip = 0, n_max = Inf,
-                        guess_max = min(1000, n_max));mom.medip2.dat
+head(dt4)
+names(dt4)
+dt5=dt4[,c(1:5,7:10)]
+head(dt5);names(dt5)
 
-# mom prescriptions
-#------------------
-mom.script.dat=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Mom Prescriptions", range = NULL, col_names = TRUE,
-                        col_types = NULL, na = "", trim_ws = TRUE, skip = 0, n_max = Inf,
-                        guess_max = min(1000, n_max));mom.script.dat
+# export data
+#-------------
+batchSize=10000; # number of rows in single output file
+data.file.name.export=as.character(dt5[2,2]);data.file.name.export
+out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\02_redcap_import_Nov17\\",sep="");out.dir
 
-
-
-
-
-
-
-           
-
-
-
+chunks=split(dt5, floor(0:(nrow(dt5)-1)/batchSize))
+for (i in 1:length(chunks))
+{ # second loop
+  write.table(chunks[[i]],paste0(out.dir,data.file.name.export,i,'.csv'),row.names=F, sep=";")
+} # end second loop
