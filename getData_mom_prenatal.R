@@ -69,6 +69,7 @@ names(mom.dat.FINAL)=tolower(names(mom.dat.FINAL))
 colnames(mom.dat.FINAL)[colnames(mom.dat.FINAL) == 'mom-id'] <- 'baby_id'
 colnames(mom.dat.FINAL)[colnames(mom.dat.FINAL) == 'race'] <- 'mom_race'
 colnames(mom.dat.FINAL)[colnames(mom.dat.FINAL) == 'ethnicity'] <- 'mom_ethnicity'
+unique(mom.dat.FINAL$redcap_repeat_instance)
 
 # export data
 #-------------
