@@ -66,7 +66,7 @@ mom.dat$redcap_event_name="visit_1_arm_1"
 mom.dat.FINAL=mom.dat[,c(1,4:6,2:3)];mom.dat.FINAL
 head(mom.dat.FINAL)
 names(mom.dat.FINAL)=tolower(names(mom.dat.FINAL))
-colnames(mom.dat.FINAL)[colnames(mom.dat.FINAL) == 'mom-id'] <- 'part_id'
+colnames(mom.dat.FINAL)[colnames(mom.dat.FINAL) == 'mom-id'] <- 'baby_id'
 colnames(mom.dat.FINAL)[colnames(mom.dat.FINAL) == 'race'] <- 'mom_race'
 colnames(mom.dat.FINAL)[colnames(mom.dat.FINAL) == 'ethnicity'] <- 'mom_ethnicity'
 
