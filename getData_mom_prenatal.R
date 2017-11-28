@@ -43,9 +43,10 @@ library(dplyr)
 n_max=10000
 data.file.name="Mom Prenatals.xlsx";data.file.name
 
-#----------------
-# mom 
-#----------------
+
+# **************************************************************************** #
+# ***************                mom_demography                                              
+# **************************************************************************** #
 
 mom.dat=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Mom", range = NULL, col_names = TRUE,
           col_types = NULL, na = "", trim_ws = TRUE, skip = 0, n_max = Inf,
@@ -66,6 +67,8 @@ mom.dat.FINAL=mom.dat[,c(1,4:6,2:3)];mom.dat.FINAL
 head(mom.dat.FINAL)
 names(mom.dat.FINAL)=tolower(names(mom.dat.FINAL))
 colnames(mom.dat.FINAL)[colnames(mom.dat.FINAL) == 'mom-id'] <- 'part_id'
+colnames(mom.dat.FINAL)[colnames(mom.dat.FINAL) == 'race'] <- 'mom_race'
+colnames(mom.dat.FINAL)[colnames(mom.dat.FINAL) == 'ethnicity'] <- 'mom_ethnicity'
 
 # export data
 #-------------
@@ -79,9 +82,11 @@ for (i in 1:length(chunks))
   write.table(chunks[[i]],paste0(out.dir,data.file.name.export,i,'.csv'),row.names=F, sep="\t")
   } # end second loop
 
-#----------------
-# mom apt
-#----------------
+
+# **************************************************************************** #
+# ***************                mom_prenat                                               
+# **************************************************************************** #
+
 prenat.dat=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Prenatals by Appt", range = NULL, col_names = TRUE,
                    col_types = NULL, na = "", trim_ws = TRUE, skip = 0, n_max = Inf,
                    guess_max = min(1000, n_max));prenat.dat
