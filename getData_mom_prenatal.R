@@ -111,7 +111,7 @@ newdata=rename(test, part_id = `Mom ID`, mom_apt_time= `Appt Time`, enc_type= `E
 newdata2 <- newdata[order(newdata$part_id, newdata$date),]
 newdata3=subset(newdata2, select=1:5)
 names(newdata3)=tolower(names(newdata3))
-newdata3$redcap_repeat_instrument="mom_prenat_apt"
+newdata3$redcap_repeat_instrument="mom_prenatal_apt"
 
 # create "redcap_repeat_instance" variable
 dt <- as.data.table(newdata3)            # Create data.table
@@ -125,16 +125,25 @@ dt3$redcap_event_name=paste("visit_",dt3$redcap_repeat_instance,"_arm_1",sep="")
 head(dt3)
 unique(dt3$redcap_event_name)
 names(dt3)
+
 # order columns for export
 dt4=dt3[,c(1,6:8,2:5)];names(dt4)
 dt4$height2=sapply(strsplit(as.character(dt4$height),"'|\""), function(x){12*as.numeric(x[1]) + as.numeric(x[2])})
 dt4$height1=paste0("&",dt4$height,"&")
 dt4$height1=gsub(" ","_",dt4$height1) 
 
+# sort/rename columns
+#--------------------
 head(dt4)
 names(dt4)
 dt5=dt4[,c(1:5,7:10)]
 head(dt5);names(dt5)
+names(dt5)=tolower(names(dt5))
+colnames(dt5)[colnames(dt5) == 'weight'] <- 'mom_prenat_wt'
+colnames(dt5)[colnames(dt5) == 'enc_type'] <- 'mom_enc_type'
+colnames(dt5)[colnames(dt5) == 'height2'] <- 'mom_prenat_ht_inch'
+colnames(dt5)[colnames(dt5) == 'height1'] <- 'mom_prenat_ht'
+unique(dt5$redcap_repeat_instance)
 
 # export data
 #-------------
