@@ -53,7 +53,7 @@ mom.abxip.dat=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Mom Anti
 # dates
 #------
 mom.abxip.dat$`Taken Datetime`=as.character(mom.abxip.dat$`Taken Datetime`)
-mom.abxip.dat$mom_abxip_date=as.POSIXlt(mom.abxip.dat$`Taken Datetime`)
+#mom.abxip.dat$mom_abxip_date=as.POSIXlt(mom.abxip.dat$`Taken Datetime`)
 str(mom.abxip.dat); head(mom.abxip.dat)
 mom.abxip.dat[1:5,5:7]
 
@@ -61,14 +61,14 @@ mom.abxip.dat[1:5,5:7]
 test=mom.abxip.dat
 
 # sort by id and date
-newdata=rename(test, part_id = `Mom ID`, mom_abxip_action= `MAR Action`, mom_prenat_abx=Antibiotics)
-newdata2 <- newdata[order(newdata$part_id, as.Date(newdata$`Taken Datetime`,format='%Y-%m-%d %H:%M:%S')),]
-A=newdata2[c(1:15),c(1,5)]
-newdata3=subset(newdata2, select=c("part_id","mom_abxip_action", "mom_prenat_abx", "mom_abxip_date"))
-names(newdata3)=tolower(names(newdata3))
-newdata3$mom_abxip_date=as.character(newdata3$mom_abxip_date)
+newdata=rename(test, part_id = `Mom ID`, mom_abxip_date=`Taken Datetime`,mom_abxip_action= `MAR Action`, mom_prenat_abx=Antibiotics)
+head(newdata)
+newdata2 <- newdata[order(newdata$part_id, as.Date(newdata$mom_abxip_date,format='%Y-%m-%d %H:%M:%S')),]
+head(newdata2)
+names(newdata2)=tolower(names(newdata2))
 
 # redcap_repeat_instrument
+newdata3=newdata2
 newdata3$redcap_repeat_instrument="mom_antibiotics_ip"
 names(newdata3)
 
@@ -76,7 +76,7 @@ names(newdata3)
 dt <- as.data.table(newdata3)            
 setkeyv(dt, c("part_id","mom_abxip_date","mom_abxip_action","mom_prenat_abx","redcap_repeat_instrument"))  # Create key for data.table
 dt3 <- dt[, redcap_repeat_instance := seq_len(.N), by = "part_id"]        # Create new variable
-# dt3[c(1:15),c(1,4)]
+# dt3[c(1:15),c(1,2,6)]
 range(dt3$redcap_repeat_instance) # 574
 
 # create "redcap_event_name" variable
