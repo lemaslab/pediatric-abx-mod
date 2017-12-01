@@ -4,7 +4,7 @@
 # **************************************************************************** #
            
 # Author:      Dominick Lemas 
-# Date:        November 16 2017 
+# Date:        November 30, 2017 
 # IRB:
 # Description: Analysis of UFHealth data. 
 # Data: C:\Users\Dominick\Dropbox (UFL)\IRB\UF\UFHealth\redcap_import
@@ -42,7 +42,6 @@ library(dplyr)
 # file parameters
 n_max=10000
 data.file.name="Mom Prenatals.xlsx";data.file.name
-
 
 # **************************************************************************** #
 # ***************                mom_demography                                              
@@ -85,7 +84,7 @@ for (i in 1:length(chunks))
 
 
 # **************************************************************************** #
-# ***************                mom_prenat                                               
+# ***************                mom_prenatal_apt                                               
 # **************************************************************************** #
 
 prenat.dat=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Prenatals by Appt", range = NULL, col_names = TRUE,
@@ -97,53 +96,59 @@ prenat.dat=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Prenatals b
 
 # dates
 prenat.dat$`Appt Time`=as.character(prenat.dat$`Appt Time`)
-prenat.dat$mom_apt_date = strptime(prenat.dat$`Appt Time`,format='%Y-%m-%d %H:%M:%S')
-prenat.dat$date=as.POSIXlt(prenat.dat$`Appt Time`)
-prenat.dat$mom_apt_date = strptime(prenat.dat$`Appt Time`,format='%Y-%m-%d %H:%M:%S')
-str(prenat.dat)
-head(prenat.dat)
+# prenat.dat$mom_apt_date = strptime(prenat.dat$`Appt Time`,format='%Y-%m-%d %H:%M:%S')
+# prenat.dat$date=as.POSIXlt(prenat.dat$`Appt Time`)
+# prenat.dat$mom_apt_date = strptime(prenat.dat$`Appt Time`,format='%Y-%m-%d %H:%M:%S')
+str(prenat.dat); head(prenat.dat)
+
 
 # create new data.frame
 test=prenat.dat
 
-# sort by id and date
-newdata=rename(test, part_id = `Mom ID`, mom_apt_time= `Appt Time`, enc_type= `Enc Type`)
-newdata2 <- newdata[order(newdata$part_id, newdata$date),]
-newdata3=subset(newdata2, select=1:5)
-names(newdata3)=tolower(names(newdata3))
+# rename, sort by id and date
+newdata=rename(test, part_id = `Mom ID`, mom_prenat_apt_date= `Appt Time`, mom_prenat_enc_type= `Enc Type`,mom_prenat_ht=Height, mom_prenat_wt_oz=Weight)
+names(newdata); head(newdata)
+newdata2 <- newdata[order(newdata$part_id, as.Date(newdata$mom_prenat_apt_date,format='%Y-%m-%d %H:%M:%S')),]
+
+# redcap_repeat_instrument
+newdata3=newdata2
 newdata3$redcap_repeat_instrument="mom_prenatal_apt"
 
 # create "redcap_repeat_instance" variable
 dt <- as.data.table(newdata3)            # Create data.table
-setkeyv(dt, c("part_id", "mom_apt_time","height","weight","enc_type","redcap_repeat_instrument"))  # Create key for data.table
-
-# create "redcap_event_name" variabledt2 <- unique(dt)                                           # Get only unique rows by key
+setkeyv(dt, c("part_id", "mom_prenat_apt_date","mom_prenat_ht","mom_prenat_wt_oz","mom_prenat_enc_type","redcap_repeat_instrument"))  # Create key for data.table
 dt3 <- dt[, redcap_repeat_instance := seq_len(.N), by = "part_id"]        # Create new variable
-head(dt3)
-range(dt3$redcap_repeat_instance) 
+head(dt3); range(dt3$redcap_repeat_instance) 
+unique(dt3$redcap_repeat_instance)
+
+
+# create "redcap_event_name" variable
 dt3$redcap_event_name=paste("visit_",dt3$redcap_repeat_instance,"_arm_1",sep="")
 head(dt3)
 unique(dt3$redcap_event_name)
-names(dt3)
+names(dt3);head(dt3)
 
 # order columns for export
-dt4=dt3[,c(1,6:8,2:5)];names(dt4)
-dt4$height2=sapply(strsplit(as.character(dt4$height),"'|\""), function(x){12*as.numeric(x[1]) + as.numeric(x[2])})
-dt4$height1=paste0("&",dt4$height,"&")
-dt4$height1=gsub(" ","_",dt4$height1) 
+dt4=dt3[,c(1,6:8,2:5)];
+names(dt4);head(dt4)
 
-# sort/rename columns
-#--------------------
+# compute "mom_prenat_ht_inch"
+dt4$tmp=dt4$mom_prenat_ht
+dt4$tmp=gsub("'"," ",dt4$tmp)
+dt4$tmp=gsub('"'," ",dt4$tmp)
+dt4$tmp=trimws(dt4$tmp, "b") 
+dt4$tmp=gsub('  '," ",dt4$tmp)
+dt4$mom_prenat_ht_inch=sapply(strsplit(as.character(dt4$tmp)," "), function(x){12*as.numeric(x[1]) + as.numeric(x[2])})
+dt4=dt4[,-c("tmp")]
+
+# compute "mom_prenat_wt_lb"
+dt4$mom_prenat_wt_lb=dt4$mom_prenat_wt_oz/16
+
+# format "mom_prenat_ht"
+dt4$mom_prenat_ht=paste0("&",dt4$mom_prenat_ht,"&")
+dt4$mom_prenat_ht=gsub(" ","_",dt4$mom_prenat_ht) 
 head(dt4)
-names(dt4)
-dt5=dt4[,c(1:5,7:10)]
-head(dt5);names(dt5)
-names(dt5)=tolower(names(dt5))
-colnames(dt5)[colnames(dt5) == 'weight'] <- 'mom_prenat_wt'
-colnames(dt5)[colnames(dt5) == 'enc_type'] <- 'mom_enc_type'
-colnames(dt5)[colnames(dt5) == 'height2'] <- 'mom_prenat_ht_inch'
-colnames(dt5)[colnames(dt5) == 'height1'] <- 'mom_prenat_ht'
-unique(dt5$redcap_repeat_instance)
+dt5=dt4
 
 # export data
 #-------------
