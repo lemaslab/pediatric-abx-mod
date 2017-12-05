@@ -198,3 +198,63 @@ for (i in 1:length(chunks))
 { # second loop
   write.table(chunks[[i]],paste0(out.dir,data.file.name.export,i,'.csv'),row.names=F, sep=";")
 } # end second loop
+
+# **************************************************************************** #
+# ***************                baby_mom_baby_link                                               
+# **************************************************************************** #
+
+baby.mom=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Baby-Mom Link", range = NULL, col_names = TRUE,
+                    col_types = NULL, na = "", trim_ws = TRUE, skip = 0, n_max = Inf,
+                    guess_max = min(1000, n_max));baby.mom
+
+# rename
+newdata=rename(baby.mom, part_id = `Baby-Id`, mom_baby_link=`Mom-Id`)
+# unique ID? Some moms had multiple babies in data set
+length(unique(newdata$part_id)) # 28069
+length(newdata$part_id)         # 29798
+names(newdata); head(newdata)
+# sort
+newdata2 <- newdata[order(newdata$part_id),]
+names(newdata2); head(newdata2)
+
+# redcap_repeat_instrument
+newdata3=newdata2
+newdata3$redcap_repeat_instrument="baby_mom_baby_link"
+names(newdata3); head(newdata3)
+
+# create "redcap_repeat_instance" variable
+dt <- as.data.table(newdata3)            
+setkeyv(dt, c("part_id", "mom_baby_link","redcap_repeat_instrument"))  
+dt3 <- dt[, redcap_repeat_instance := seq_len(.N), by = "part_id"]        
+head(dt3); range(dt3$redcap_repeat_instance) 
+unique(dt3$redcap_repeat_instance)
+
+# create "redcap_event_name" variable
+dt3$redcap_event_name=paste("visit_",dt3$redcap_repeat_instance,"_arm_1",sep="")
+head(dt3)
+unique(dt3$redcap_event_name)
+names(dt3);head(dt3)
+
+# order columns for export
+col.names=names(dt3);col.names
+
+first=c("part_id","redcap_repeat_instrument","redcap_repeat_instance","redcap_event_name");first
+first.names=which(col.names%in%first);first.names
+second=which(!col.names%in%first);second
+second.names=which(!col.names%in%first);second.names
+dt4=dt3[,c(1,3,4,5,2)];dt4
+names(dt4);head(dt4)
+dt5=dt4
+
+# export data
+#-------------
+batchSize=10000; # number of rows in single output file
+data.file.name.export=as.character(dt5[2,2]);data.file.name.export
+out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\02_redcap_import_Nov17\\",sep="");out.dir
+
+chunks=split(dt5, floor(0:(nrow(dt5)-1)/batchSize))
+for (i in 1:length(chunks))
+{ # second loop
+  write.table(chunks[[i]],paste0(out.dir,data.file.name.export,i,'.csv'),row.names=F, sep=";")
+} # end second loop
+
