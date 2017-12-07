@@ -35,7 +35,7 @@ library(tidyr)
 library(dplyr)
 
 # **************************************************************************** #
-# ***************                Mom Prenatals.xlsx                                              
+# ***************                Baby.xlsx                                              
 # **************************************************************************** #      
 
 # file parameters
@@ -432,6 +432,61 @@ for (i in 1:length(chunks))
 # ***************                baby_antibiotics_ip                                               
 # **************************************************************************** #
 
+baby.abx=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Antibiotics IP Administration", range = NULL, col_names = TRUE,
+                      col_types = NULL, na = "", trim_ws = TRUE, skip = 0, n_max = Inf,
+                      guess_max = min(1000, n_max));baby.abx;names(baby.abx)
+
+# rename
+newdata=rename(baby.abx, part_id = `Baby-Id`,infant_med_order_ip="Med Order #",infant_mar_action_ip="MAR_Action",infant_med_code_ip="Med_Code",infant_med_ip_date="Taken_Datetime",infant_med_ip="Medication");newdata
+# unique ID? Some moms had multiple babies in data set
+length(unique(newdata$part_id)) # 15998
+length(newdata$part_id)         # 70367
+names(newdata); head(newdata)
+# sort
+newdata2 <- newdata[order(newdata$part_id, as.Date(newdata$infant_med_ip_date,format='%Y-%m-%d %H:%M:%S')),]
+names(newdata2); head(newdata2)
+
+# redcap_repeat_instrument
+newdata3=newdata2
+newdata3$redcap_repeat_instrument="baby_antibiotics_ip"
+names(newdata3); head(newdata3)
+
+# modify medication string
+newdata3$infant_med_ip=gsub(" ","_",newdata3$infant_med_ip) 
+newdata3$infant_med_ip=gsub(",","&",newdata3$infant_med_ip) 
+head(newdata3);str(newdata3)
+
+# create "redcap_repeat_instance" variable
+dt <- as.data.table(newdata3);names(dt)           
+setkeyv(dt, c("part_id", "infant_med_ip_date","infant_med_order_ip","infant_mar_action_ip","infant_med_code_ip","infant_med_ip","redcap_repeat_instrument"))  
+dt3 <- dt[, redcap_repeat_instance := seq_len(.N), by = "part_id"]        
+head(dt3); range(dt3$redcap_repeat_instance) 
+unique(dt3$redcap_repeat_instance) #537
+
+# create "redcap_event_name" variable
+dt3$redcap_event_name=paste("visit_",dt3$redcap_repeat_instance,"_arm_1",sep="")
+head(dt3)
+unique(dt3$redcap_event_name)
+names(dt3);head(dt3)
+
+# order columns for export
+col.names=names(dt3);col.names
+colFixed=c("part_id","redcap_repeat_instrument","redcap_repeat_instance","redcap_event_name","infant_med_order_ip","infant_mar_action_ip","infant_med_code_ip","infant_med_ip_date","infant_med_ip");colFixed
+dt4=setcolorder(dt3, colFixed)
+names(dt4);head(dt4)
+dt5=dt4
+
+# export data
+#-------------
+batchSize=10000; # number of rows in single output file
+data.file.name.export=as.character(dt5[2,2]);data.file.name.export
+out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\02_redcap_import_Nov17\\",sep="");out.dir
+
+chunks=split(dt5, floor(0:(nrow(dt5)-1)/batchSize))
+for (i in 1:length(chunks))
+{ # second loop
+  write.table(chunks[[i]],paste0(out.dir,data.file.name.export,i,'.csv'),row.names=F, sep=";")
+} # end second loop
 
 # **************************************************************************** #
 # ***************                baby_vaccines                                               
