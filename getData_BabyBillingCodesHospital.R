@@ -54,27 +54,188 @@ baby.asthma=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Asthma", r
 dat=baby.asthma
 
 # rename
-newdata=rename(dat, part_id = `Baby Id`, infant_asthma_date=`Service/Charge Date`, infant_asthma_icd=`Asthma ICD9/ICD10`);newdata
+newdata=rename(dat, part_id = `Baby-Id`, infant_asthma_hosp_date=`Admit Date`, infant_asthma_hosp_icd=`ICD9/ICD10 Code`);newdata
+
 # unique ID? Some moms had multiple babies in data set
-length(unique(newdata$part_id)) # 16346
-length(newdata$part_id)         # 16353
+length(unique(newdata$part_id)) # 2465
+length(newdata$part_id)         # 5293
 names(newdata); head(newdata)
+
 # sort
-newdata2 <- newdata[order(newdata$part_id, as.Date(newdata$infant_asthma_date,format='%Y-%m-%d')),]
+newdata2 <- newdata[order(newdata$part_id, as.Date(newdata$infant_asthma_hosp_date,format='%Y-%m-%d')),]
 names(newdata2); head(newdata2)
+
+# redcap_repeat_instrument
+newdata3=newdata2
+newdata3$redcap_repeat_instrument="baby_hospital_asthma"
+names(newdata3); head(newdata3)
+
+# create "redcap_repeat_instance" variable
+dt <- as.data.table(newdata3)            
+setkeyv(dt, c("part_id", "infant_asthma_hosp_date","infant_asthma_hosp_icd","redcap_repeat_instrument"))  
+dt3 <- dt[, redcap_repeat_instance := seq_len(.N), by = "part_id"]        
+head(dt3); range(dt3$redcap_repeat_instance) 
+max(unique(dt3$redcap_repeat_instance)) # 29
+
+# create "redcap_event_name" variable
+dt3$redcap_event_name=paste("visit_",dt3$redcap_repeat_instance,"_arm_1",sep="")
+head(dt3)
+unique(dt3$redcap_event_name)
+names(dt3);head(dt3)
+
+# order columns for export
+col.names=names(dt3);col.names
+colFixed=c("part_id","redcap_repeat_instrument","redcap_repeat_instance","redcap_event_name","infant_asthma_hosp_date","infant_asthma_hosp_icd");colFixed
+dt4=setcolorder(dt3, colFixed)
+names(dt4);head(dt4)
+dt5=dt4
+
+# export data
+#-------------
+batchSize=10000; # number of rows in single output file
+data.file.name.export=as.character(dt5[2,2]);data.file.name.export
+out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\02_redcap_import_Nov17\\",sep="");out.dir
+
+chunks=split(dt5, floor(0:(nrow(dt5)-1)/batchSize))
+for (i in 1:length(chunks))
+{ # second loop
+  write.table(chunks[[i]],paste0(out.dir,data.file.name.export,i,'.csv'),row.names=F, sep=";")
+} # end second loop
+
 
 # **************************************************************************** #
 # ***************                 baby_hospital_dermatitis                                              
 # **************************************************************************** #
 
+baby.derm=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Seborrheic Dermatitis", range = NULL, col_names = TRUE,
+                      col_types = NULL, na = "NA", trim_ws = TRUE, skip = 0, n_max = Inf,
+                      guess_max = min(1000, n_max));baby.derm
+
+# data
+dat=baby.derm
+
+# rename
+newdata=rename(dat, part_id = `Baby-Id`, infant_derm_hosp_date=`Admit Date`, infant_derm_hosp_icd=`ICD9/ICD10 Code`);newdata
+
+# unique ID? Some moms had multiple babies in data set
+length(unique(newdata$part_id)) # 455
+length(newdata$part_id)         # 687
+names(newdata); head(newdata)
+
+# sort
+newdata2 <- newdata[order(newdata$part_id, as.Date(newdata$infant_derm_hosp_date,format='%Y-%m-%d')),]
+names(newdata2); head(newdata2)
+
+# redcap_repeat_instrument
+newdata3=newdata2
+newdata3$redcap_repeat_instrument="baby_hospital_dermatitis"
+names(newdata3); head(newdata3)
+
+# create "redcap_repeat_instance" variable
+dt <- as.data.table(newdata3)            
+setkeyv(dt, c("part_id", "infant_derm_hosp_date","infant_derm_hosp_icd","redcap_repeat_instrument"))  
+dt3 <- dt[, redcap_repeat_instance := seq_len(.N), by = "part_id"]        
+head(dt3); range(dt3$redcap_repeat_instance) 
+max(unique(dt3$redcap_repeat_instance)) # 17
+
+# create "redcap_event_name" variable
+dt3$redcap_event_name=paste("visit_",dt3$redcap_repeat_instance,"_arm_1",sep="")
+head(dt3)
+unique(dt3$redcap_event_name)
+names(dt3);head(dt3)
+
+# order columns for export
+col.names=names(dt3);col.names
+colFixed=c("part_id","redcap_repeat_instrument","redcap_repeat_instance","redcap_event_name","infant_derm_hosp_date","infant_derm_hosp_icd");colFixed
+dt4=setcolorder(dt3, colFixed)
+names(dt4);head(dt4)
+dt5=dt4
+
+# export data
+#-------------
+batchSize=10000; # number of rows in single output file
+data.file.name.export=as.character(dt5[2,2]);data.file.name.export
+out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\02_redcap_import_Nov17\\",sep="");out.dir
+
+chunks=split(dt5, floor(0:(nrow(dt5)-1)/batchSize))
+for (i in 1:length(chunks))
+{ # second loop
+  write.table(chunks[[i]],paste0(out.dir,data.file.name.export,i,'.csv'),row.names=F, sep=";")
+} # end second loop
+
 # **************************************************************************** #
 # ***************                 baby_hospital_ear                                              
 # **************************************************************************** #
 
+baby.ear=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Ear Infection", range = NULL, col_names = TRUE,
+                    col_types = NULL, na = "NA", trim_ws = TRUE, skip = 0, n_max = Inf,
+                    guess_max = min(1000, n_max));baby.ear
+
+# data
+dat=baby.ear;dat
+
+# rename
+newdata=rename(dat, part_id = `Baby-Id`, infant_ear_hosp_date=`Admit Date`, infant_ear_hosp_icd=`ICD9/ICD10 Code`);newdata
+
+# unique ID? Some moms had multiple babies in data set
+length(unique(newdata$part_id)) # 1669
+length(newdata$part_id)         # 2548
+names(newdata); head(newdata)
+
+# sort
+newdata2 <- newdata[order(newdata$part_id, as.Date(newdata$infant_ear_hosp_date,format='%Y-%m-%d')),]
+names(newdata2); head(newdata2)
+
+# redcap_repeat_instrument
+newdata3=newdata2
+newdata3$redcap_repeat_instrument="baby_hospital_ear"
+names(newdata3); head(newdata3)
+
+# create "redcap_repeat_instance" variable
+dt <- as.data.table(newdata3)            
+setkeyv(dt, c("part_id", "infant_ear_hosp_date","infant_ear_hosp_icd","redcap_repeat_instrument"))  
+dt3 <- dt[, redcap_repeat_instance := seq_len(.N), by = "part_id"]        
+head(dt3); range(dt3$redcap_repeat_instance) 
+max(unique(dt3$redcap_repeat_instance)) # 28
+
+# create "redcap_event_name" variable
+dt3$redcap_event_name=paste("visit_",dt3$redcap_repeat_instance,"_arm_1",sep="")
+head(dt3)
+unique(dt3$redcap_event_name)
+names(dt3);head(dt3)
+
+# order columns for export
+col.names=names(dt3);col.names
+colFixed=c("part_id","redcap_repeat_instrument","redcap_repeat_instance","redcap_event_name","infant_ear_hosp_date","infant_ear_hosp_icd");colFixed
+dt4=setcolorder(dt3, colFixed)
+names(dt4);head(dt4)
+dt5=dt4
+
+# export data
+#-------------
+batchSize=10000; # number of rows in single output file
+data.file.name.export=as.character(dt5[2,2]);data.file.name.export
+out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\02_redcap_import_Nov17\\",sep="");out.dir
+
+chunks=split(dt5, floor(0:(nrow(dt5)-1)/batchSize))
+for (i in 1:length(chunks))
+{ # second loop
+  write.table(chunks[[i]],paste0(out.dir,data.file.name.export,i,'.csv'),row.names=F, sep=";")
+} # end second loop
 
 # **************************************************************************** #
 # ***************                 baby_hospital_eczema                                              
 # **************************************************************************** #
+
+baby.eczema=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Dermatitis-Eczema", range = NULL, col_names = TRUE,
+                   col_types = NULL, na = "NA", trim_ws = TRUE, skip = 0, n_max = Inf,
+                   guess_max = min(1000, n_max));baby.eczema
+
+# data
+dat=baby.eczema;dat
+
+# rename
+newdata=rename(dat, part_id = `Baby-Id`, infant_eczema_hosp_date=`Admit Date`, infant_eczema_hosp_icd=`ICD9/ICD10 Code`);newdata
 
 # **************************************************************************** #
 # ***************                 baby_hospital_foodallergy                                              
