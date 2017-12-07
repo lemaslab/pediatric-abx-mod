@@ -4,7 +4,7 @@
 # **************************************************************************** #
            
 # Author:      Dominick Lemas 
-# Date:        December 06, 2017 
+# Date:        December 07, 2017 
 # IRB:
 # Description: Analysis of infant clinic data in UFHealth data. 
 # Data: C:\Users\Dominick\Dropbox (UFL)\IRB\UF\UFHealth\redcap_import
@@ -46,15 +46,26 @@ data.file.name="Baby-Billing Codes (Hospital).xlsx";data.file.name
 # ***************                 baby_hospital_asthma                                              
 # **************************************************************************** #
 
+# import
 baby.asthma=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Asthma", range = NULL, col_names = TRUE,
                       col_types = NULL, na = "NA", trim_ws = TRUE, skip = 0, n_max = Inf,
                       guess_max = min(1000, n_max));baby.asthma
+
+# Data Description
+#-----------------
+# rows: 5,293
+# cols: 3
+# unique id: 2465
+# repeat: 29
+# ICD9/10: "J069"   "J45909" "4659"   "49390"  "49391"  "49392"  "J45998" "J4541"  "J45901" "J4530"  "49300"  "49302"  "J4531"  "4660"   "J45902" "J4540"  "J4542"  "49320" 
+#          "49382"  "J4521"  "J4520"  "J4522"  "J4550"  "J4551"  "J209"   "49121"  "J4552"  "J4532"  "J449"   "J45991" "4658"   "49310"  "49311"  "49322"  "49312"
 
 # data
 dat=baby.asthma
 
 # rename
 newdata=rename(dat, part_id = `Baby-Id`, infant_asthma_hosp_date=`Admit Date`, infant_asthma_hosp_icd=`ICD9/ICD10 Code`);newdata
+unique(newdata$infant_asthma_hosp_icd)
 
 # unique ID? Some moms had multiple babies in data set
 length(unique(newdata$part_id)) # 2465
@@ -102,20 +113,32 @@ for (i in 1:length(chunks))
   write.table(chunks[[i]],paste0(out.dir,data.file.name.export,i,'.csv'),row.names=F, sep=";")
 } # end second loop
 
+# clear slate
+rm(baby.asthma, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
 
 # **************************************************************************** #
 # ***************                 baby_hospital_dermatitis                                              
 # **************************************************************************** #
 
+# import
 baby.derm=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Seborrheic Dermatitis", range = NULL, col_names = TRUE,
                       col_types = NULL, na = "NA", trim_ws = TRUE, skip = 0, n_max = Inf,
                       guess_max = min(1000, n_max));baby.derm
+
+# Data Description
+#-----------------
+# rows: 687
+# cols: 3
+# unique id: 455
+# repeat: 17
+# ICD9/10: ""6929"  "L309"  "L298"  "6918"  "L308"  "L209"  "L2089" "L2083" "L2084" "L239"  "69012"
 
 # data
 dat=baby.derm
 
 # rename
 newdata=rename(dat, part_id = `Baby-Id`, infant_derm_hosp_date=`Admit Date`, infant_derm_hosp_icd=`ICD9/ICD10 Code`);newdata
+unique(newdata$infant_asthma_hosp_icd)
 
 # unique ID? Some moms had multiple babies in data set
 length(unique(newdata$part_id)) # 455
@@ -163,19 +186,32 @@ for (i in 1:length(chunks))
   write.table(chunks[[i]],paste0(out.dir,data.file.name.export,i,'.csv'),row.names=F, sep=";")
 } # end second loop
 
+# clear slate
+rm(baby.asthma, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
+
 # **************************************************************************** #
 # ***************                 baby_hospital_ear                                              
 # **************************************************************************** #
 
+# import
 baby.ear=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Ear Infection", range = NULL, col_names = TRUE,
                     col_types = NULL, na = "NA", trim_ws = TRUE, skip = 0, n_max = Inf,
                     guess_max = min(1000, n_max));baby.ear
+
+# Data Description
+#-----------------
+# rows: 2548
+# cols: 3
+# unique id: 1669
+# repeat: 17
+# ICD9/10: "3829"   "H6690"  "3813"   "H6692"  "H6693"  "H6691"  "H65491" "H65493" "H938X2" "H65499" "H65492" "H938X3"
 
 # data
 dat=baby.ear;dat
 
 # rename
 newdata=rename(dat, part_id = `Baby-Id`, infant_ear_hosp_date=`Admit Date`, infant_ear_hosp_icd=`ICD9/ICD10 Code`);newdata
+unique(newdata$infant_asthma_hosp_icd)
 
 # unique ID? Some moms had multiple babies in data set
 length(unique(newdata$part_id)) # 1669
@@ -223,19 +259,32 @@ for (i in 1:length(chunks))
   write.table(chunks[[i]],paste0(out.dir,data.file.name.export,i,'.csv'),row.names=F, sep=";")
 } # end second loop
 
+# clear slate
+rm(baby.asthma, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
+
 # **************************************************************************** #
 # ***************                 baby_hospital_eczema                                              
 # **************************************************************************** #
 
+# import
 baby.eczema=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Dermatitis-Eczema", range = NULL, col_names = TRUE,
                    col_types = NULL, na = "NA", trim_ws = TRUE, skip = 0, n_max = Inf,
                    guess_max = min(1000, n_max));baby.eczema
+
+# Data Description
+#-----------------
+# rows: 2548
+# cols: 3
+# unique id: 1669
+# repeat: 17
+# ICD9/10: "3829"   "H6690"  "3813"   "H6692"  "H6693"  "H6691"  "H65491" "H65493" "H938X2" "H65499" "H65492" "H938X3"
 
 # data
 dat=baby.eczema;dat
 
 # rename
 newdata=rename(dat, part_id = `Baby-Id`, infant_eczema_hosp_date=`Admit Date`, infant_eczema_hosp_icd=`ICD9/ICD10 Code`);newdata
+unique(newdata$infant_asthma_hosp_icd)
 
 # unique ID? Some moms had multiple babies in data set
 length(unique(newdata$part_id)) # 1669
@@ -283,19 +332,32 @@ for (i in 1:length(chunks))
   write.table(chunks[[i]],paste0(out.dir,data.file.name.export,i,'.csv'),row.names=F, sep=";")
 } # end second loop
 
+# clear slate
+rm(baby.asthma, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
+
 # **************************************************************************** #
 # ***************                 baby_hospital_foodallergy                                              
 # **************************************************************************** #
 
+# import
 baby.food=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Food Allergy", range = NULL, col_names = TRUE,
                       col_types = NULL, na = "NA", trim_ws = TRUE, skip = 0, n_max = Inf,
                       guess_max = min(1000, n_max));baby.food
+
+# Data Description
+#-----------------
+# rows: 1339
+# cols: 3
+# unique id: 1669
+# repeat: 17
+# ICD9/10: "3829"   "H6690"  "3813"   "H6692"  "H6693"  "H6691"  "H65491" "H65493" "H938X2" "H65499" "H65492" "H938X3"
 
 # data
 dat=baby.food;dat
 
 # rename
 newdata=rename(dat, part_id = `Baby-Id`, infant_fa_hosp_date=`Admit Date`, infant_fa_hosp_icd=`ICD9/ICD10 Code`);newdata
+unique(newdata$infant_asthma_hosp_icd)
 
 # unique ID? Some moms had multiple babies in data set
 length(unique(newdata$part_id)) # 980
@@ -343,6 +405,9 @@ for (i in 1:length(chunks))
   write.table(chunks[[i]],paste0(out.dir,data.file.name.export,i,'.csv'),row.names=F, sep=";")
 } # end second loop
 
+# clear slate
+rm(baby.asthma, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
+
 # **************************************************************************** #
 # ***************                 baby_hospital_hemangioma                                              
 # **************************************************************************** #
@@ -351,6 +416,14 @@ baby.hemang=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Hemangioma
                     col_types = NULL, na = "NA", trim_ws = TRUE, skip = 0, n_max = Inf,
                     guess_max = min(1000, n_max));baby.hemang
 
+# Data Description
+#-----------------
+# rows: 
+# cols: 
+# unique id: 
+# repeat: 
+# ICD9/10: 
+
 # data
 dat=baby.hemang;dat
 
@@ -358,6 +431,8 @@ dat=baby.hemang;dat
 newdata=rename(dat, part_id = `Baby-Id`, infant_hemang_hosp_date=`Admit Date`, infant_hemang_hosp_icd=`ICD9/ICD10 Code`);newdata
 newdata.1=newdata[,c(1,3,4)]
 newdata=newdata.1
+unique(newdata$infant_asthma_hosp_icd)
+
 
 # unique ID? Some moms had multiple babies in data set
 length(unique(newdata$part_id)) # 511
@@ -405,19 +480,32 @@ for (i in 1:length(chunks))
   write.table(chunks[[i]],paste0(out.dir,data.file.name.export,i,'.csv'),row.names=F, sep=";")
 } # end second loop
 
+# clear slate
+rm(baby.asthma, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
+
 # **************************************************************************** #
 # ***************                 baby_hospital_sebaceous                                              
 # **************************************************************************** #
 
+# import
 baby.seb=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Nevus sebaceous", range = NULL, col_names = TRUE,
                       col_types = NULL, na = "NA", trim_ws = TRUE, skip = 0, n_max = Inf,
                       guess_max = min(1000, n_max));baby.seb
+
+# Data Description
+#-----------------
+# rows: 
+# cols: 
+# unique id: 
+# repeat: 
+# ICD9/10:
 
 # data
 dat=baby.seb;dat
 
 # rename
 newdata=rename(dat, part_id = `Baby-Id`, infant_sebaceous_hosp_date=`Admit Date`, infant_sebaceous_hosp_icd=`ICD9/ICD10 Code`);newdata
+unique(newdata$infant_asthma_hosp_icd)
 
 # unique ID? Some moms had multiple babies in data set
 length(unique(newdata$part_id)) # 31
@@ -465,19 +553,32 @@ for (i in 1:length(chunks))
   write.table(chunks[[i]],paste0(out.dir,data.file.name.export,i,'.csv'),row.names=F, sep=";")
 } # end second loop
 
+# clear slate
+rm(baby.asthma, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
+
 # **************************************************************************** #
 # ***************                 baby_hospital_obesity                                              
 # **************************************************************************** #
 
+# import
 baby.ob=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Obesity", range = NULL, col_names = TRUE,
                    col_types = NULL, na = "NA", trim_ws = TRUE, skip = 0, n_max = Inf,
                    guess_max = min(1000, n_max));baby.ob
+
+# Data Description
+#-----------------
+# rows: 
+# cols: 
+# unique id: 
+# repeat: 
+# ICD9/10:
 
 # data
 dat=baby.ob;dat
 
 # rename
 newdata=rename(dat, part_id = `Baby-Id`, infant_obesity_hosp_date=`Admit Date`, infant_obesity_hosp_icd=`ICD9/ICD10 Code`);newdata
+unique(newdata$infant_asthma_hosp_icd)
 
 # unique ID? Some moms had multiple babies in data set
 length(unique(newdata$part_id)) # 26
@@ -525,19 +626,32 @@ for (i in 1:length(chunks))
   write.table(chunks[[i]],paste0(out.dir,data.file.name.export,i,'.csv'),row.names=F, sep=";")
 } # end second loop
 
+# clear slate
+rm(baby.asthma, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
+
 # **************************************************************************** #
 # ***************                 baby_hospital_erythema                                              
 # **************************************************************************** #
 
+# import
 baby.tox=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Erythema toxicum", range = NULL, col_names = TRUE,
                   col_types = NULL, na = "NA", trim_ws = TRUE, skip = 0, n_max = Inf,
                   guess_max = min(1000, n_max));baby.tox
+
+# Data Description
+#-----------------
+# rows: 
+# cols: 
+# unique id: 
+# repeat: 
+# ICD9/10:
 
 # data
 dat=baby.tox;dat
 
 # rename
 newdata=rename(dat, part_id = `Baby-Id`, infant_erythema_hosp_date=`Admit Date`, infant_erythema_hosp_icd=`ICD9/ICD10 Code`);newdata
+unique(newdata$infant_asthma_hosp_icd)
 
 # unique ID? Some moms had multiple babies in data set
 length(unique(newdata$part_id)) # 1032
@@ -585,4 +699,5 @@ for (i in 1:length(chunks))
   write.table(chunks[[i]],paste0(out.dir,data.file.name.export,i,'.csv'),row.names=F, sep=";")
 } # end second loop
 
-
+# clear slate
+rm(baby.asthma, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
