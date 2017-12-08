@@ -203,7 +203,7 @@ baby.ear=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Ear Infection
 # rows: 2548
 # cols: 3
 # unique id: 1669
-# repeat: 17
+# repeat: 28
 # ICD9/10: "3829"   "H6690"  "3813"   "H6692"  "H6693"  "H6691"  "H65491" "H65493" "H938X2" "H65499" "H65492" "H938X3"
 
 # data
@@ -211,7 +211,7 @@ dat=baby.ear;dat
 
 # rename
 newdata=rename(dat, part_id = `Baby-Id`, infant_ear_hosp_date=`Admit Date`, infant_ear_hosp_icd=`ICD9/ICD10 Code`);newdata
-unique(newdata$infant_asthma_hosp_icd)
+unique(newdata$infant_ear_hosp_icd)
 
 # unique ID? Some moms had multiple babies in data set
 length(unique(newdata$part_id)) # 1669
@@ -260,7 +260,7 @@ for (i in 1:length(chunks))
 } # end second loop
 
 # clear slate
-rm(baby.asthma, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
+rm(baby.ear, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
 
 # **************************************************************************** #
 # ***************                 baby_hospital_eczema                                              
@@ -276,7 +276,7 @@ baby.eczema=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Dermatitis
 # rows: 2548
 # cols: 3
 # unique id: 1669
-# repeat: 17
+# repeat: 28
 # ICD9/10: "3829"   "H6690"  "3813"   "H6692"  "H6693"  "H6691"  "H65491" "H65493" "H938X2" "H65499" "H65492" "H938X3"
 
 # data
@@ -284,7 +284,7 @@ dat=baby.eczema;dat
 
 # rename
 newdata=rename(dat, part_id = `Baby-Id`, infant_eczema_hosp_date=`Admit Date`, infant_eczema_hosp_icd=`ICD9/ICD10 Code`);newdata
-unique(newdata$infant_asthma_hosp_icd)
+unique(newdata$infant_eczema_hosp_icd)
 
 # unique ID? Some moms had multiple babies in data set
 length(unique(newdata$part_id)) # 1669
