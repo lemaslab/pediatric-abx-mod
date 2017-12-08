@@ -333,7 +333,7 @@ for (i in 1:length(chunks))
 } # end second loop
 
 # clear slate
-rm(baby.asthma, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
+rm(baby.eczema, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
 
 # **************************************************************************** #
 # ***************                 baby_hospital_foodallergy                                              
@@ -348,16 +348,16 @@ baby.food=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Food Allergy
 #-----------------
 # rows: 1339
 # cols: 3
-# unique id: 1669
+# unique id: 980
 # repeat: 17
-# ICD9/10: "3829"   "H6690"  "3813"   "H6692"  "H6693"  "H6691"  "H65491" "H65493" "H938X2" "H65499" "H65492" "H938X3"
+# ICD9/10: "78791"   "V1501"   "V1505"   "Z91010"  "7080"    "Z91018"  "9989"    "L500"    "9957"    "Z9102"   "T781XXA" "5583"    "V5889"   "K5229"
 
 # data
 dat=baby.food;dat
 
 # rename
 newdata=rename(dat, part_id = `Baby-Id`, infant_fa_hosp_date=`Admit Date`, infant_fa_hosp_icd=`ICD9/ICD10 Code`);newdata
-unique(newdata$infant_asthma_hosp_icd)
+unique(newdata$infant_fa_hosp_icd)
 
 # unique ID? Some moms had multiple babies in data set
 length(unique(newdata$part_id)) # 980
@@ -406,7 +406,7 @@ for (i in 1:length(chunks))
 } # end second loop
 
 # clear slate
-rm(baby.asthma, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
+rm(baby.food, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
 
 # **************************************************************************** #
 # ***************                 baby_hospital_hemangioma                                              
@@ -418,11 +418,11 @@ baby.hemang=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Hemangioma
 
 # Data Description
 #-----------------
-# rows: 
-# cols: 
-# unique id: 
-# repeat: 
-# ICD9/10: 
+# rows: 533
+# cols: 4
+# unique id: 511
+# repeat: 7
+# ICD9/10: "22801" "75732" "22809" "Q825"  "22800" "D1801" "D1800" "D1809"
 
 # data
 dat=baby.hemang;dat
@@ -431,8 +431,7 @@ dat=baby.hemang;dat
 newdata=rename(dat, part_id = `Baby-Id`, infant_hemang_hosp_date=`Admit Date`, infant_hemang_hosp_icd=`ICD9/ICD10 Code`);newdata
 newdata.1=newdata[,c(1,3,4)]
 newdata=newdata.1
-unique(newdata$infant_asthma_hosp_icd)
-
+unique(newdata$infant_hemang_hosp_icd)
 
 # unique ID? Some moms had multiple babies in data set
 length(unique(newdata$part_id)) # 511
@@ -481,7 +480,7 @@ for (i in 1:length(chunks))
 } # end second loop
 
 # clear slate
-rm(baby.asthma, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
+rm(baby.hemang, dat, newdata, newdata.1, newdata2, newdata3, dt, dt3, dt4, dt5)
 
 # **************************************************************************** #
 # ***************                 baby_hospital_sebaceous                                              
@@ -494,18 +493,18 @@ baby.seb=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Nevus sebaceo
 
 # Data Description
 #-----------------
-# rows: 
-# cols: 
-# unique id: 
-# repeat: 
-# ICD9/10:
+# rows: 31
+# cols: 3
+# unique id: 31  
+# repeat: 1
+# ICD9/10: "2168"  "2169"  "2163"  "D224"  "2164"  "D229"  "D2239"
 
 # data
 dat=baby.seb;dat
 
 # rename
 newdata=rename(dat, part_id = `Baby-Id`, infant_sebaceous_hosp_date=`Admit Date`, infant_sebaceous_hosp_icd=`ICD9/ICD10 Code`);newdata
-unique(newdata$infant_asthma_hosp_icd)
+unique(newdata$infant_sebaceous_hosp_icd)
 
 # unique ID? Some moms had multiple babies in data set
 length(unique(newdata$part_id)) # 31
@@ -554,7 +553,7 @@ for (i in 1:length(chunks))
 } # end second loop
 
 # clear slate
-rm(baby.asthma, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
+rm(baby.seb, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
 
 # **************************************************************************** #
 # ***************                 baby_hospital_obesity                                              
@@ -567,18 +566,18 @@ baby.ob=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Obesity", rang
 
 # Data Description
 #-----------------
-# rows: 
-# cols: 
-# unique id: 
-# repeat: 
-# ICD9/10:
+# rows: 30 
+# cols: 3
+# unique id: 26
+# repeat: 2
+# ICD9/10: "27800" "E669"  "Z6854" "E6601" "V8554" "Z6853" "27801" "V8553"
 
 # data
 dat=baby.ob;dat
 
 # rename
 newdata=rename(dat, part_id = `Baby-Id`, infant_obesity_hosp_date=`Admit Date`, infant_obesity_hosp_icd=`ICD9/ICD10 Code`);newdata
-unique(newdata$infant_asthma_hosp_icd)
+unique(newdata$infant_obesity_hosp_icd)
 
 # unique ID? Some moms had multiple babies in data set
 length(unique(newdata$part_id)) # 26
@@ -627,7 +626,7 @@ for (i in 1:length(chunks))
 } # end second loop
 
 # clear slate
-rm(baby.asthma, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
+rm(baby.ob, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
 
 # **************************************************************************** #
 # ***************                 baby_hospital_erythema                                              
@@ -640,18 +639,18 @@ baby.tox=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Erythema toxi
 
 # Data Description
 #-----------------
-# rows: 
-# cols: 
-# unique id: 
-# repeat: 
-# ICD9/10:
+# rows: 1037
+# cols: 3
+# unique id: 1032
+# repeat: 2
+# ICD9/10: "7788" "6950" "P831" "L530"
 
 # data
 dat=baby.tox;dat
 
 # rename
 newdata=rename(dat, part_id = `Baby-Id`, infant_erythema_hosp_date=`Admit Date`, infant_erythema_hosp_icd=`ICD9/ICD10 Code`);newdata
-unique(newdata$infant_asthma_hosp_icd)
+unique(newdata$infant_erythema_hosp_icd)
 
 # unique ID? Some moms had multiple babies in data set
 length(unique(newdata$part_id)) # 1032
@@ -700,4 +699,4 @@ for (i in 1:length(chunks))
 } # end second loop
 
 # clear slate
-rm(baby.asthma, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
+rm(baby.tox, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
