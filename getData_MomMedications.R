@@ -4,7 +4,7 @@
 # **************************************************************************** #
            
 # Author:      Dominick Lemas 
-# Date:        November 30, 2017 
+# Date:        November 30, 2017 (START HERE)
 # IRB:
 # Description: Analysis of UFHealth maternal prenatal medication data 
 # Data: C:\Users\Dominick\Dropbox (UFL)\IRB\UF\UFHealth\redcap_import
@@ -50,6 +50,14 @@ mom.abxip.dat=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Mom Anti
                       col_types = NULL, na = "", trim_ws = TRUE, skip = 0, n_max = Inf,
                       guess_max = min(1000, n_max));mom.abxip.dat
 
+# Data Description
+#-----------------
+# rows: 
+# cols: 
+# unique id: 
+# repeat: 
+# ICD9/10: 
+
 # dates
 #------
 mom.abxip.dat$`Taken Datetime`=as.character(mom.abxip.dat$`Taken Datetime`)
@@ -89,11 +97,14 @@ dt3$mom_prenat_abx=gsub(" ","_",dt3$mom_prenat_abx)
 dt3$mom_prenat_abx=gsub(",","&",dt3$mom_prenat_abx) 
 head(dt3)
 
-# sort/rename columns
-#--------------------
-head(dt3); names(dt3)
-dt5=dt3[,c(1,5:7,2:4)]
-head(dt5);names(dt5)
+# order columns for export
+col.names=names(dt3);col.names
+col.first=c("part_id","redcap_repeat_instrument","redcap_repeat_instance","redcap_event_name");col.first
+col.next=subset(col.names, !(col.names%in%col.first));col.next
+colFixed=append(col.first, col.next, after=length(col.first));colFixed
+dt4=setcolorder(dt3, colFixed)
+names(dt4);head(dt4)
+dt5=dt4
 
 # export data
 #-------------
@@ -107,6 +118,9 @@ for (i in 1:length(chunks))
   write.table(chunks[[i]],paste0(out.dir,data.file.name.export,i,'.csv'),row.names=F, sep=";")
 } # end second loop
 
+# clear slate
+rm(baby.dat, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
+
 # **************************************************************************** #
 # ***************                mom_antibiotics                                              
 # **************************************************************************** #
@@ -114,6 +128,14 @@ for (i in 1:length(chunks))
 mom.abxscript.dat=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Mom Antibiotics Prescription", range = NULL, col_names = TRUE,
                         col_types = NULL, na = "", trim_ws = TRUE, skip = 0, n_max = Inf,
                         guess_max = min(1000, n_max));mom.abxscript.dat
+
+# Data Description
+#-----------------
+# rows: 
+# cols: 
+# unique id: 
+# repeat: 
+# ICD9/10: 
 
 # dates
 mom.abxscript.dat$`Order Datetime`=as.character(mom.abxscript.dat$`Order Datetime`)
@@ -149,10 +171,14 @@ names(dt3)
 dt3$mom_prenat_abx2=gsub(" ","_",dt3$mom_prenat_abx2) 
 head(dt3)
 
-# sort/rename columns
-head(dt3); names(dt3)
-dt5=dt3[,c(1,4:6,2:3)]
-head(dt5);names(dt5)
+# order columns for export
+col.names=names(dt3);col.names
+col.first=c("part_id","redcap_repeat_instrument","redcap_repeat_instance","redcap_event_name");col.first
+col.next=subset(col.names, !(col.names%in%col.first));col.next
+colFixed=append(col.first, col.next, after=length(col.first));colFixed
+dt4=setcolorder(dt3, colFixed)
+names(dt4);head(dt4)
+dt5=dt4
 
 # export data
 #-------------
@@ -166,6 +192,8 @@ for (i in 1:length(chunks))
   write.table(chunks[[i]],paste0(out.dir,data.file.name.export,i,'.csv'),row.names=F, sep=";")
 } # end second loop
 
+# clear slate
+rm(baby.dat, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
 
 # **************************************************************************** #
 # ***************                mom_medications_ip 1 & 2                                             
@@ -183,6 +211,14 @@ mom.medip2.dat=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Mom IP 
 
 # combine datasets
 mom.meds.dat=bind_rows(mom.medip1.dat,mom.medip2.dat);mom.meds.dat
+
+# Data Description
+#-----------------
+# rows: 
+# cols: 
+# unique id: 
+# repeat: 
+# ICD9/10: 
 
 # dates
 mom.meds.dat$`Taken Datetime`=as.character(mom.meds.dat$`Taken Datetime`)
@@ -218,10 +254,14 @@ names(dt3)
 dt3$mom_prenat_medip=gsub(" ","_",dt3$mom_prenat_medip) 
 head(dt3)
 
-# sort/rename columns
-head(dt3); names(dt3)
-dt5=dt3[,c(1,5:7,2:4)]
-head(dt5);names(dt5)
+# order columns for export
+col.names=names(dt3);col.names
+col.first=c("part_id","redcap_repeat_instrument","redcap_repeat_instance","redcap_event_name");col.first
+col.next=subset(col.names, !(col.names%in%col.first));col.next
+colFixed=append(col.first, col.next, after=length(col.first));colFixed
+dt4=setcolorder(dt3, colFixed)
+names(dt4);head(dt4)
+dt5=dt4
 
 # export data
 #-------------
@@ -235,6 +275,9 @@ for (i in 1:length(chunks))
   write.table(chunks[[i]],paste0(out.dir,data.file.name.export,i,'.csv'),row.names=F, sep=";")
 } # end second loop
 
+# clear slate
+rm(baby.dat, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
+
 # **************************************************************************** #
 # ***************                mom_perscriptions                                              
 # **************************************************************************** #
@@ -242,6 +285,14 @@ for (i in 1:length(chunks))
 mom.script.dat=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Mom Prescriptions", range = NULL, col_names = TRUE,
                         col_types = NULL, na = "", trim_ws = TRUE, skip = 0, n_max = Inf,
                         guess_max = min(1000, n_max));mom.script.dat
+
+# Data Description
+#-----------------
+# rows: 
+# cols: 
+# unique id: 
+# repeat: 
+# ICD9/10: 
 
 # dates
 mom.script.dat$`Order Datetime`=as.character(mom.script.dat$`Order Datetime`)
@@ -277,10 +328,14 @@ names(dt3)
 dt3$mom_prenat_med_rx=gsub(" ","_",dt3$mom_prenat_med_rx) 
 head(dt3)
 
-# sort/rename columns
-head(dt3); names(dt3)
-dt5=dt3[,c(1,4:6,2:3)]
-head(dt5);names(dt5)
+# order columns for export
+col.names=names(dt3);col.names
+col.first=c("part_id","redcap_repeat_instrument","redcap_repeat_instance","redcap_event_name");col.first
+col.next=subset(col.names, !(col.names%in%col.first));col.next
+colFixed=append(col.first, col.next, after=length(col.first));colFixed
+dt4=setcolorder(dt3, colFixed)
+names(dt4);head(dt4)
+dt5=dt4
 
 # export data
 #-------------
@@ -294,7 +349,5 @@ for (i in 1:length(chunks))
   write.table(chunks[[i]],paste0(out.dir,data.file.name.export,i,'.csv'),row.names=F, sep=";")
 } # end second loop
 
-           
-
-
-
+# clear slate
+rm(baby.dat, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
