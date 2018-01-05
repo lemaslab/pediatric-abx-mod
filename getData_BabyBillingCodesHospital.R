@@ -4,9 +4,9 @@
 # **************************************************************************** #
            
 # Author:      Dominick Lemas 
-# Date:        December 07, 2017 
+# Date:        January 05, 2018 
 # IRB:
-# Description: Analysis of infant clinic data in UFHealth data. 
+# Description:Import infant clinic data to RedCap from flat files. 
 # Data: C:\Users\Dominick\Dropbox (UFL)\IRB\UF\UFHealth\redcap_import
 
 # **************************************************************************** #
@@ -96,7 +96,9 @@ names(dt3);head(dt3)
 
 # order columns for export
 col.names=names(dt3);col.names
-colFixed=c("part_id","redcap_repeat_instrument","redcap_repeat_instance","redcap_event_name","infant_asthma_hosp_date","infant_asthma_hosp_icd");colFixed
+col.first=c("part_id","redcap_repeat_instrument","redcap_repeat_instance","redcap_event_name");col.first
+col.next=subset(col.names, !(col.names%in%col.first));col.next
+colFixed=append(col.first, col.next, after=length(col.first));colFixed
 dt4=setcolorder(dt3, colFixed)
 names(dt4);head(dt4)
 dt5=dt4
@@ -138,7 +140,7 @@ dat=baby.derm
 
 # rename
 newdata=rename(dat, part_id = `Baby-Id`, infant_derm_hosp_date=`Admit Date`, infant_derm_hosp_icd=`ICD9/ICD10 Code`);newdata
-unique(newdata$infant_asthma_hosp_icd)
+unique(newdata$infant_derm_hosp_icd)
 
 # unique ID? Some moms had multiple babies in data set
 length(unique(newdata$part_id)) # 455
@@ -169,7 +171,9 @@ names(dt3);head(dt3)
 
 # order columns for export
 col.names=names(dt3);col.names
-colFixed=c("part_id","redcap_repeat_instrument","redcap_repeat_instance","redcap_event_name","infant_derm_hosp_date","infant_derm_hosp_icd");colFixed
+col.first=c("part_id","redcap_repeat_instrument","redcap_repeat_instance","redcap_event_name");col.first
+col.next=subset(col.names, !(col.names%in%col.first));col.next
+colFixed=append(col.first, col.next, after=length(col.first));colFixed
 dt4=setcolorder(dt3, colFixed)
 names(dt4);head(dt4)
 dt5=dt4
@@ -187,7 +191,7 @@ for (i in 1:length(chunks))
 } # end second loop
 
 # clear slate
-rm(baby.asthma, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
+rm(baby.derm, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
 
 # **************************************************************************** #
 # ***************                 baby_hospital_ear                                              
@@ -242,7 +246,9 @@ names(dt3);head(dt3)
 
 # order columns for export
 col.names=names(dt3);col.names
-colFixed=c("part_id","redcap_repeat_instrument","redcap_repeat_instance","redcap_event_name","infant_ear_hosp_date","infant_ear_hosp_icd");colFixed
+col.first=c("part_id","redcap_repeat_instrument","redcap_repeat_instance","redcap_event_name");col.first
+col.next=subset(col.names, !(col.names%in%col.first));col.next
+colFixed=append(col.first, col.next, after=length(col.first));colFixed
 dt4=setcolorder(dt3, colFixed)
 names(dt4);head(dt4)
 dt5=dt4
@@ -315,7 +321,9 @@ names(dt3);head(dt3)
 
 # order columns for export
 col.names=names(dt3);col.names
-colFixed=c("part_id","redcap_repeat_instrument","redcap_repeat_instance","redcap_event_name","infant_eczema_hosp_date","infant_eczema_hosp_icd");colFixed
+col.first=c("part_id","redcap_repeat_instrument","redcap_repeat_instance","redcap_event_name");col.first
+col.next=subset(col.names, !(col.names%in%col.first));col.next
+colFixed=append(col.first, col.next, after=length(col.first));colFixed
 dt4=setcolorder(dt3, colFixed)
 names(dt4);head(dt4)
 dt5=dt4
@@ -388,7 +396,9 @@ names(dt3);head(dt3)
 
 # order columns for export
 col.names=names(dt3);col.names
-colFixed=c("part_id","redcap_repeat_instrument","redcap_repeat_instance","redcap_event_name","infant_fa_hosp_date","infant_fa_hosp_icd");colFixed
+col.first=c("part_id","redcap_repeat_instrument","redcap_repeat_instance","redcap_event_name");col.first
+col.next=subset(col.names, !(col.names%in%col.first));col.next
+colFixed=append(col.first, col.next, after=length(col.first));colFixed
 dt4=setcolorder(dt3, colFixed)
 names(dt4);head(dt4)
 dt5=dt4
@@ -462,7 +472,9 @@ names(dt3);head(dt3)
 
 # order columns for export
 col.names=names(dt3);col.names
-colFixed=c("part_id","redcap_repeat_instrument","redcap_repeat_instance","redcap_event_name","infant_hemang_hosp_date","infant_hemang_hosp_icd");colFixed
+col.first=c("part_id","redcap_repeat_instrument","redcap_repeat_instance","redcap_event_name");col.first
+col.next=subset(col.names, !(col.names%in%col.first));col.next
+colFixed=append(col.first, col.next, after=length(col.first));colFixed
 dt4=setcolorder(dt3, colFixed)
 names(dt4);head(dt4)
 dt5=dt4
@@ -535,7 +547,9 @@ names(dt3);head(dt3)
 
 # order columns for export
 col.names=names(dt3);col.names
-colFixed=c("part_id","redcap_repeat_instrument","redcap_repeat_instance","redcap_event_name","infant_sebaceous_hosp_date","infant_sebaceous_hosp_icd");colFixed
+col.first=c("part_id","redcap_repeat_instrument","redcap_repeat_instance","redcap_event_name");col.first
+col.next=subset(col.names, !(col.names%in%col.first));col.next
+colFixed=append(col.first, col.next, after=length(col.first));colFixed
 dt4=setcolorder(dt3, colFixed)
 names(dt4);head(dt4)
 dt5=dt4
@@ -608,7 +622,9 @@ names(dt3);head(dt3)
 
 # order columns for export
 col.names=names(dt3);col.names
-colFixed=c("part_id","redcap_repeat_instrument","redcap_repeat_instance","redcap_event_name","infant_obesity_hosp_date","infant_obesity_hosp_icd");colFixed
+col.first=c("part_id","redcap_repeat_instrument","redcap_repeat_instance","redcap_event_name");col.first
+col.next=subset(col.names, !(col.names%in%col.first));col.next
+colFixed=append(col.first, col.next, after=length(col.first));colFixed
 dt4=setcolorder(dt3, colFixed)
 names(dt4);head(dt4)
 dt5=dt4
@@ -681,7 +697,9 @@ names(dt3);head(dt3)
 
 # order columns for export
 col.names=names(dt3);col.names
-colFixed=c("part_id","redcap_repeat_instrument","redcap_repeat_instance","redcap_event_name","infant_erythema_hosp_date","infant_erythema_hosp_icd");colFixed
+col.first=c("part_id","redcap_repeat_instrument","redcap_repeat_instance","redcap_event_name");col.first
+col.next=subset(col.names, !(col.names%in%col.first));col.next
+colFixed=append(col.first, col.next, after=length(col.first));colFixed
 dt4=setcolorder(dt3, colFixed)
 names(dt4);head(dt4)
 dt5=dt4

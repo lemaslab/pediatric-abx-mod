@@ -4,9 +4,9 @@
 # **************************************************************************** #
            
 # Author:      Dominick Lemas 
-# Date:        December 08, 2017 
+# Date:        January 05, 2018 
 # IRB:
-# Description: Analysis of infant clinic data in UFHealth data. 
+# Description: Import infant clinic data to RedCap from flat files. 
 # Data: C:\Users\Dominick\Dropbox (UFL)\IRB\UF\UFHealth\redcap_import
 
 # **************************************************************************** #
@@ -96,7 +96,9 @@ names(dt3);head(dt3)
 
 # order columns for export
 col.names=names(dt3);col.names
-colFixed=c("part_id","redcap_repeat_instrument","redcap_repeat_instance","redcap_event_name","infant_asthma_date","infant_asthma_icd");colFixed
+col.first=c("part_id","redcap_repeat_instrument","redcap_repeat_instance","redcap_event_name");col.first
+col.next=subset(col.names, !(col.names%in%col.first));col.next
+colFixed=append(col.first, col.next, after=length(col.first));colFixed
 dt4=setcolorder(dt3, colFixed)
 names(dt4);head(dt4)
 dt5=dt4
@@ -170,7 +172,9 @@ names(dt3);head(dt3)
 
 # order columns for export
 col.names=names(dt3);col.names
-colFixed=c("part_id","redcap_repeat_instrument","redcap_repeat_instance","redcap_event_name","infant_fa_date","infant_fa_icd");colFixed
+col.first=c("part_id","redcap_repeat_instrument","redcap_repeat_instance","redcap_event_name");col.first
+col.next=subset(col.names, !(col.names%in%col.first));col.next
+colFixed=append(col.first, col.next, after=length(col.first));colFixed
 dt4=setcolorder(dt3, colFixed)
 names(dt4);head(dt4)
 dt5=dt4
@@ -243,7 +247,9 @@ names(dt3);head(dt3)
 
 # order columns for export
 col.names=names(dt3);col.names
-colFixed=c("part_id","redcap_repeat_instrument","redcap_repeat_instance","redcap_event_name","infant_ear_infect_date","infant_ear_infect_icd");colFixed
+col.first=c("part_id","redcap_repeat_instrument","redcap_repeat_instance","redcap_event_name");col.first
+col.next=subset(col.names, !(col.names%in%col.first));col.next
+colFixed=append(col.first, col.next, after=length(col.first));colFixed
 dt4=setcolorder(dt3, colFixed)
 names(dt4);head(dt4)
 dt5=dt4
@@ -316,7 +322,9 @@ names(dt3);head(dt3)
 
 # order columns for export
 col.names=names(dt3);col.names
-colFixed=c("part_id","redcap_repeat_instrument","redcap_repeat_instance","redcap_event_name","infant_eczema_date","infant_eczema_icd");colFixed
+col.first=c("part_id","redcap_repeat_instrument","redcap_repeat_instance","redcap_event_name");col.first
+col.next=subset(col.names, !(col.names%in%col.first));col.next
+colFixed=append(col.first, col.next, after=length(col.first));colFixed
 dt4=setcolorder(dt3, colFixed)
 names(dt4);head(dt4)
 dt5=dt4
@@ -389,7 +397,9 @@ names(dt3);head(dt3)
 
 # order columns for export
 col.names=names(dt3);col.names
-colFixed=c("part_id","redcap_repeat_instrument","redcap_repeat_instance","redcap_event_name","infant_dermatitis_date","infant_dermatitis_icd");colFixed
+col.first=c("part_id","redcap_repeat_instrument","redcap_repeat_instance","redcap_event_name");col.first
+col.next=subset(col.names, !(col.names%in%col.first));col.next
+colFixed=append(col.first, col.next, after=length(col.first));colFixed
 dt4=setcolorder(dt3, colFixed)
 names(dt4);head(dt4)
 dt5=dt4
@@ -462,7 +472,9 @@ names(dt3);head(dt3)
 
 # order columns for export
 col.names=names(dt3);col.names
-colFixed=c("part_id","redcap_repeat_instrument","redcap_repeat_instance","redcap_event_name","infant_erythema_date","infant_erythema_icd");colFixed
+col.first=c("part_id","redcap_repeat_instrument","redcap_repeat_instance","redcap_event_name");col.first
+col.next=subset(col.names, !(col.names%in%col.first));col.next
+colFixed=append(col.first, col.next, after=length(col.first));colFixed
 dt4=setcolorder(dt3, colFixed)
 names(dt4);head(dt4)
 dt5=dt4
@@ -535,7 +547,9 @@ names(dt3);head(dt3)
 
 # order columns for export
 col.names=names(dt3);col.names
-colFixed=c("part_id","redcap_repeat_instrument","redcap_repeat_instance","redcap_event_name","infant_sebaceous_date","infant_sebaceous_icd");colFixed
+col.first=c("part_id","redcap_repeat_instrument","redcap_repeat_instance","redcap_event_name");col.first
+col.next=subset(col.names, !(col.names%in%col.first));col.next
+colFixed=append(col.first, col.next, after=length(col.first));colFixed
 dt4=setcolorder(dt3, colFixed)
 names(dt4);head(dt4)
 dt5=dt4
@@ -608,7 +622,9 @@ names(dt3);head(dt3)
 
 # order columns for export
 col.names=names(dt3);col.names
-colFixed=c("part_id","redcap_repeat_instrument","redcap_repeat_instance","redcap_event_name","infant_hemangioma_date","infant_hemangioma_icd");colFixed
+col.first=c("part_id","redcap_repeat_instrument","redcap_repeat_instance","redcap_event_name");col.first
+col.next=subset(col.names, !(col.names%in%col.first));col.next
+colFixed=append(col.first, col.next, after=length(col.first));colFixed
 dt4=setcolorder(dt3, colFixed)
 names(dt4);head(dt4)
 dt5=dt4
@@ -681,7 +697,9 @@ names(dt3);head(dt3)
 
 # order columns for export
 col.names=names(dt3);col.names
-colFixed=c("part_id","redcap_repeat_instrument","redcap_repeat_instance","redcap_event_name","infant_obesity_date","infant_obesity_icd");colFixed
+col.first=c("part_id","redcap_repeat_instrument","redcap_repeat_instance","redcap_event_name");col.first
+col.next=subset(col.names, !(col.names%in%col.first));col.next
+colFixed=append(col.first, col.next, after=length(col.first));colFixed
 dt4=setcolorder(dt3, colFixed)
 names(dt4);head(dt4)
 dt5=dt4
