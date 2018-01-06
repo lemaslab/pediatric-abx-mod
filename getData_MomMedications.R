@@ -284,10 +284,10 @@ for (i in 1:length(chunks))
 rm(mom.medip1.dat,mom.medip2.dat,mom.meds.dat, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
 
 # **************************************************************************** #
-# ***************                mom_perscriptions                                              
+# ***************                mom_medications_rx                                              
 # **************************************************************************** #
 
-# mom_perscriptions
+# mom_medications_rx
 #-----------------
 # rows: 23357
 # cols: 3

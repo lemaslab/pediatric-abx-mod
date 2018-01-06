@@ -49,7 +49,7 @@ data.file.name="Baby-Billing Codes (Hospital).xlsx";data.file.name
 
 # baby_hospital_asthma
 #-----------------
-# rows: 5,293
+# rows: 5293
 # cols: 3
 # unique id: 2465
 # repeat: 29
@@ -128,7 +128,7 @@ rm(baby.asthma, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
 # cols: 3
 # unique id: 455
 # repeat: 17
-# ICD9/10: ""6929"  "L309"  "L298"  "6918"  "L308"  "L209"  "L2089" "L2083" "L2084" "L239"  "69012"
+# ICD9/10: 6929"  "L309"  "L298"  "6918"  "L308"  "L209"  "L2089" "L2083" "L2084" "L239"  "69012"
 
 # read data
 baby.derm=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Seborrheic Dermatitis", range = NULL, col_names = TRUE,

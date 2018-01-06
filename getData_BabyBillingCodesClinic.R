@@ -202,7 +202,7 @@ rm(baby.allergy, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
 #-----------------
 # rows: 6507
 # cols: 3
-# unique id: 
+# unique id: 2849
 # repeat: 21
 # ICD9/10: "382.9"   "381.3"   "H66.90"  "H66.93"  "H66.91"  "H66.92"  "H93.8X1" "H65.493" "H65.491" "H65.499" "H65.492" "386.30"  "H93.8X3" "H93.8X2"
 
@@ -427,7 +427,7 @@ rm(baby.derm, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
 #-----------------
 # rows: 700
 # cols: 3
-# unique id: 
+# unique id: 477
 # repeat: 10
 # ICD9/10: "695.0" "778.8" "L53.0" NA "P83.1"
 
@@ -502,7 +502,7 @@ rm(baby.tox, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
 #-----------------
 # rows: 171
 # cols: 3
-# unique id: 
+# unique id: 109
 # repeat: 8
 # ICD9/10: "216.9"  "D22.4"  "D22.9"  "216.4"  "216.3"  "D23.9"  "216.8"  "D22.30" NA
 
