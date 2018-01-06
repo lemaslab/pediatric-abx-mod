@@ -290,7 +290,7 @@ baby.mom=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Baby-Mom Link
 dat=baby.mom
 
 # rename
-newdata=rename(dat, part_id = `Baby-Id`, mom_baby_link=`Mom-Id`)
+newdata=rename(dat, part_id = `Baby-Id`, part_link=`Mom-Id`)
 names(newdata); head(newdata)
 
 # unique ID? Some moms had multiple babies in data set
@@ -304,7 +304,7 @@ names(newdata2); head(newdata2)
 
 # redcap_repeat_instrument
 newdata3=newdata2
-newdata3$redcap_repeat_instrument="baby_mom_baby_link"
+newdata3$redcap_repeat_instrument="mom_baby_link"
 names(newdata3); head(newdata3)
 
 # create "redcap_repeat_instance" variable
@@ -495,10 +495,10 @@ for (i in 1:length(chunks))
 rm(baby.hc, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
 
 # **************************************************************************** #
-# ***************                baby_antibiotics_perscriptions                                               
+# ***************                baby_antibiotics_rx                                               
 # **************************************************************************** #
 
-# baby_antibiotics_perscriptions
+# baby_antibiotics_rx
 #-----------------
 # rows: 5156
 # cols: 5
@@ -529,7 +529,7 @@ names(newdata2); head(newdata2)
 
 # redcap_repeat_instrument
 newdata3=newdata2
-newdata3$redcap_repeat_instrument="baby_antibiotics_perscriptions"
+newdata3$redcap_repeat_instrument="baby_antibiotics_rx"
 names(newdata3); head(newdata3)
 
 # modify medication string
