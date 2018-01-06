@@ -46,12 +46,7 @@ data.file.name="Baby-Billing Codes (Clinic).xlsx";data.file.name
 # ***************                baby_clinic_asthma                                               
 # **************************************************************************** #
 
-# import
-baby.asthma=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Asthma (Clinic)", range = NULL, col_names = TRUE,
-                   col_types = NULL, na = "NA", trim_ws = TRUE, skip = 0, n_max = Inf,
-                   guess_max = min(1000, n_max));baby.asthma
-
-# Data Description
+# baby_clinic_asthma
 #-----------------
 # rows: 13241
 # cols: 3
@@ -59,6 +54,11 @@ baby.asthma=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Asthma (Cl
 # repeat: 75
 # ICD9/10: "465.9"   "493.90"  "493.02"  "J45.20"  "493.92"  "493.00"  "J45.998" "J45.909" "J45.41"  "J45.901" "J06.9"   "466.0"   "493.01"  "J45.30"  "J45.21"  "493.82"  "493.91"  "J45.31" 
 # "J45.902" "J45.40"  "J45.50"  "J45.22"  "J45.32"  "J45.51"  "J45.42"  "J20.9"   "J45.52"  "493.20"  "465.8"   "493.11"  "493.10"  "J45.991" "493.81"  "J44.9"   "491.21"  "J44.1"
+
+# read data
+baby.asthma=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Asthma (Clinic)", range = NULL, col_names = TRUE,
+                   col_types = NULL, na = "NA", trim_ws = TRUE, skip = 0, n_max = Inf,
+                   guess_max = min(1000, n_max));baby.asthma
 
 # data
 dat=baby.asthma
@@ -122,12 +122,7 @@ rm(baby.asthma, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
 # ***************                baby_clinic_foodallergy                                               
 # **************************************************************************** #
 
-# import
-baby.allergy=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Food Allergy (Clinic)", range = NULL, col_names = TRUE,
-                      col_types = NULL, na = "NA", trim_ws = TRUE, skip = 0, n_max = Inf,
-                      guess_max = min(1000, n_max));baby.allergy
-
-# Data Description
+# baby_clinic_foodallergy
 #-----------------
 # rows: 2360
 # cols: 3
@@ -135,6 +130,11 @@ baby.allergy=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Food Alle
 # repeat: 33
 # ICD9/10: "787.91"   "909.9"    "Z91.018"  "708.0"    "Z91.010"  "995.7"    "V15.05"   "558.3"    "995.60"   "V58.89"   "V15.01"   "T78.1XXA" "909.0"    "L50.0"    "K52.29"   "T78.00XA"
 #          "T78.1XXD"
+
+# read data
+baby.allergy=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Food Allergy (Clinic)", range = NULL, col_names = TRUE,
+                      col_types = NULL, na = "NA", trim_ws = TRUE, skip = 0, n_max = Inf,
+                      guess_max = min(1000, n_max));baby.allergy
 
 # data
 dat=baby.allergy
@@ -198,18 +198,18 @@ rm(baby.allergy, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
 # ***************                baby_clinic_ear                                                
 # **************************************************************************** #
 
-# import
-baby.ear=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Ear Infection (Clinic)", range = NULL, col_names = TRUE,
-                       col_types = NULL, na = "NA", trim_ws = TRUE, skip = 0, n_max = Inf,
-                       guess_max = min(1000, n_max));baby.ear
-
-# Data Description
+# baby_clinic_ear
 #-----------------
 # rows: 6507
 # cols: 3
 # unique id: 
 # repeat: 21
 # ICD9/10: "382.9"   "381.3"   "H66.90"  "H66.93"  "H66.91"  "H66.92"  "H93.8X1" "H65.493" "H65.491" "H65.499" "H65.492" "386.30"  "H93.8X3" "H93.8X2"
+
+# read data
+baby.ear=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Ear Infection (Clinic)", range = NULL, col_names = TRUE,
+                       col_types = NULL, na = "NA", trim_ws = TRUE, skip = 0, n_max = Inf,
+                       guess_max = min(1000, n_max));baby.ear
 
 # data
 dat=baby.ear
@@ -273,18 +273,18 @@ rm(baby.ear, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
 # ***************                baby_clinic_eczema                                               
 # **************************************************************************** #
 
-# import
-baby.eczema=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Dermatitis-Eczema (Clinic)", range = NULL, col_names = TRUE,
-                   col_types = NULL, na = "NA", trim_ws = TRUE, skip = 0, n_max = Inf,
-                   guess_max = min(1000, n_max));baby.eczema
-
-# Data Description
+# baby_clinic_eczema
 #-----------------
 # rows: 5026
 # cols: 3
 # unique id: 1997
 # repeat: 36
 # ICD9/10: "692.9"  "691.8"  "690.12" "L29.8"  "L30.8"  "L30.9"  NA       "L20.84" "L20.9"  "L23.9"  "L20.89" "L20.83"
+
+# read data
+baby.eczema=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Dermatitis-Eczema (Clinic)", range = NULL, col_names = TRUE,
+                   col_types = NULL, na = "NA", trim_ws = TRUE, skip = 0, n_max = Inf,
+                   guess_max = min(1000, n_max));baby.eczema
 
 # data
 dat=baby.eczema
@@ -348,18 +348,18 @@ rm(baby.eczema, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
 # ***************                baby_clinic_dermatitis                                               
 # **************************************************************************** #
 
-# import
-baby.derm=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Seborrheic Dermatitis (Clinic)", range = NULL, col_names = TRUE,
-                      col_types = NULL, na = "NA", trim_ws = TRUE, skip = 0, n_max = Inf,
-                      guess_max = min(1000, n_max));baby.derm
-
-# Data Description
+# baby_clinic_dermatitis
 #-----------------
 # rows: 607
 # cols: 3
 # unique id: 487
 # repeat: 7
-# ICD9/10: "690.12" "690.10" "L21.9"  NA       "L21.1" 
+# ICD9/10: "690.12" "690.10" "L21.9"  NA  "L21.1"
+
+# read data
+baby.derm=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Seborrheic Dermatitis (Clinic)", range = NULL, col_names = TRUE,
+                      col_types = NULL, na = "NA", trim_ws = TRUE, skip = 0, n_max = Inf,
+                      guess_max = min(1000, n_max));baby.derm
 
 # data
 dat=baby.derm
@@ -423,18 +423,18 @@ rm(baby.derm, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
 # ***************                baby_clinic_erythema                                               
 # **************************************************************************** #
 
-# import
-baby.tox=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Erythema Toxicum (Clinic)", range = NULL, col_names = TRUE,
-                    col_types = NULL, na = "NA", trim_ws = TRUE, skip = 0, n_max = Inf,
-                    guess_max = min(1000, n_max));baby.tox
-
-# Data Description
+# baby_clinic_erythema
 #-----------------
 # rows: 700
 # cols: 3
 # unique id: 
 # repeat: 10
-# ICD9/10: "695.0" "778.8" "L53.0" NA      "P83.1"
+# ICD9/10: "695.0" "778.8" "L53.0" NA "P83.1"
+
+# read data
+baby.tox=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Erythema Toxicum (Clinic)", range = NULL, col_names = TRUE,
+                    col_types = NULL, na = "NA", trim_ws = TRUE, skip = 0, n_max = Inf,
+                    guess_max = min(1000, n_max));baby.tox
 
 # data
 dat=baby.tox
@@ -498,18 +498,18 @@ rm(baby.tox, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
 # ***************                 baby_clinic_sebaceous                                              
 # **************************************************************************** #
 
-# import
-baby.seb=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Nevus Sebaceous (Clinic)", range = NULL, col_names = TRUE,
-                   col_types = NULL, na = "NA", trim_ws = TRUE, skip = 0, n_max = Inf,
-                   guess_max = min(1000, n_max));baby.seb
-
-# Data Description
+# baby_clinic_sebaceous
 #-----------------
 # rows: 171
 # cols: 3
 # unique id: 
 # repeat: 8
 # ICD9/10: "216.9"  "D22.4"  "D22.9"  "216.4"  "216.3"  "D23.9"  "216.8"  "D22.30" NA
+
+# read data
+baby.seb=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Nevus Sebaceous (Clinic)", range = NULL, col_names = TRUE,
+                   col_types = NULL, na = "NA", trim_ws = TRUE, skip = 0, n_max = Inf,
+                   guess_max = min(1000, n_max));baby.seb
 
 # data
 dat=baby.seb
@@ -573,18 +573,18 @@ rm(baby.seb, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
 # ***************                 baby_clinic_hemangioma                                              
 # **************************************************************************** #
 
-# import
-baby.hem=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Hemangioma (Clinic)", range = NULL, col_names = TRUE,
-                   col_types = NULL, na = "NA", trim_ws = TRUE, skip = 0, n_max = Inf,
-                   guess_max = min(1000, n_max));baby.hem
-
-# Data Description
+# baby_clinic_hemangioma
 #-----------------
 # rows: 1035
 # cols: 3
 # unique id: 473
 # repeat: 18
-# ICD9/10: "228.00" "D18.00" "757.32" "228.09" "228.01" "448.9"  "Q82.5"  "D18.01" "D18.09" NA       "I78.8"
+# ICD9/10: "228.00" "D18.00" "757.32" "228.09" "228.01" "448.9"  "Q82.5"  "D18.01" "D18.09" NA "I78.8"
+
+# read data
+baby.hem=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Hemangioma (Clinic)", range = NULL, col_names = TRUE,
+                   col_types = NULL, na = "NA", trim_ws = TRUE, skip = 0, n_max = Inf,
+                   guess_max = min(1000, n_max));baby.hem
 
 # data
 dat=baby.hem
@@ -648,18 +648,18 @@ rm(baby.hem, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
 # ***************                 baby_obesity_clinic                                              
 # **************************************************************************** #
 
-# import
-baby.ob=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Obesity (Clinic)", range = NULL, col_names = TRUE,
-                   col_types = NULL, na = "NA", trim_ws = TRUE, skip = 0, n_max = Inf,
-                   guess_max = min(1000, n_max));baby.ob
-
-# Data Description
+# baby_obesity_clinic
 #-----------------
 # rows: 490
 # cols: 3
 # unique id: 316
 # repeat: 11
 # ICD9/10: "278.00" "V85.54" "Z68.54" "E66.01" "E66.9"  "Z68.53" "V85.53" "E66.09" "E66.3"  "278.02" "278.01"
+
+# read data
+baby.ob=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Obesity (Clinic)", range = NULL, col_names = TRUE,
+                   col_types = NULL, na = "NA", trim_ws = TRUE, skip = 0, n_max = Inf,
+                   guess_max = min(1000, n_max));baby.ob
 
 # data
 dat=baby.ob

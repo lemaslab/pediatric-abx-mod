@@ -4,9 +4,9 @@
 # **************************************************************************** #
            
 # Author:      Dominick Lemas 
-# Date:        November 30, 2017 (START HERE)
+# Date:        January 06, 2018 
 # IRB:
-# Description: Analysis of UFHealth maternal prenatal medication data 
+# Description: Import maternal medication data to to redcap from flat files. 
 # Data: C:\Users\Dominick\Dropbox (UFL)\IRB\UF\UFHealth\redcap_import
 
 # **************************************************************************** #
@@ -46,34 +46,34 @@ data.file.name="Mom Medications.xlsx";data.file.name
 # ***************                mom_antibiotics_ip                                              
 # **************************************************************************** #
 
+# mom_antibiotics_ip
+#-----------------
+# rows: 51398
+# cols: 4
+# unique id: 6740
+# repeat: 574
+# ICD9/10: NA
+
+# read data
 mom.abxip.dat=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Mom Antibiotics IP Admin", range = NULL, col_names = TRUE,
                       col_types = NULL, na = "", trim_ws = TRUE, skip = 0, n_max = Inf,
                       guess_max = min(1000, n_max));mom.abxip.dat
 
-# Data Description
-#-----------------
-# rows: 
-# cols: 
-# unique id: 
-# repeat: 
-# ICD9/10: 
+# data
+dat=mom.abxip.dat
 
-# dates
-#------
-mom.abxip.dat$`Taken Datetime`=as.character(mom.abxip.dat$`Taken Datetime`)
-#mom.abxip.dat$mom_abxip_date=as.POSIXlt(mom.abxip.dat$`Taken Datetime`)
-str(mom.abxip.dat); head(mom.abxip.dat)
-mom.abxip.dat[1:5,5:7]
-
-# create new data.frame
-test=mom.abxip.dat
-
-# sort by id and date
-newdata=rename(test, part_id = `Mom ID`, mom_abxip_date=`Taken Datetime`,mom_abxip_action= `MAR Action`, mom_prenat_abx=Antibiotics)
+# rename
+newdata=rename(dat, part_id = `Mom ID`, mom_abxip_date=`Taken Datetime`,mom_abxip_action= `MAR Action`, mom_prenat_abx=Antibiotics)
 head(newdata)
+
+# unique ID? Some moms had multiple babies in data set
+length(unique(newdata$part_id)) # 6740
+length(newdata$part_id)         # 51398
+names(newdata); head(newdata)
+
+# sort 
 newdata2 <- newdata[order(newdata$part_id, as.Date(newdata$mom_abxip_date,format='%Y-%m-%d %H:%M:%S')),]
 head(newdata2)
-names(newdata2)=tolower(names(newdata2))
 
 # redcap_repeat_instrument
 newdata3=newdata2
@@ -85,7 +85,7 @@ dt <- as.data.table(newdata3)
 setkeyv(dt, c("part_id","mom_abxip_date","mom_abxip_action","mom_prenat_abx","redcap_repeat_instrument"))  # Create key for data.table
 dt3 <- dt[, redcap_repeat_instance := seq_len(.N), by = "part_id"]        # Create new variable
 # dt3[c(1:15),c(1,2,6)]
-range(dt3$redcap_repeat_instance) # 574
+max(dt3$redcap_repeat_instance) # 574
 
 # create "redcap_event_name" variable
 dt3$redcap_event_name=paste("visit_",dt3$redcap_repeat_instance,"_arm_1",sep="")
@@ -119,37 +119,40 @@ for (i in 1:length(chunks))
 } # end second loop
 
 # clear slate
-rm(baby.dat, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
+rm(mom.abxip.dat, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
 
 # **************************************************************************** #
-# ***************                mom_antibiotics                                              
+# ***************                mom_antibiotics_rx                                              
 # **************************************************************************** #
 
+# mom_antibiotics_rx
+#-----------------
+# rows: 22927
+# cols: 3
+# unique id: 5787
+# repeat: 55
+# ICD9/10: NA
+
+# read data
 mom.abxscript.dat=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Mom Antibiotics Prescription", range = NULL, col_names = TRUE,
                         col_types = NULL, na = "", trim_ws = TRUE, skip = 0, n_max = Inf,
                         guess_max = min(1000, n_max));mom.abxscript.dat
 
-# Data Description
-#-----------------
-# rows: 
-# cols: 
-# unique id: 
-# repeat: 
-# ICD9/10: 
+# data
+dat=mom.abxscript.dat
 
-# dates
-mom.abxscript.dat$`Order Datetime`=as.character(mom.abxscript.dat$`Order Datetime`)
-str(mom.abxscript.dat); head(mom.abxscript.dat)
-
-# create new data.frame
-test=mom.abxscript.dat
-
-# sort by id and date
-newdata=rename(test, part_id = `Mom ID`, mom_abx2_date=`Order Datetime`, mom_prenat_abx2=Antibiotics)
+# rename
+newdata=rename(dat, part_id = `Mom ID`, mom_abx2_date=`Order Datetime`, mom_prenat_abx2=Antibiotics)
 head(newdata)
+
+# unique ID? Some moms had multiple babies in data set
+length(unique(newdata$part_id)) # 5787
+length(newdata$part_id)         # 22937
+names(newdata); head(newdata)
+
+# sort
 newdata2 <- newdata[order(newdata$part_id, as.Date(newdata$mom_abx2_date,format='%Y-%m-%d %H:%M:%S')),]
 head(newdata2)
-names(newdata2)=tolower(names(newdata2))
 
 # redcap_repeat_instrument
 newdata3=newdata2
@@ -160,7 +163,7 @@ names(newdata3)
 dt <- as.data.table(newdata3)            
 setkeyv(dt, c("part_id","mom_abx2_date","mom_prenat_abx2"))  # Create key for data.table
 dt3 <- dt[, redcap_repeat_instance := seq_len(.N), by = "part_id"]        # Create new variable
-range(dt3$redcap_repeat_instance) # 55
+max(dt3$redcap_repeat_instance) # 55
 
 # create "redcap_event_name" variable
 dt3$redcap_event_name=paste("visit_",dt3$redcap_repeat_instance,"_arm_1",sep="")
@@ -193,18 +196,26 @@ for (i in 1:length(chunks))
 } # end second loop
 
 # clear slate
-rm(baby.dat, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
+rm(mom.abxscript.dat, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
 
 # **************************************************************************** #
 # ***************                mom_medications_ip 1 & 2                                             
 # **************************************************************************** #
 
-# data1
+# mom_medications_ip 
+#-----------------
+# rows: 1107716
+# cols: 4
+# unique id: 9239
+# repeat: 11205
+# ICD9/10: NA
+
+# read data1
 mom.medip1.dat=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Mom IP Medications", range = NULL, col_names = TRUE,
                         col_types = NULL, na = "", trim_ws = TRUE, skip = 0, n_max = Inf,
                         guess_max = min(1000, n_max));mom.medip1.dat
 
-# data 2
+# read data2
 mom.medip2.dat=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Mom IP Medications(1)", range = NULL, col_names = TRUE,
                         col_types = NULL, na = "", trim_ws = TRUE, skip = 0, n_max = Inf,
                         guess_max = min(1000, n_max));mom.medip2.dat
@@ -212,27 +223,21 @@ mom.medip2.dat=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Mom IP 
 # combine datasets
 mom.meds.dat=bind_rows(mom.medip1.dat,mom.medip2.dat);mom.meds.dat
 
-# Data Description
-#-----------------
-# rows: 
-# cols: 
-# unique id: 
-# repeat: 
-# ICD9/10: 
+# data
+dat=mom.meds.dat
 
-# dates
-mom.meds.dat$`Taken Datetime`=as.character(mom.meds.dat$`Taken Datetime`)
-str(mom.meds.dat); head(mom.meds.dat)
-
-# create new data.frame
-test=mom.meds.dat
-
-# sort by id and date
-newdata=rename(test, part_id = `Mom ID`, mom_medip_date=`Taken Datetime`, mom_prenat_medip=Medication, mom_prenat_med_act=`MAR Action`)
+# rename
+newdata=rename(dat, part_id = `Mom ID`, mom_medip_date=`Taken Datetime`, mom_prenat_medip=Medication, mom_prenat_med_act=`MAR Action`)
 head(newdata)
+
+# unique ID? Some moms had multiple babies in data set
+length(unique(newdata$part_id)) # 9239
+length(newdata$part_id)         # 1107716
+names(newdata); head(newdata)
+
+# sort
 newdata2 <- newdata[order(newdata$part_id, as.Date(newdata$mom_medip_date,format='%Y-%m-%d %H:%M:%S')),]
 head(newdata2)
-names(newdata2)=tolower(names(newdata2))
 
 # redcap_repeat_instrument
 newdata3=newdata2
@@ -243,7 +248,7 @@ names(newdata3); head(newdata3)
 dt <- as.data.table(newdata3)            
 setkeyv(dt, c("part_id","mom_medip_date","mom_prenat_med_act","mom_prenat_medip","redcap_repeat_instrument"))  
 dt3 <- dt[, redcap_repeat_instance := seq_len(.N), by = "part_id"]        # Create new variable
-range(dt3$redcap_repeat_instance) # 55
+max(dt3$redcap_repeat_instance) # 11205
 
 # create "redcap_event_name" variable
 dt3$redcap_event_name=paste("visit_",dt3$redcap_repeat_instance,"_arm_1",sep="")
@@ -276,37 +281,40 @@ for (i in 1:length(chunks))
 } # end second loop
 
 # clear slate
-rm(baby.dat, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
+rm(mom.medip1.dat,mom.medip2.dat,mom.meds.dat, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
 
 # **************************************************************************** #
 # ***************                mom_perscriptions                                              
 # **************************************************************************** #
 
+# mom_perscriptions
+#-----------------
+# rows: 23357
+# cols: 3
+# unique id: 5811
+# repeat: 55
+# ICD9/10: NA
+
+# read data
 mom.script.dat=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Mom Prescriptions", range = NULL, col_names = TRUE,
                         col_types = NULL, na = "", trim_ws = TRUE, skip = 0, n_max = Inf,
                         guess_max = min(1000, n_max));mom.script.dat
 
-# Data Description
-#-----------------
-# rows: 
-# cols: 
-# unique id: 
-# repeat: 
-# ICD9/10: 
+# data
+dat=mom.script.dat
 
-# dates
-mom.script.dat$`Order Datetime`=as.character(mom.script.dat$`Order Datetime`)
-str(mom.script.dat); head(mom.script.dat)
-
-# create new data.frame
-test=mom.script.dat
-
-# sort by id and date
-newdata=rename(test, part_id = `Mom ID`, mom_med_rx_date=`Order Datetime`, mom_prenat_med_rx=Medication)
+# rename
+newdata=rename(dat, part_id = `Mom ID`, mom_med_rx_date=`Order Datetime`, mom_prenat_med_rx=Medication)
 head(newdata)
+
+# unique ID? Some moms had multiple babies in data set
+length(unique(newdata$part_id)) # 5811
+length(newdata$part_id)         # 23357
+names(newdata); head(newdata)
+
+# sort
 newdata2 <- newdata[order(newdata$part_id, as.Date(newdata$mom_med_rx_date,format='%Y-%m-%d %H:%M:%S')),]
 head(newdata2)
-names(newdata2)=tolower(names(newdata2))
 
 # redcap_repeat_instrument
 newdata3=newdata2
@@ -317,7 +325,7 @@ names(newdata3); head(newdata3)
 dt <- as.data.table(newdata3)            
 setkeyv(dt, c("part_id","mom_med_rx_date","mom_prenat_med_rx","redcap_repeat_instrument"))  
 dt3 <- dt[, redcap_repeat_instance := seq_len(.N), by = "part_id"]        # Create new variable
-range(dt3$redcap_repeat_instance) # 55
+max(dt3$redcap_repeat_instance) # 55
 
 # create "redcap_event_name" variable
 dt3$redcap_event_name=paste("visit_",dt3$redcap_repeat_instance,"_arm_1",sep="")
@@ -350,4 +358,4 @@ for (i in 1:length(chunks))
 } # end second loop
 
 # clear slate
-rm(baby.dat, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
+rm(mom.script.dat, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)

@@ -46,17 +46,18 @@ data.file.name="Baby.xlsx";data.file.name
 # ***************                baby_demography                                              
 # **************************************************************************** #
 
-baby.dat=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Baby", range = NULL, col_names = TRUE,
-          col_types = NULL, na = "NA", trim_ws = TRUE, skip = 0, n_max = Inf,
-          guess_max = min(1000, n_max));baby.dat
-
-# Data Description
+# baby_demography
 #-----------------
 # rows: 16684
 # cols: 10 
 # unique id: 16684
 # repeat: 1
 # ICD9/10: NA
+
+# read data
+baby.dat=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Baby", range = NULL, col_names = TRUE,
+          col_types = NULL, na = "NA", trim_ws = TRUE, skip = 0, n_max = Inf,
+          guess_max = min(1000, n_max));baby.dat
 
 # data
 dat=baby.dat
@@ -120,17 +121,18 @@ rm(baby.dat, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
 # ***************                baby_vaccines                                               
 # **************************************************************************** #
 
-baby.vaccine=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Vaccines", range = NULL, col_names = TRUE,
-                   col_types = NULL, na = "", trim_ws = TRUE, skip = 0, n_max = Inf,
-                   guess_max = min(1000, n_max));baby.vaccine
-
-# Data Description
+# baby_vaccines
 #-----------------
 # rows: 105611
 # cols: 3
 # unique id: 13068
 # repeat: 34
 # ICD9/10: NA
+
+# read data
+baby.vaccine=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Vaccines", range = NULL, col_names = TRUE,
+                   col_types = NULL, na = "", trim_ws = TRUE, skip = 0, n_max = Inf,
+                   guess_max = min(1000, n_max));baby.vaccine
 
 # data
 dat=baby.vaccine
@@ -197,17 +199,18 @@ rm(baby.vaccine, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
 # ***************                baby_wellvisit                                               
 # **************************************************************************** #
 
-baby.well=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Well Visit", range = NULL, col_names = TRUE,
-                       col_types = NULL, na = "", trim_ws = TRUE, skip = 0, n_max = Inf,
-                       guess_max = min(1000, n_max));baby.well
-
-# Data Description
+# baby_wellvisit
 #-----------------
 # rows: 51441
 # cols: 5
 # unique id: 7667
 # repeat: 43
 # ICD9/10: NA
+
+# read data
+baby.well=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Well Visit", range = NULL, col_names = TRUE,
+                       col_types = NULL, na = "", trim_ws = TRUE, skip = 0, n_max = Inf,
+                       guess_max = min(1000, n_max));baby.well
 
 # data
 dat=baby.well
@@ -270,17 +273,18 @@ rm(baby.well, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
 # ***************                baby_mom_baby_link                                               
 # **************************************************************************** #
 
-baby.mom=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Baby-Mom Link", range = NULL, col_names = TRUE,
-                    col_types = NULL, na = "", trim_ws = TRUE, skip = 0, n_max = Inf,
-                    guess_max = min(1000, n_max));baby.mom
-
-# Data Description
+# baby_mom_baby_link
 #-----------------
 # rows: 29798
 # cols: 2
 # unique id: 28069
 # repeat: 5
 # ICD9/10: NA
+
+# read data
+baby.mom=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Baby-Mom Link", range = NULL, col_names = TRUE,
+                    col_types = NULL, na = "", trim_ws = TRUE, skip = 0, n_max = Inf,
+                    guess_max = min(1000, n_max));baby.mom
 
 # data
 dat=baby.mom
@@ -344,17 +348,18 @@ rm(baby.mom, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
 # ***************                baby_first_height                                               
 # **************************************************************************** #
 
-baby.ht=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "First Height", range = NULL, col_names = TRUE,
-                   col_types = NULL, na = "", trim_ws = TRUE, skip = 0, n_max = Inf,
-                   guess_max = min(1000, n_max));baby.ht
-
-# Data Description
+# baby_first_height
 #-----------------
 # rows: 16441
 # cols: 3
 # unique id: 16441
 # repeat: 1
 # ICD9/10: NA
+
+# read data
+baby.ht=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "First Height", range = NULL, col_names = TRUE,
+                   col_types = NULL, na = "", trim_ws = TRUE, skip = 0, n_max = Inf,
+                   guess_max = min(1000, n_max));baby.ht
 
 # data
 dat=baby.ht
@@ -418,17 +423,18 @@ rm(baby.ht, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
 # ***************                baby_first_head_circumference                                               
 # **************************************************************************** #
 
-baby.hc=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "First Head Circumference", range = NULL, col_names = TRUE,
-                  col_types = NULL, na = "", trim_ws = TRUE, skip = 0, n_max = Inf,
-                  guess_max = min(1000, n_max));baby.hc
-
-# Data Description
+# baby_first_head_circumference
 #-----------------
 # rows: 16353
 # cols: 3
 # unique id: 16346
 # repeat: 2
 # ICD9/10: NA
+
+# read data
+baby.hc=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "First Head Circumference", range = NULL, col_names = TRUE,
+                  col_types = NULL, na = "", trim_ws = TRUE, skip = 0, n_max = Inf,
+                  guess_max = min(1000, n_max));baby.hc
 
 # data
 dat=baby.hc
@@ -492,17 +498,18 @@ rm(baby.hc, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
 # ***************                baby_antibiotics_perscriptions                                               
 # **************************************************************************** #
 
-baby.script=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Antibiotics Prescription", range = NULL, col_names = TRUE,
-                  col_types = NULL, na = "", trim_ws = TRUE, skip = 0, n_max = Inf,
-                  guess_max = min(1000, n_max));baby.script
-
-# Data Description
+# baby_antibiotics_perscriptions
 #-----------------
 # rows: 5156
 # cols: 5
 # unique id: 2717
 # repeat: 25
 # ICD9/10: NA
+
+# read data
+baby.script=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Antibiotics Prescription", range = NULL, col_names = TRUE,
+                  col_types = NULL, na = "", trim_ws = TRUE, skip = 0, n_max = Inf,
+                  guess_max = min(1000, n_max));baby.script
 
 # data
 dat=baby.script
@@ -571,17 +578,18 @@ rm(baby.script, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
 # ***************                baby_antibiotics_ip                                               
 # **************************************************************************** #
 
-baby.abx=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Antibiotics IP Administration", range = NULL, col_names = TRUE,
-                      col_types = NULL, na = "", trim_ws = TRUE, skip = 0, n_max = Inf,
-                      guess_max = min(1000, n_max));baby.abx
-
-# Data Description
+# baby_antibiotics_ip
 #-----------------
 # rows: 70367
 # cols: 6
 # unique id: 15998
 # repeat: 537
-# ICD9/10: 
+# ICD9/10: NA
+
+# read data
+baby.abx=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Antibiotics IP Administration", range = NULL, col_names = TRUE,
+                      col_types = NULL, na = "", trim_ws = TRUE, skip = 0, n_max = Inf,
+                      guess_max = min(1000, n_max));baby.abx
 
 # data
 dat=baby.abx
