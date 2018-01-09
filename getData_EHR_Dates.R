@@ -4,7 +4,11 @@
 # **************************************************************************** #
            
 # Author:      Dominick Lemas 
+<<<<<<< HEAD
 # Date:        January 07 2018
+=======
+# Date:        January 09 2018
+>>>>>>> 4c7162e648775890b61d0e3501fe5c57e6340cdf
 # IRB:
 # Description: Import dates that were exported from RedCap to compute days2measure. 
 # Data: C:\Users\Dominick\Dropbox (UFL)\IRB\UF\UFHealth\redcap_import\dates
@@ -161,41 +165,63 @@ names(dat.new3)
 
 # modify names (start here)
 dat.new4=rename(dat.new3, redcap_repeat_instrument=redcap_repeat_instrument2,
-                          days2_admit=admit_date,
-                          days2_inf_vaccine=infant_immune_date,
-                          days2_wellvisit=observation_date,
-                          days2_ht1=first_height_date,
-                          days2_hc1=first_head_circumf_date,
-                          days2_meds=med_date,
-                          days2_meds_ip=med_ip_date,
-                          days2_asthma_clinic=asthma_charge_date,
-                          days2_fa_clinic=food_allergy_charge_date,
-                          days2_ear_clinic=ear_infect_charge_date,
-                          days2_eczema_clinic=eczema_charge_date,
-                          days2_dermatitis_clinic=dermatitis_charge_date,
-                          days2_erythema_clinic=erythema_charge_date,
-                          days2_sebaceous_clinic=sebaceous_charge_date,
-                          days2_hemangioma_clinic=hemangioma_charge_date,
-                          days2_asthma_hosp=asthma_hospital_admit_date,
-                          days2_dermatitis_hosp=dermatitis_hosp_admit_date,
-                          days2_ear_hosp=ear_hospital_admit_date,
-                          days2_eczema_hosp=eczema_hospital_admit_date,
-                          days2_fa_hosp=food_allergy_hosp_admit_date,
-                          days2_hemangioma_hosp=hemangioma_hosp_admit_date,
-                          days2_sebaceous_hosp=sebaceous_hosp_admit_date,
-                          days2_obesity_hosp=obesity_hospital_admit_date,
-                          days2_erythema_hosp=toxicum_hosp_admit_date);names(dat.new4)
+                days2_baby_admit=infant_admit_date,
+                days2_baby_vac=infant_immune_date,
+                days2_baby_wellvisit=infant_obs_date,
+                days2_baby_ht1=infant_ht1_date,
+                days2_baby_hc1=infant_hc1_date,
+                days2_baby_meds=infant_med_date,
+                days2_baby_meds_ip=infant_med_ip_date);names(dat.new4)
 head(dat.new4)
-dat.new5=dat.new4[,c(1:3,28,4:27)];names(dat.new5)
-head(dat.new5)
+dt5=dat.new4
 
-# **************************************************************************** #
-# ***************                # EXPORT DATA                                              
-# **************************************************************************** #
-# file parameters
-data.file.name.export="baby.dates_08Sept17.csv";data.file.name.export
-head(dat.new5)
+# instruments
+instrument=as.character(unique(dt5$redcap_repeat_instrument)); instrument
+inst.key=c("baby_antibiotics_ip",
+           "baby_antibiotics_rx",
+           "baby_demography", 
+           "baby_first_head_circumference", 
+           "baby_first_height",
+           "baby_vaccines",
+           "baby_wellvisit");inst.key;length(inst.key)  
 
-# write file
-write.table(dat.new5, file =(paste(data.dir,data.file.name.export,sep="")),row.names=F, sep=";")
+# date variables
+date=names(dt5);
+date.value=c("days2_baby_meds_ip",         # done
+             "days2_baby_meds",            # done 
+             "days2_baby_admit",           # done
+             "days2_baby_hc1",             # done
+             "days2_baby_ht1",             # done
+             "days2_baby_vac",             # done
+             "days2_baby_wellvisit")       # done
+date.value;length(date.value)
+
+# create key-value set
+temp1 <- setNames(as.list(date.value), inst.key);temp1
+
+# export data
+#-------------
+# create a file for each key-value
+for (j in 1:length(temp1)){ # first loop
+  
+  out=dt5[dt5$redcap_repeat_instrument==names(temp1)[j],
+                c("part_id","redcap_repeat_instrument","redcap_repeat_instance","redcap_event_name",temp1[[j]])]
+  
+  # write file
+  batchSize=10000; # number of rows in single output file
+  data.file.name.export=names(temp1)[j];data.file.name.export
+  out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\03_redcap_import_Jan18\\",sep="");out.dir
+  
+  
+  chunks=split(out, floor(0:(nrow(out)-1)/batchSize))
+  for (i in 1:length(chunks)){ # second loop
+    write.table(chunks[[i]],paste0(out.dir,data.file.name.export,i,'.csv'),row.names=F, sep="\t")
+  } # end second loop
+} # end first loop
+
+# clear slate
+rm(baby.wellness,chunks,dat.new,dat.new.sort,dat.new3,dat.new4,dt5,mdata,mdata.d,newdata,newdata2)
+
+
+
 
