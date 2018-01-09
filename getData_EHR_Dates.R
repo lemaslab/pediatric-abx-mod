@@ -131,17 +131,49 @@ dat.new4=rename(dat.new3, redcap_repeat_instrument=redcap_repeat_instrument2,
 head(dat.new4)
 dt5=dat.new4
 
+# instruments
+instrument=as.character(unique(dt5$redcap_repeat_instrument)); instrument
+inst.key=c("baby_antibiotics_ip",
+           "baby_antibiotics_rx",
+           "baby_demography", 
+           "baby_first_head_circumference", 
+           "baby_first_height",
+           "baby_vaccines",
+           "baby_wellvisit");inst.key;length(inst.key)  
+
+# date variables
+date=names(dt5);
+date.value=c("days2_baby_meds_ip",         # done
+             "days2_baby_meds",            # done 
+             "days2_baby_admit",           # done
+             "days2_baby_hc1",             # done
+             "days2_baby_ht1",             # done
+             "days2_baby_vac",             # done
+             "days2_baby_wellvisit")       # done
+date.value;length(date.value)
+
+# create key-value set
+temp1 <- setNames(as.list(date.value), inst.key);temp1
+
 # export data
 #-------------
-batchSize=10000; # number of rows in single output file
-data.file.name.export="baby_wellness_dates";data.file.name.export
-out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\03_redcap_import_Jan18\\",sep="");out.dir
-
-chunks=split(dt5, floor(0:(nrow(dt5)-1)/batchSize))
-for (i in 1:length(chunks))
-{ # second loop
-  write.table(chunks[[i]],paste0(out.dir,data.file.name.export,i,'.csv'),row.names=F, sep="\t")
-} # end second loop
+# create a file for each key-value
+for (j in 1:length(temp1)){ # first loop
+  
+  out=dt5[dt5$redcap_repeat_instrument==names(temp1)[j],
+                c("part_id","redcap_repeat_instrument","redcap_repeat_instance","redcap_event_name",temp1[[j]])]
+  
+  # write file
+  batchSize=10000; # number of rows in single output file
+  data.file.name.export=names(temp1)[j];data.file.name.export
+  out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\03_redcap_import_Jan18\\",sep="");out.dir
+  
+  
+  chunks=split(out, floor(0:(nrow(out)-1)/batchSize))
+  for (i in 1:length(chunks)){ # second loop
+    write.table(chunks[[i]],paste0(out.dir,data.file.name.export,i,'.csv'),row.names=F, sep="\t")
+  } # end second loop
+} # end first loop
 
 # clear slate
 rm(baby.wellness,chunks,dat.new,dat.new.sort,dat.new3,dat.new4,dt5,mdata,mdata.d,newdata,newdata2)
