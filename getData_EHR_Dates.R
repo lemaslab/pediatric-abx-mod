@@ -4,7 +4,7 @@
 # **************************************************************************** #
            
 # Author:      Dominick Lemas 
-# Date:        Sept 09 2017
+# Date:        January 07 2018
 # IRB:
 # Description: Import dates that were exported from RedCap to compute days2measure. 
 # Data: C:\Users\Dominick\Dropbox (UFL)\IRB\UF\UFHealth\redcap_import\dates
@@ -61,37 +61,45 @@ baby.wellness=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "baby_wel
 
 # data
 dat=baby.wellness
-head(dat); str(dat)
+head(dat); str(dat); names(dat)
+unique(dat$redcap_repeat_instrument)
+dat.1=dat[,-2]
+#dat[,1:5]
 
 # melt data
-mdata <- melt(dat, id=c("part_id","redcap_repeat_instrument","redcap_repeat_instance","redcap_event_name","infant_dob"))
-head(mdata)[3];str(mdata);dim(mdata)
+mdata <- melt(dat.1, id=c("part_id","redcap_repeat_instrument","redcap_repeat_instance","infant_dob"))
+head(mdata);str(mdata);dim(mdata)
+unique(mdata$redcap_repeat_instrument)
 length(unique(mdata$part_id))
 length(is.na(mdata$value)==F)
-mdata[1:50,]
+head(mdata)
 
 # remove 
-mdata.d=subset(mdata, is.na(value)==F);dim(mdata.d)
-head(mdata.d);
+# mdata.d=subset(mdata, is.na(value)==F);dim(mdata.d);head(mdata.d)
+mdata.d=subset(mdata, is.na(infant_dob)==F);dim(mdata.d);head(mdata.d)
+
+unique(mdata.d$redcap_repeat_instrument)
+unique(mdata.d$variable)
+
 length(unique(mdata.d$part_id))
 mdata.d[,"dob.new"]=NA
-# mdata.d$dob=as.numeric(mdata.d$dob)
-str(mdata.d)
-
 mdata.d1=mdata.d
-head(mdata.d1);
-dim(mdata.d1)
 mdata.d1$redcap_repeat_instrument2=mdata.d1$redcap_repeat_instrument
 mdata.d1$dob2=mdata.d1$infant_dob
 
-# drop duplicate: Baby-0004
-mdata.d2=mdata.d1[-122281,]
+head(mdata.d1)
+mdata.d2=mdata.d1
+head(mdata.d2)
+unique(mdata.d2$redcap_repeat_instrument2)
+
+mdata.d2=mdata
+head(mdata)
 
 dat.new=mdata.d2 %>%
   group_by(part_id) %>%
   spread(redcap_repeat_instrument, infant_dob) %>%  # makes this variable into its own columns (long to wide)
-  select(baby_id, redcap_repeat_instrument2,redcap_repeat_instance, variable, value,dob2, babybaby) %>%
-  mutate(birth = first(babybaby))  # Repeat the first observation for birth within each baby
+  select(part_id, redcap_repeat_instrument,redcap_repeat_instance, variable, value, baby_demography) %>%
+  mutate(birth = first(baby_demography))  # Repeat the first observation for birth within each baby
 
 # check
 head(dat.new)
