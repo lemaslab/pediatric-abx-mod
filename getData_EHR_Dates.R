@@ -69,45 +69,7 @@ baby.wellness=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "baby_wel
 dat=baby.wellness
 head(dat); str(dat); names(dat)
 unique(dat$redcap_repeat_instrument)
-dat.1=dat[,-2]
-#dat[,1:5]
-
-# melt data
-mdata <- melt(dat.1, id=c("part_id","redcap_repeat_instrument","redcap_repeat_instance","infant_dob"))
-head(mdata);str(mdata);dim(mdata)
-unique(mdata$redcap_repeat_instrument)
-length(unique(mdata$part_id))
-length(is.na(mdata$value)==F)
-head(mdata)
-
-# remove 
-# mdata.d=subset(mdata, is.na(value)==F);dim(mdata.d);head(mdata.d)
-mdata.d=subset(mdata, is.na(infant_dob)==F);dim(mdata.d);head(mdata.d)
-
-unique(mdata.d$redcap_repeat_instrument)
-unique(mdata.d$variable)
-
-length(unique(mdata.d$part_id))
-mdata.d[,"dob.new"]=NA
-mdata.d1=mdata.d
-mdata.d1$redcap_repeat_instrument2=mdata.d1$redcap_repeat_instrument
-mdata.d1$dob2=mdata.d1$infant_dob
-
-head(mdata.d1)
-mdata.d2=mdata.d1
-head(mdata.d2)
-unique(mdata.d2$redcap_repeat_instrument2)
-
-mdata.d2=mdata
-head(mdata)
-
-dat.new=mdata.d2 %>%
-  group_by(part_id) %>%
-  spread(redcap_repeat_instrument, infant_dob) %>%  # makes this variable into its own columns (long to wide)
-  select(part_id, redcap_repeat_instrument,redcap_repeat_instance, variable, value, baby_demography) %>%
-  mutate(birth = first(baby_demography))  # Repeat the first observation for birth within each baby
-newdata=baby.wellness
-names(newdata);head(newdata)
+newdata=dat
 
 # melt data
 mdata <- melt(newdata, id=c("part_id","redcap_event_name","redcap_repeat_instrument","redcap_repeat_instance","infant_dob"))
@@ -129,12 +91,13 @@ newdata2[1:50,]
 # dplyr for data wrangle
 #----------------------
 dat.new=newdata2 %>%
-  group_by(part_id) %>%
-  spread(redcap_repeat_instrument, infant_dob) %>%  # makes this variable into its own columns (long to wide)
-  select(part_id, redcap_event_name, redcap_repeat_instance,redcap_repeat_instrument2, variable, value, baby_demography) %>%
-  mutate(infant_dob = first(baby_demography[!is.na(baby_demography)])) %>%  # Repeat the first observation for birth within each baby
-  select(part_id,redcap_repeat_instrument2, redcap_event_name, redcap_repeat_instance, infant_dob, variable, value) %>% # drop and reorder variables
-  mutate(date=as.Date(value, format="%Y-%m-%d"))
+ group_by(part_id) %>%
+   spread(redcap_repeat_instrument, infant_dob) %>%  # makes this variable into its own columns (long to wide)
+   select(part_id, redcap_event_name, redcap_repeat_instance,redcap_repeat_instrument2, variable, value, baby_demography) %>%
+   mutate(infant_dob = first(baby_demography[!is.na(baby_demography)])) %>%  # Repeat the first observation for birth within each baby
+   select(part_id,redcap_repeat_instrument2, redcap_event_name, redcap_repeat_instance, infant_dob, variable, value) %>% # drop and reorder variables
+   mutate(date=as.Date(value, format="%Y-%m-%d"))
+
 
 # check (it works!)
 head(dat.new)
@@ -145,7 +108,6 @@ str(dat.new)
 dat.new$days_to_meas=dat.new$date-as.Date(dat.new$infant_dob,format="%Y-%m-%d")
 head(dat.new)
 range(dat.new$days_to_meas)
-names(dat.new)
 
 # modify redcap import
 dat.new.sort=dat.new %>% 
@@ -218,6 +180,140 @@ for (j in 1:length(temp1)){ # first loop
 # clear slate
 rm(baby.wellness,chunks,dat.new,dat.new.sort,dat.new3,dat.new4,dt5,mdata,mdata.d,newdata,newdata2)
 
+# **************************************************************************** #
+# ***************                baby_hospital_dates                                              
+# **************************************************************************** #
+
+# baby_hospital_dates
+#-----------------
+# rows: 
+# cols:  
+# unique id: 
+# repeat: 
+# ICD9/10: 
+
+# clear slate
+# rm(baby_hospital_dates,test, dat, dat.new,new,data,newdata,mdata, mdata.d, mdata.d1, mdata.d2, newdata2)
+
+# read data
+baby.hospital=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "baby_hospital_dates", range = NULL, col_names = TRUE,
+                        col_types = NULL, na = "NA", trim_ws = TRUE, skip = 0, n_max = Inf,
+                        guess_max = min(1000, n_max));baby.hospital
+
+# data
+dat=baby.hospital
+head(dat); str(dat); names(dat)
+unique(dat$redcap_repeat_instrument)
+newdata=dat
+
+# melt data
+mdata <- melt(newdata, id=c("part_id","redcap_event_name","redcap_repeat_instrument","redcap_repeat_instance","infant_dob"))
+head(mdata);str(mdata);dim(mdata)
+length(unique(mdata$part_id))  # 30540
+length(is.na(mdata$value)==F)  # 446060
+mdata[1:50,]
+mdata$redcap_repeat_instrument2=mdata$redcap_repeat_instrument
+
+# remove non-sense rows (no data) 
+mdata.d=subset(mdata, is.na(value)==F);dim(mdata.d) # 30750
+head(mdata.d);
+length(unique(mdata.d$part_id))
+str(mdata.d); head(mdata.d)
+newdata2 <- mdata.d[order(mdata.d$part_id, mdata.d$redcap_repeat_instrument),]
+head(newdata2)
+newdata2[1:50,]
+
+# dplyr for data wrangle
+#----------------------
+dat.new=newdata2 %>%
+  group_by(part_id) %>%
+  spread(redcap_repeat_instrument, infant_dob) %>%  # makes this variable into its own columns (long to wide)
+  select(part_id, redcap_event_name, redcap_repeat_instance,redcap_repeat_instrument2, variable, value, baby_demography) %>%
+  mutate(infant_dob = first(baby_demography[!is.na(baby_demography)])) %>%  # Repeat the first observation for birth within each baby
+  select(part_id,redcap_repeat_instrument2, redcap_event_name, redcap_repeat_instance, infant_dob, variable, value) %>% # drop and reorder variables
+  mutate(date=as.Date(value, format="%Y-%m-%d"))
+
+# check (it works!)
+head(dat.new)
+dat.new[1:50,]
+str(dat.new)
+
+# days_to variable(s)
+dat.new$days_to_meas=dat.new$date-as.Date(dat.new$infant_dob,format="%Y-%m-%d")
+head(dat.new)
+range(dat.new$days_to_meas)
+
+# modify redcap import
+dat.new.sort=dat.new %>% 
+  as_data_frame %>%
+  select_("part_id","redcap_repeat_instrument2","redcap_repeat_instance","redcap_event_name","variable","days_to_meas")
+names(dat.new.sort);head(dat.new.sort)
+is.data.table(dat.new.sort)
+
+# cast
+dat.new3=dcast(dat.new.sort, part_id+redcap_repeat_instrument2+redcap_event_name+redcap_repeat_instance~variable)
+head(dat.new3)
+names(dat.new3)
+
+# modify names (start here: for real)
+#------------------------------------
+dat.new4=rename(dat.new3, redcap_repeat_instrument=redcap_repeat_instrument2,
+                days2_baby_admit=infant_admit_date,
+                days2_baby_vac=infant_immune_date,
+                days2_baby_wellvisit=infant_obs_date,
+                days2_baby_ht1=infant_ht1_date,
+                days2_baby_hc1=infant_hc1_date,
+                days2_baby_meds=infant_med_date,
+                days2_baby_meds_ip=infant_med_ip_date);names(dat.new4)
+head(dat.new4)
+dt5=dat.new4
+
+# instruments
+instrument=as.character(unique(dt5$redcap_repeat_instrument)); instrument
+inst.key=c("baby_antibiotics_ip",
+           "baby_antibiotics_rx",
+           "baby_demography", 
+           "baby_first_head_circumference", 
+           "baby_first_height",
+           "baby_vaccines",
+           "baby_wellvisit");inst.key;length(inst.key)  
+
+# date variables
+date=names(dt5);
+date.value=c("days2_baby_meds_ip",         # done
+             "days2_baby_meds",            # done 
+             "days2_baby_admit",           # done
+             "days2_baby_hc1",             # done
+             "days2_baby_ht1",             # done
+             "days2_baby_vac",             # done
+             "days2_baby_wellvisit")       # done
+date.value;length(date.value)
+
+# create key-value set
+temp1 <- setNames(as.list(date.value), inst.key);temp1
+
+# export data
+#-------------
+# create a file for each key-value
+for (j in 1:length(temp1)){ # first loop
+  
+  out=dt5[dt5$redcap_repeat_instrument==names(temp1)[j],
+          c("part_id","redcap_repeat_instrument","redcap_repeat_instance","redcap_event_name",temp1[[j]])]
+  
+  # write file
+  batchSize=10000; # number of rows in single output file
+  data.file.name.export=names(temp1)[j];data.file.name.export
+  out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\03_redcap_import_Jan18\\",sep="");out.dir
+  
+  
+  chunks=split(out, floor(0:(nrow(out)-1)/batchSize))
+  for (i in 1:length(chunks)){ # second loop
+    write.table(chunks[[i]],paste0(out.dir,data.file.name.export,i,'.csv'),row.names=F, sep="\t")
+  } # end second loop
+} # end first loop
+
+# clear slate
+rm(baby.wellness,chunks,dat.new,dat.new.sort,dat.new3,dat.new4,dt5,mdata,mdata.d,newdata,newdata2)
 
 
 
