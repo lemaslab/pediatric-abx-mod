@@ -4,11 +4,7 @@
 # **************************************************************************** #
            
 # Author:      Dominick Lemas 
-<<<<<<< HEAD
-# Date:        January 07 2018
-=======
 # Date:        January 09 2018
->>>>>>> 4c7162e648775890b61d0e3501fe5c57e6340cdf
 # IRB:
 # Description: Import dates that were exported from RedCap to compute days2measure. 
 # Data: C:\Users\Dominick\Dropbox (UFL)\IRB\UF\UFHealth\redcap_import\dates
