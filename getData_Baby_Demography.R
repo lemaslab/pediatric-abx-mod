@@ -138,7 +138,7 @@ baby.vaccine=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Vaccines"
 dat=baby.vaccine
 
 # rename
-newdata=rename(dat, part_id = `Baby-Id`, infant_immune_date=Immune_Date, infant_vac_name=Immunization_Name)
+newdata=rename(dat, part_id = `Baby-Id`, baby_immune_date=Immune_Date, baby_vac_name=Immunization_Name)
 names(newdata); head(newdata)
 
 # unique ID? Some moms had multiple babies in data set
@@ -147,12 +147,12 @@ length(newdata$part_id)         # 105611
 names(newdata); head(newdata)
 
 # sort
-newdata2 <- newdata[order(newdata$part_id, as.Date(newdata$infant_immune_date,format='%Y-%m-%d %H:%M:%S')),]
+newdata2 <- newdata[order(newdata$part_id, as.Date(newdata$baby_immune_date,format='%Y-%m-%d %H:%M:%S')),]
 names(newdata2); head(newdata2)
 
 # character format for immunization name
-newdata2$infant_vac_name=gsub(" ","_",newdata2$infant_vac_name) 
-newdata2$infant_vac_name=gsub(",","&",newdata2$infant_vac_name) 
+newdata2$baby_vac_name=gsub(" ","_",newdata2$baby_vac_name) 
+newdata2$baby_vac_name=gsub(",","&",newdata2$baby_vac_name) 
 
 # redcap_repeat_instrument
 newdata3=newdata2
@@ -160,7 +160,7 @@ newdata3$redcap_repeat_instrument="baby_vaccines"
 
 # create "redcap_repeat_instance" variable
 dt <- as.data.table(newdata3)            
-setkeyv(dt, c("part_id", "infant_immune_date","infant_vac_name","redcap_repeat_instrument"))  
+setkeyv(dt, c("part_id", "baby_immune_date","baby_vac_name","redcap_repeat_instrument"))  
 dt3 <- dt[, redcap_repeat_instance := seq_len(.N), by = "part_id"]        
 head(dt3); range(dt3$redcap_repeat_instance) 
 max(unique(dt3$redcap_repeat_instance)) # 34
@@ -184,7 +184,7 @@ dt5=dt4
 #-------------
 batchSize=10000; # number of rows in single output file
 data.file.name.export=as.character(dt5[2,2]);data.file.name.export
-out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\02_redcap_import_Nov17\\",sep="");out.dir
+out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\03_redcap_import_Jan18\\",sep="");out.dir
 
 chunks=split(dt5, floor(0:(nrow(dt5)-1)/batchSize))
 for (i in 1:length(chunks))
