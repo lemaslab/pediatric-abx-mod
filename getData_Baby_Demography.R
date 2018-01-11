@@ -107,7 +107,6 @@ dt5=dt4
 #-------------
 batchSize=10000; # number of rows in single output file
 data.file.name.export=as.character(dt5[2,2]);data.file.name.export
-# out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\03_redcap_import_Jan18\\",sep="");out.dir
 
 chunks=split(dt5, floor(0:(nrow(dt5)-1)/batchSize))
 for (i in 1:length(chunks))
@@ -185,7 +184,6 @@ dt5=dt4
 #-------------
 batchSize=10000; # number of rows in single output file
 data.file.name.export=as.character(dt5[2,2]);data.file.name.export
-# out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\03_redcap_import_Jan18\\",sep="");out.dir
 
 chunks=split(dt5, floor(0:(nrow(dt5)-1)/batchSize))
 for (i in 1:length(chunks))
@@ -259,7 +257,6 @@ dt5=dt4
 #-------------
 batchSize=10000; # number of rows in single output file
 data.file.name.export=as.character(dt5[2,2]);data.file.name.export
-# out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\03_redcap_import_Jan18\\",sep="");out.dir
 
 chunks=split(dt5, floor(0:(nrow(dt5)-1)/batchSize))
 for (i in 1:length(chunks))
@@ -334,7 +331,6 @@ dt5=dt4
 #-------------
 batchSize=10000; # number of rows in single output file
 data.file.name.export=as.character(dt5[2,2]);data.file.name.export
-# out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\03_redcap_import_Jan18\\",sep="");out.dir
 
 chunks=split(dt5, floor(0:(nrow(dt5)-1)/batchSize))
 for (i in 1:length(chunks))
@@ -409,7 +405,6 @@ dt5=dt4
 #-------------
 batchSize=10000; # number of rows in single output file
 data.file.name.export=as.character(dt5[2,2]);data.file.name.export
-# out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\03_redcap_import_Jan18\\",sep="");out.dir
 
 chunks=split(dt5, floor(0:(nrow(dt5)-1)/batchSize))
 for (i in 1:length(chunks))
@@ -484,7 +479,6 @@ dt5=dt4
 #-------------
 batchSize=10000; # number of rows in single output file
 data.file.name.export=as.character(dt5[2,2]);data.file.name.export
-# out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\03_redcap_import_Jan18\\",sep="");out.dir
 
 chunks=split(dt5, floor(0:(nrow(dt5)-1)/batchSize))
 for (i in 1:length(chunks))
@@ -564,7 +558,6 @@ dt5=dt4
 #-------------
 batchSize=10000; # number of rows in single output file
 data.file.name.export=as.character(dt5[2,2]);data.file.name.export
-# out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\03_redcap_import_Jan18\\",sep="");out.dir
 
 chunks=split(dt5, floor(0:(nrow(dt5)-1)/batchSize))
 for (i in 1:length(chunks))
@@ -644,7 +637,6 @@ dt5=dt4
 #-------------
 batchSize=10000; # number of rows in single output file
 data.file.name.export=as.character(dt5[2,2]);data.file.name.export
-# out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\03_redcap_import_Jan18\\",sep="");out.dir
 
 chunks=split(dt5, floor(0:(nrow(dt5)-1)/batchSize))
 for (i in 1:length(chunks))
