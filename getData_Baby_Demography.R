@@ -115,7 +115,7 @@ for (i in 1:length(chunks))
   } # end second loop
 
 # clear slate
-rm(baby.dat, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
+rm(baby.dat, dat, newdata,chunks, newdata2, newdata3, dt, dt3, dt4, dt5)
 
 # **************************************************************************** #
 # ***************                baby_vaccines                                               
@@ -192,7 +192,7 @@ for (i in 1:length(chunks))
 } # end second loop
 
 # clear slate
-rm(baby.vaccine, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
+rm(baby.vaccine, dat, newdata,chunks, newdata2, newdata3, dt, dt3, dt4, dt5)
 
 # **************************************************************************** #
 # ***************                baby_wellvisit                                               
@@ -265,7 +265,7 @@ for (i in 1:length(chunks))
 } # end second loop
 
 # clear slate
-rm(baby.well, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
+rm(baby.well, dat, newdata, newdata2,chunks, newdata3, dt, dt3, dt4, dt5)
 
 # **************************************************************************** #
 # ***************                baby_mom_baby_link                                               
@@ -339,7 +339,7 @@ for (i in 1:length(chunks))
 } # end second loop
 
 # clear slate
-rm(baby.mom, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
+rm(baby.mom, dat, newdata, chunks, newdata2, newdata3, dt, dt3, dt4, dt5)
 
 # **************************************************************************** #
 # ***************                baby_first_height                                               
@@ -413,7 +413,7 @@ for (i in 1:length(chunks))
 } # end second loop
 
 # clear slate
-rm(baby.ht, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
+rm(baby.ht, dat, newdata, chunks, newdata2, newdata3, dt, dt3, dt4, dt5)
 
 # **************************************************************************** #
 # ***************                baby_first_head_circumference                                               
@@ -487,7 +487,7 @@ for (i in 1:length(chunks))
 } # end second loop
 
 # clear slate
-rm(baby.hc, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
+rm(baby.hc, dat, newdata,chunks, newdata2, newdata3, dt, dt3, dt4, dt5)
 
 # **************************************************************************** #
 # ***************                baby_antibiotics_rx                                               
@@ -566,7 +566,7 @@ for (i in 1:length(chunks))
 } # end second loop
 
 # clear slate
-rm(baby.script, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
+rm(baby.script, dat, newdata,chunks, newdata2, newdata3, dt, dt3, dt4, dt5)
 
 # **************************************************************************** #
 # ***************                baby_antibiotics_ip                                               
@@ -645,5 +645,5 @@ for (i in 1:length(chunks))
 } # end second loop
 
 # clear slate
-rm(baby.abx, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
+rm(baby.abx, dat, newdata,chunks, newdata2, newdata3, dt, dt3, dt4, dt5)
 
