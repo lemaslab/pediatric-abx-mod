@@ -216,7 +216,7 @@ baby.well=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Well Visit",
 dat=baby.well
 
 # rename
-newdata=rename(dat, part_id = `Baby-Id`, infant_obs_date=Observation_Date, infant_ht_cm=`Height (cm)`, infant_wt_kgs=`Weight (kgs)`, infant_head_circ_cm=`Head Circumference (cm)`)
+newdata=rename(dat, part_id = `Baby-Id`, baby_obs_date=Observation_Date, baby_ht_cm=`Height (cm)`, baby_wt_kgs=`Weight (kgs)`, baby_head_circ_cm=`Head Circumference (cm)`)
 names(newdata); head(newdata)
 
 # unique ID? Some moms had multiple babies in data set
@@ -225,7 +225,7 @@ length(newdata$part_id)         #
 names(newdata); head(newdata)
 
 # sort
-newdata2 <- newdata[order(newdata$part_id, as.Date(newdata$infant_obs_date,format='%Y-%m-%d %H:%M:%S')),]
+newdata2 <- newdata[order(newdata$part_id, as.Date(newdata$baby_obs_date,format='%Y-%m-%d %H:%M:%S')),]
 names(newdata2); head(newdata2)
 
 # redcap_repeat_instrument
@@ -234,7 +234,7 @@ newdata3$redcap_repeat_instrument="baby_wellvisit"
 
 # create "redcap_repeat_instance" variable
 dt <- as.data.table(newdata3)            
-setkeyv(dt, c("part_id", "infant_obs_date","infant_ht_cm","infant_wt_kgs","redcap_repeat_instrument"))  
+setkeyv(dt, c("part_id", "baby_obs_date","baby_ht_cm","baby_wt_kgs","redcap_repeat_instrument"))  
 dt3 <- dt[, redcap_repeat_instance := seq_len(.N), by = "part_id"]        
 head(dt3); range(dt3$redcap_repeat_instance) 
 max(unique(dt3$redcap_repeat_instance)) # 43
@@ -258,7 +258,7 @@ dt5=dt4
 #-------------
 batchSize=10000; # number of rows in single output file
 data.file.name.export=as.character(dt5[2,2]);data.file.name.export
-out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\02_redcap_import_Nov17\\",sep="");out.dir
+out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\03_redcap_import_Jan18\\",sep="");out.dir
 
 chunks=split(dt5, floor(0:(nrow(dt5)-1)/batchSize))
 for (i in 1:length(chunks))
@@ -333,7 +333,7 @@ dt5=dt4
 #-------------
 batchSize=10000; # number of rows in single output file
 data.file.name.export=as.character(dt5[2,2]);data.file.name.export
-out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\02_redcap_import_Nov17\\",sep="");out.dir
+out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\03_redcap_import_Jan18\\",sep="");out.dir
 
 chunks=split(dt5, floor(0:(nrow(dt5)-1)/batchSize))
 for (i in 1:length(chunks))
@@ -365,7 +365,7 @@ baby.ht=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "First Height",
 dat=baby.ht
 
 # rename
-newdata=rename(dat, part_id = `Baby-Id`, infant_ht1_date=`1st Height date`, infant_ht1_cm=`Height (cm)`);newdata
+newdata=rename(dat, part_id = `Baby-Id`, baby_ht1_date=`1st Height date`, baby_ht1_cm=`Height (cm)`);newdata
 names(newdata); head(newdata)
 
 # unique ID? Some moms had multiple babies in data set
@@ -374,7 +374,7 @@ length(newdata$part_id)         # 16441
 names(newdata); head(newdata)
 
 # sort
-newdata2 <- newdata[order(newdata$part_id, as.Date(newdata$infant_ht1_date,format='%Y-%m-%d %H:%M:%S')),]
+newdata2 <- newdata[order(newdata$part_id, as.Date(newdata$baby_ht1_date,format='%Y-%m-%d %H:%M:%S')),]
 names(newdata2); head(newdata2)
 
 # redcap_repeat_instrument
@@ -384,7 +384,7 @@ names(newdata3); head(newdata3)
 
 # create "redcap_repeat_instance" variable
 dt <- as.data.table(newdata3)            
-setkeyv(dt, c("part_id", "infant_ht1_date","infant_ht1_cm","redcap_repeat_instrument"))  
+setkeyv(dt, c("part_id", "baby_ht1_date","baby_ht1_cm","redcap_repeat_instrument"))  
 dt3 <- dt[, redcap_repeat_instance := seq_len(.N), by = "part_id"]        
 head(dt3); range(dt3$redcap_repeat_instance) 
 max(unique(dt3$redcap_repeat_instance)) # 1
@@ -408,7 +408,7 @@ dt5=dt4
 #-------------
 batchSize=10000; # number of rows in single output file
 data.file.name.export=as.character(dt5[2,2]);data.file.name.export
-out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\02_redcap_import_Nov17\\",sep="");out.dir
+out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\03_redcap_import_Jan18\\",sep="");out.dir
 
 chunks=split(dt5, floor(0:(nrow(dt5)-1)/batchSize))
 for (i in 1:length(chunks))
@@ -440,7 +440,7 @@ baby.hc=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "First Head Cir
 dat=baby.hc
 
 # rename
-newdata=rename(dat, part_id = `Baby-Id`, infant_hc1_date=`1st Head Circumference date`, infant_hc1_cm=`Head Circumference (cm)`);newdata
+newdata=rename(dat, part_id = `Baby-Id`, baby_hc1_date=`1st Head Circumference date`, baby_hc1_cm=`Head Circumference (cm)`);newdata
 names(newdata); head(newdata)
 
 # unique ID? Some moms had multiple babies in data set
@@ -449,7 +449,7 @@ length(newdata$part_id)         # 16353
 names(newdata); head(newdata)
 
 # sort
-newdata2 <- newdata[order(newdata$part_id, as.Date(newdata$infant_hc1_date,format='%Y-%m-%d %H:%M:%S')),]
+newdata2 <- newdata[order(newdata$part_id, as.Date(newdata$baby_hc1_date,format='%Y-%m-%d %H:%M:%S')),]
 names(newdata2); head(newdata2)
 
 # redcap_repeat_instrument
@@ -459,7 +459,7 @@ names(newdata3); head(newdata3)
 
 # create "redcap_repeat_instance" variable
 dt <- as.data.table(newdata3)            
-setkeyv(dt, c("part_id", "infant_hc1_date","infant_hc1_cm","redcap_repeat_instrument"))  
+setkeyv(dt, c("part_id", "baby_hc1_date","baby_hc1_cm","redcap_repeat_instrument"))  
 dt3 <- dt[, redcap_repeat_instance := seq_len(.N), by = "part_id"]        
 head(dt3); range(dt3$redcap_repeat_instance) 
 max(unique(dt3$redcap_repeat_instance)) # 2
@@ -483,7 +483,7 @@ dt5=dt4
 #-------------
 batchSize=10000; # number of rows in single output file
 data.file.name.export=as.character(dt5[2,2]);data.file.name.export
-out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\02_redcap_import_Nov17\\",sep="");out.dir
+out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\03_redcap_import_Jan18\\",sep="");out.dir
 
 chunks=split(dt5, floor(0:(nrow(dt5)-1)/batchSize))
 for (i in 1:length(chunks))
@@ -515,7 +515,7 @@ baby.script=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Antibiotic
 dat=baby.script
 
 # rename
-newdata=rename(dat, part_id = `Baby-Id`, infant_med_order=`Med Order #`, infant_med_code=Med_Code, infant_meds=Medication, infant_med_date=`Med Order Datetime`);newdata
+newdata=rename(dat, part_id = `Baby-Id`, baby_med_order=`Med Order #`, baby_med_code=Med_Code, baby_meds=Medication, baby_med_date=`Med Order Datetime`);newdata
 names(newdata); head(newdata)
 
 # unique ID? Some moms had multiple babies in data set
@@ -524,7 +524,7 @@ length(newdata$part_id)         # 5156
 names(newdata); head(newdata)
 
 # sort
-newdata2 <- newdata[order(newdata$part_id, as.Date(newdata$infant_med_date,format='%Y-%m-%d %H:%M:%S')),]
+newdata2 <- newdata[order(newdata$part_id, as.Date(newdata$baby_med_date,format='%Y-%m-%d %H:%M:%S')),]
 names(newdata2); head(newdata2)
 
 # redcap_repeat_instrument
@@ -533,13 +533,13 @@ newdata3$redcap_repeat_instrument="baby_antibiotics_rx"
 names(newdata3); head(newdata3)
 
 # modify medication string
-newdata3$infant_meds=gsub(" ","_",newdata3$infant_meds) 
-newdata3$infant_meds=gsub(",","&",newdata3$infant_meds) 
+newdata3$baby_meds=gsub(" ","_",newdata3$baby_meds) 
+newdata3$baby_meds=gsub(",","&",newdata3$baby_meds) 
 head(newdata3);str(newdata3)
 
 # create "redcap_repeat_instance" variable
 dt <- as.data.table(newdata3)            
-setkeyv(dt, c("part_id", "infant_med_date","infant_med_order","infant_med_code","infant_meds","redcap_repeat_instrument"))  
+setkeyv(dt, c("part_id", "baby_med_date","baby_med_order","baby_med_code","baby_meds","redcap_repeat_instrument"))  
 dt3 <- dt[, redcap_repeat_instance := seq_len(.N), by = "part_id"]        
 head(dt3); range(dt3$redcap_repeat_instance) 
 max(unique(dt3$redcap_repeat_instance)) # 25
@@ -563,7 +563,7 @@ dt5=dt4
 #-------------
 batchSize=10000; # number of rows in single output file
 data.file.name.export=as.character(dt5[2,2]);data.file.name.export
-out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\02_redcap_import_Nov17\\",sep="");out.dir
+out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\03_redcap_import_Jan18\\",sep="");out.dir
 
 chunks=split(dt5, floor(0:(nrow(dt5)-1)/batchSize))
 for (i in 1:length(chunks))
@@ -595,7 +595,7 @@ baby.abx=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Antibiotics I
 dat=baby.abx
 
 # rename
-newdata=rename(dat, part_id = `Baby-Id`,infant_med_order_ip="Med Order #",infant_mar_action_ip="MAR_Action",infant_med_code_ip="Med_Code",infant_med_ip_date="Taken_Datetime",infant_med_ip="Medication");newdata
+newdata=rename(dat, part_id = `Baby-Id`,baby_med_order_ip="Med Order #",baby_mar_action_ip="MAR_Action",baby_med_code_ip="Med_Code",baby_med_ip_date="Taken_Datetime",baby_med_ip="Medication");newdata
 names(newdata); head(newdata)
 
 # unique ID? Some moms had multiple babies in data set
@@ -604,7 +604,7 @@ length(newdata$part_id)         # 70367
 names(newdata); head(newdata)
 
 # sort
-newdata2 <- newdata[order(newdata$part_id, as.Date(newdata$infant_med_ip_date,format='%Y-%m-%d %H:%M:%S')),]
+newdata2 <- newdata[order(newdata$part_id, as.Date(newdata$baby_med_ip_date,format='%Y-%m-%d %H:%M:%S')),]
 names(newdata2); head(newdata2)
 
 # redcap_repeat_instrument
@@ -613,13 +613,13 @@ newdata3$redcap_repeat_instrument="baby_antibiotics_ip"
 names(newdata3); head(newdata3)
 
 # modify medication string
-newdata3$infant_med_ip=gsub(" ","_",newdata3$infant_med_ip) 
-newdata3$infant_med_ip=gsub(",","&",newdata3$infant_med_ip) 
+newdata3$baby_med_ip=gsub(" ","_",newdata3$baby_med_ip) 
+newdata3$baby_med_ip=gsub(",","&",newdata3$baby_med_ip) 
 head(newdata3);str(newdata3)
 
 # create "redcap_repeat_instance" variable
 dt <- as.data.table(newdata3);names(dt)           
-setkeyv(dt, c("part_id", "infant_med_ip_date","infant_med_order_ip","infant_mar_action_ip","infant_med_code_ip","infant_med_ip","redcap_repeat_instrument"))  
+setkeyv(dt, c("part_id", "baby_med_ip_date","baby_med_order_ip","baby_mar_action_ip","baby_med_code_ip","baby_med_ip","redcap_repeat_instrument"))  
 dt3 <- dt[, redcap_repeat_instance := seq_len(.N), by = "part_id"]        
 head(dt3); range(dt3$redcap_repeat_instance) 
 max(unique(dt3$redcap_repeat_instance)) #537
@@ -643,7 +643,7 @@ dt5=dt4
 #-------------
 batchSize=10000; # number of rows in single output file
 data.file.name.export=as.character(dt5[2,2]);data.file.name.export
-out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\02_redcap_import_Nov17\\",sep="");out.dir
+out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\03_redcap_import_Jan18\\",sep="");out.dir
 
 chunks=split(dt5, floor(0:(nrow(dt5)-1)/batchSize))
 for (i in 1:length(chunks))
