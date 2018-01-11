@@ -4,7 +4,7 @@
 # **************************************************************************** #
            
 # Author:      Dominick Lemas 
-# Date:        January 05, 2018 
+# Date:        January 10, 2018 
 # IRB:
 # Description: Import infant birth data to RedCap from flat files. 
 # Data: C:\Users\Dominick\Dropbox (UFL)\IRB\UF\UFHealth\redcap_import
@@ -63,10 +63,10 @@ baby.dat=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Baby", range 
 dat=baby.dat
 
 # rename
-newdata=rename(dat, part_id = `Baby-Id`, infant_dob=DOB, infant_race=Race, 
-               infant_ethnicity=Ethnicity, infant_birth_wt_gr=`Birth Weight (grams)`, 
-               infant_admit_date=`Admit Date`, infant_admit_source=`Admit Source`,
-               infant_nicu_los=`NICU LOS`,infant_gest_age=Gestational_Age, delivery_mode=Delivery_Mode);newdata
+newdata=rename(dat, part_id = `Baby-Id`, baby_dob=DOB, baby_race=Race, 
+               baby_ethnicity=Ethnicity, baby_birth_wt_gr=`Birth Weight (grams)`, 
+               baby_admit_date=`Admit Date`, baby_admit_source=`Admit Source`,
+               baby_nicu_los=`NICU LOS`,baby_gest_age=Gestational_Age, delivery_mode=Delivery_Mode);newdata
 
 # unique ID? Some moms had multiple babies in data set
 length(unique(newdata$part_id)) # 16684
@@ -106,7 +106,7 @@ dt5=dt4
 #-------------
 batchSize=10000; # number of rows in single output file
 data.file.name.export=as.character(dt5[2,2]);data.file.name.export
-out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\02_redcap_import_Nov17\\",sep="");out.dir
+out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\03_redcap_import_Jan18\\",sep="");out.dir
 
 chunks=split(dt5, floor(0:(nrow(dt5)-1)/batchSize))
 for (i in 1:length(chunks))
