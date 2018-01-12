@@ -20,6 +20,7 @@
 # Directory Locations
 work.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\raw_data\\",sep="");work.dir
 data.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\raw_data\\",sep="");data.dir
+out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\03_redcap_import_Jan18\\",sep="");out.dir
 
 # Set Working Directory
 setwd(work.dir)
@@ -168,9 +169,7 @@ for (j in 1:length(temp1)){ # first loop
   # write file
   batchSize=10000; # number of rows in single output file
   data.file.name.export=names(temp1)[j];data.file.name.export
-  out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\03_redcap_import_Jan18\\",sep="");out.dir
-  
-  
+
   chunks=split(out, floor(0:(nrow(out)-1)/batchSize))
   for (i in 1:length(chunks)){ # second loop
     write.table(chunks[[i]],paste0(out.dir,data.file.name.export,i,'.csv'),row.names=F, sep="\t")
@@ -313,9 +312,7 @@ for (j in 1:length(temp1)){ # first loop
   # write file
   batchSize=10000; # number of rows in single output file
   data.file.name.export=names(temp1)[j];data.file.name.export
-  out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\03_redcap_import_Jan18\\",sep="");out.dir
-  
-  
+
   chunks=split(out, floor(0:(nrow(out)-1)/batchSize))
   for (i in 1:length(chunks)){ # second loop
     write.table(chunks[[i]],paste0(out.dir,data.file.name.export,i,'.csv'),row.names=F, sep="\t")
@@ -455,9 +452,7 @@ for (j in 1:length(temp1)){ # first loop
   # write file
   batchSize=10000; # number of rows in single output file
   data.file.name.export=names(temp1)[j];data.file.name.export
-  out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\03_redcap_import_Jan18\\",sep="");out.dir
-  
-  
+
   chunks=split(out, floor(0:(nrow(out)-1)/batchSize))
   for (i in 1:length(chunks)){ # second loop
     write.table(chunks[[i]],paste0(out.dir,data.file.name.export,i,'.csv'),row.names=F, sep="\t")

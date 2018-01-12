@@ -268,7 +268,7 @@ for (i in 1:length(chunks))
 rm(baby.well, dat, newdata, newdata2,chunks, newdata3, dt, dt3, dt4, dt5)
 
 # **************************************************************************** #
-# ***************                baby_mom_baby_link                                               
+# ***************                mom_baby_link   (need to modify data dictionary and re-import)                                            
 # **************************************************************************** #
 
 # baby_mom_baby_link
@@ -288,7 +288,7 @@ baby.mom=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Baby-Mom Link
 dat=baby.mom
 
 # rename
-newdata=rename(dat, part_id = `Baby-Id`, part_link=`Mom-Id`)
+newdata=rename(dat, part_id = `Baby-Id`, mom_id=`Mom-Id`)
 names(newdata); head(newdata)
 
 # unique ID? Some moms had multiple babies in data set
@@ -307,10 +307,11 @@ names(newdata3); head(newdata3)
 
 # create "redcap_repeat_instance" variable
 dt <- as.data.table(newdata3)            
-setkeyv(dt, c("part_id", "mom_baby_link","redcap_repeat_instrument"))  
+setkeyv(dt, c("part_id", "part_link","redcap_repeat_instrument"))  
 dt3 <- dt[, redcap_repeat_instance := seq_len(.N), by = "part_id"]        
 head(dt3); range(dt3$redcap_repeat_instance) 
 max(unique(dt3$redcap_repeat_instance)) # 5
+table(dt3$redcap_repeat_instance)
 
 # create "redcap_event_name" variable
 dt3$redcap_event_name=paste("visit_",dt3$redcap_repeat_instance,"_arm_1",sep="")
