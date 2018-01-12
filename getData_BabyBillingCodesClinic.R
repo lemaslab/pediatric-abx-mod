@@ -20,6 +20,7 @@
 # Directory Locations
 work.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\raw_data\\",sep="");work.dir
 data.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\raw_data\\",sep="");data.dir
+out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\03_redcap_import_Jan18\\",sep="");out.dir
 
 # Set Working Directory
 setwd(work.dir)
@@ -64,8 +65,8 @@ baby.asthma=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Asthma (Cl
 dat=baby.asthma
 
 # rename
-newdata=rename(dat, part_id = `Baby Id`, infant_asthma_date=`Service/Charge Date`, infant_asthma_icd=`Asthma ICD9/ICD10`);newdata
-unique(newdata$infant_asthma_icd)
+newdata=rename(dat, part_id = `Baby Id`, baby_asthma_date=`Service/Charge Date`, baby_asthma_icd=`Asthma ICD9/ICD10`);newdata
+unique(newdata$baby_asthma_icd)
 
 # unique ID? Some moms had multiple babies in data set
 length(unique(newdata$part_id)) # 3577
@@ -73,7 +74,7 @@ length(newdata$part_id)         # 13241
 names(newdata); head(newdata)
 
 # sort
-newdata2 <- newdata[order(newdata$part_id, as.Date(newdata$infant_asthma_date,format='%Y-%m-%d')),]
+newdata2 <- newdata[order(newdata$part_id, as.Date(newdata$baby_asthma_date,format='%Y-%m-%d')),]
 names(newdata2); head(newdata2)
 
 # redcap_repeat_instrument
@@ -83,7 +84,7 @@ names(newdata3); head(newdata3)
 
 # create "redcap_repeat_instance" variable
 dt <- as.data.table(newdata3)            
-setkeyv(dt, c("part_id", "infant_asthma_date","infant_asthma_icd","redcap_repeat_instrument"))  
+setkeyv(dt, c("part_id", "baby_asthma_date","baby_asthma_icd","redcap_repeat_instrument"))  
 dt3 <- dt[, redcap_repeat_instance := seq_len(.N), by = "part_id"]        
 head(dt3); range(dt3$redcap_repeat_instance) 
 max(unique(dt3$redcap_repeat_instance)) # 75
@@ -107,7 +108,6 @@ dt5=dt4
 #-------------
 batchSize=10000; # number of rows in single output file
 data.file.name.export=as.character(dt5[2,2]);data.file.name.export
-out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\02_redcap_import_Nov17\\",sep="");out.dir
 
 chunks=split(dt5, floor(0:(nrow(dt5)-1)/batchSize))
 for (i in 1:length(chunks))
@@ -116,7 +116,7 @@ for (i in 1:length(chunks))
 } # end second loop
 
 # clear slate
-rm(baby.asthma, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
+rm(baby.asthma, dat, newdata,chunks, newdata2, newdata3, dt, dt3, dt4, dt5)
 
 # **************************************************************************** #
 # ***************                baby_clinic_foodallergy                                               
@@ -140,8 +140,8 @@ baby.allergy=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Food Alle
 dat=baby.allergy
 
 # rename
-newdata=rename(dat, part_id = `Baby Id`, infant_fa_date=`Service/Charge Date`, infant_fa_icd=`Food Allergy ID9/ICD10`);newdata
-unique(newdata$infant_fa_icd)
+newdata=rename(dat, part_id = `Baby Id`, baby_fa_date=`Service/Charge Date`, baby_fa_icd=`Food Allergy ID9/ICD10`);newdata
+unique(newdata$baby_fa_icd)
 
 # unique ID? Some moms had multiple babies in data set
 length(unique(newdata$part_id)) # 1372
@@ -149,7 +149,7 @@ length(newdata$part_id)         # 2360
 names(newdata); head(newdata)
 
 # sort
-newdata2 <- newdata[order(newdata$part_id, as.Date(newdata$infant_fa_date,format='%Y-%m-%d')),]
+newdata2 <- newdata[order(newdata$part_id, as.Date(newdata$baby_fa_date,format='%Y-%m-%d')),]
 names(newdata2); head(newdata2)
 
 # redcap_repeat_instrument
@@ -159,7 +159,7 @@ names(newdata3); head(newdata3)
 
 # create "redcap_repeat_instance" variable
 dt <- as.data.table(newdata3)            
-setkeyv(dt, c("part_id", "infant_fa_date","infant_fa_icd","redcap_repeat_instrument"))  
+setkeyv(dt, c("part_id", "baby_fa_date","baby_fa_icd","redcap_repeat_instrument"))  
 dt3 <- dt[, redcap_repeat_instance := seq_len(.N), by = "part_id"]        
 head(dt3); range(dt3$redcap_repeat_instance) 
 max(unique(dt3$redcap_repeat_instance)) # 33
@@ -183,7 +183,6 @@ dt5=dt4
 #-------------
 batchSize=10000; # number of rows in single output file
 data.file.name.export=as.character(dt5[2,2]);data.file.name.export
-out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\02_redcap_import_Nov17\\",sep="");out.dir
 
 chunks=split(dt5, floor(0:(nrow(dt5)-1)/batchSize))
 for (i in 1:length(chunks))
@@ -192,7 +191,7 @@ for (i in 1:length(chunks))
 } # end second loop
 
 # clear slate
-rm(baby.allergy, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
+rm(baby.allergy, dat, newdata,chunks, newdata2, newdata3, dt, dt3, dt4, dt5)
 
 # **************************************************************************** #
 # ***************                baby_clinic_ear                                                
@@ -215,8 +214,8 @@ baby.ear=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Ear Infection
 dat=baby.ear
 
 # rename
-newdata=rename(dat, part_id = `Baby Id`, infant_ear_infect_date=`Service/Charge Date`, infant_ear_infect_icd=`Ear Infection ICD9/ICD10`);newdata
-unique(newdata$infant_ear_infect_icd)
+newdata=rename(dat, part_id = `Baby Id`, baby_ear_infect_date=`Service/Charge Date`, baby_ear_infect_icd=`Ear Infection ICD9/ICD10`);newdata
+unique(newdata$baby_ear_infect_icd)
 
 # unique ID? Some moms had multiple babies in data set
 length(unique(newdata$part_id)) # 2849
@@ -224,7 +223,7 @@ length(newdata$part_id)         # 6507
 names(newdata); head(newdata)
 
 # sort
-newdata2 <- newdata[order(newdata$part_id, as.Date(newdata$infant_ear_infect_date,format='%Y-%m-%d')),]
+newdata2 <- newdata[order(newdata$part_id, as.Date(newdata$baby_ear_infect_date,format='%Y-%m-%d')),]
 names(newdata2); head(newdata2)
 
 # redcap_repeat_instrument
@@ -234,7 +233,7 @@ names(newdata3); head(newdata3)
 
 # create "redcap_repeat_instance" variable
 dt <- as.data.table(newdata3)            
-setkeyv(dt, c("part_id", "infant_ear_infect_date","infant_ear_infect_icd","redcap_repeat_instrument"))  
+setkeyv(dt, c("part_id", "baby_ear_infect_date","baby_ear_infect_icd","redcap_repeat_instrument"))  
 dt3 <- dt[, redcap_repeat_instance := seq_len(.N), by = "part_id"]        
 head(dt3); range(dt3$redcap_repeat_instance) 
 max(unique(dt3$redcap_repeat_instance)) # 21
@@ -258,7 +257,6 @@ dt5=dt4
 #-------------
 batchSize=10000; # number of rows in single output file
 data.file.name.export=as.character(dt5[2,2]);data.file.name.export
-out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\02_redcap_import_Nov17\\",sep="");out.dir
 
 chunks=split(dt5, floor(0:(nrow(dt5)-1)/batchSize))
 for (i in 1:length(chunks))
@@ -267,7 +265,7 @@ for (i in 1:length(chunks))
 } # end second loop
 
 # clear slate
-rm(baby.ear, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
+rm(baby.ear, dat, newdata,chunks, newdata2, newdata3, dt, dt3, dt4, dt5)
 
 # **************************************************************************** #
 # ***************                baby_clinic_eczema                                               
@@ -290,8 +288,8 @@ baby.eczema=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Dermatitis
 dat=baby.eczema
 
 # rename
-newdata=rename(dat, part_id = `Baby Id`, infant_eczema_date=`Service/Charge Date`, infant_eczema_icd=`Dermatitis-Eczema ICD9/ICD10`);newdata
-unique(newdata$infant_eczema_icd)
+newdata=rename(dat, part_id = `Baby Id`, baby_eczema_date=`Service/Charge Date`, baby_eczema_icd=`Dermatitis-Eczema ICD9/ICD10`);newdata
+unique(newdata$baby_eczema_icd)
 
 # unique ID? Some moms had multiple babies in data set
 length(unique(newdata$part_id)) # 1997
@@ -299,7 +297,7 @@ length(newdata$part_id)         # 5026
 names(newdata); head(newdata)
 
 # sort
-newdata2 <- newdata[order(newdata$part_id, as.Date(newdata$infant_eczema_date,format='%Y-%m-%d')),]
+newdata2 <- newdata[order(newdata$part_id, as.Date(newdata$baby_eczema_date,format='%Y-%m-%d')),]
 names(newdata2); head(newdata2)
 
 # redcap_repeat_instrument
@@ -309,7 +307,7 @@ names(newdata3); head(newdata3)
 
 # create "redcap_repeat_instance" variable
 dt <- as.data.table(newdata3)            
-setkeyv(dt, c("part_id", "infant_eczema_date","infant_eczema_icd","redcap_repeat_instrument"))  
+setkeyv(dt, c("part_id", "baby_eczema_date","baby_eczema_icd","redcap_repeat_instrument"))  
 dt3 <- dt[, redcap_repeat_instance := seq_len(.N), by = "part_id"]        
 head(dt3); range(dt3$redcap_repeat_instance) 
 max(unique(dt3$redcap_repeat_instance)) # 36
@@ -333,7 +331,6 @@ dt5=dt4
 #-------------
 batchSize=10000; # number of rows in single output file
 data.file.name.export=as.character(dt5[2,2]);data.file.name.export
-out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\02_redcap_import_Nov17\\",sep="");out.dir
 
 chunks=split(dt5, floor(0:(nrow(dt5)-1)/batchSize))
 for (i in 1:length(chunks))
@@ -342,7 +339,7 @@ for (i in 1:length(chunks))
 } # end second loop
 
 # clear slate
-rm(baby.eczema, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
+rm(baby.eczema,dat, newdata,chunks,newdata2, newdata3, dt, dt3, dt4, dt5)
 
 # **************************************************************************** #
 # ***************                baby_clinic_dermatitis                                               
@@ -365,8 +362,8 @@ baby.derm=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Seborrheic D
 dat=baby.derm
 
 # rename
-newdata=rename(dat, part_id = `Baby Id`, infant_dermatitis_date=`Service/Charge Date`, infant_dermatitis_icd=`Seborrheic Dermatitis ICD9/ICD10`);newdata
-unique(newdata$infant_dermatitis_icd)
+newdata=rename(dat, part_id = `Baby Id`, baby_dermatitis_date=`Service/Charge Date`, baby_dermatitis_icd=`Seborrheic Dermatitis ICD9/ICD10`);newdata
+unique(newdata$baby_dermatitis_icd)
 
 # unique ID? Some moms had multiple babies in data set
 length(unique(newdata$part_id)) # 487
@@ -374,7 +371,7 @@ length(newdata$part_id)         # 607
 names(newdata); head(newdata)
 
 # sort
-newdata2 <- newdata[order(newdata$part_id, as.Date(newdata$infant_dermatitis_date,format='%Y-%m-%d')),]
+newdata2 <- newdata[order(newdata$part_id, as.Date(newdata$baby_dermatitis_date,format='%Y-%m-%d')),]
 names(newdata2); head(newdata2)
 
 # redcap_repeat_instrument
@@ -384,7 +381,7 @@ names(newdata3); head(newdata3)
 
 # create "redcap_repeat_instance" variable
 dt <- as.data.table(newdata3)            
-setkeyv(dt, c("part_id", "infant_dermatitis_date","infant_dermatitis_icd","redcap_repeat_instrument"))  
+setkeyv(dt, c("part_id", "baby_dermatitis_date","baby_dermatitis_icd","redcap_repeat_instrument"))  
 dt3 <- dt[, redcap_repeat_instance := seq_len(.N), by = "part_id"]        
 head(dt3); range(dt3$redcap_repeat_instance) 
 max(unique(dt3$redcap_repeat_instance)) # 7
@@ -408,7 +405,6 @@ dt5=dt4
 #-------------
 batchSize=10000; # number of rows in single output file
 data.file.name.export=as.character(dt5[2,2]);data.file.name.export
-out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\02_redcap_import_Nov17\\",sep="");out.dir
 
 chunks=split(dt5, floor(0:(nrow(dt5)-1)/batchSize))
 for (i in 1:length(chunks))
@@ -417,7 +413,7 @@ for (i in 1:length(chunks))
 } # end second loop
 
 # clear slate
-rm(baby.derm, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
+rm(baby.derm, dat, newdata,chunks, newdata2, newdata3, dt, dt3, dt4, dt5)
 
 # **************************************************************************** #
 # ***************                baby_clinic_erythema                                               
@@ -440,8 +436,8 @@ baby.tox=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Erythema Toxi
 dat=baby.tox
 
 # rename
-newdata=rename(dat, part_id = `Baby Id`, infant_erythema_date=`Service/Charge Date`, infant_erythema_icd=`Erythema Toxicum-ICD9/ICD10`);newdata
-unique(newdata$infant_erythema_icd)
+newdata=rename(dat, part_id = `Baby Id`, baby_erythema_date=`Service/Charge Date`, baby_erythema_icd=`Erythema Toxicum-ICD9/ICD10`);newdata
+unique(newdata$baby_erythema_icd)
 
 # unique ID? Some moms had multiple babies in data set
 length(unique(newdata$part_id)) # 477
@@ -449,7 +445,7 @@ length(newdata$part_id)         # 700
 names(newdata); head(newdata)
 
 # sort
-newdata2 <- newdata[order(newdata$part_id, as.Date(newdata$infant_erythema_date,format='%Y-%m-%d')),]
+newdata2 <- newdata[order(newdata$part_id, as.Date(newdata$baby_erythema_date,format='%Y-%m-%d')),]
 names(newdata2); head(newdata2)
 
 # redcap_repeat_instrument
@@ -459,7 +455,7 @@ names(newdata3); head(newdata3)
 
 # create "redcap_repeat_instance" variable
 dt <- as.data.table(newdata3)            
-setkeyv(dt, c("part_id", "infant_erythema_date","infant_erythema_icd","redcap_repeat_instrument"))  
+setkeyv(dt, c("part_id", "baby_erythema_date","baby_erythema_icd","redcap_repeat_instrument"))  
 dt3 <- dt[, redcap_repeat_instance := seq_len(.N), by = "part_id"]        
 head(dt3); range(dt3$redcap_repeat_instance) 
 max(unique(dt3$redcap_repeat_instance)) # 10
@@ -483,7 +479,6 @@ dt5=dt4
 #-------------
 batchSize=10000; # number of rows in single output file
 data.file.name.export=as.character(dt5[2,2]);data.file.name.export
-out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\02_redcap_import_Nov17\\",sep="");out.dir
 
 chunks=split(dt5, floor(0:(nrow(dt5)-1)/batchSize))
 for (i in 1:length(chunks))
@@ -492,7 +487,7 @@ for (i in 1:length(chunks))
 } # end second loop
 
 # clear slate
-rm(baby.tox, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
+rm(baby.tox, dat, newdata,chunks, newdata2, newdata3, dt, dt3, dt4, dt5)
 
 # **************************************************************************** #
 # ***************                 baby_clinic_sebaceous                                              
@@ -515,8 +510,8 @@ baby.seb=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Nevus Sebaceo
 dat=baby.seb
 
 # rename
-newdata=rename(dat, part_id = `Baby Id`, infant_sebaceous_date=`Service/Charge Date`, infant_sebaceous_icd=`Nevus Sebaceous ICD9/ICD10`);newdata
-unique(newdata$infant_sebaceous_icd)
+newdata=rename(dat, part_id = `Baby Id`, baby_sebaceous_date=`Service/Charge Date`, baby_sebaceous_icd=`Nevus Sebaceous ICD9/ICD10`);newdata
+unique(newdata$baby_sebaceous_icd)
 
 # unique ID? Some moms had multiple babies in data set
 length(unique(newdata$part_id)) # 109
@@ -524,7 +519,7 @@ length(newdata$part_id)         # 171
 names(newdata); head(newdata)
 
 # sort
-newdata2 <- newdata[order(newdata$part_id, as.Date(newdata$infant_sebaceous_date,format='%Y-%m-%d')),]
+newdata2 <- newdata[order(newdata$part_id, as.Date(newdata$baby_sebaceous_date,format='%Y-%m-%d')),]
 names(newdata2); head(newdata2)
 
 # redcap_repeat_instrument
@@ -534,7 +529,7 @@ names(newdata3); head(newdata3)
 
 # create "redcap_repeat_instance" variable
 dt <- as.data.table(newdata3)            
-setkeyv(dt, c("part_id", "infant_sebaceous_date","infant_sebaceous_icd","redcap_repeat_instrument"))  
+setkeyv(dt, c("part_id", "baby_sebaceous_date","baby_sebaceous_icd","redcap_repeat_instrument"))  
 dt3 <- dt[, redcap_repeat_instance := seq_len(.N), by = "part_id"]        
 head(dt3); range(dt3$redcap_repeat_instance) 
 max(unique(dt3$redcap_repeat_instance)) # 8
@@ -558,7 +553,6 @@ dt5=dt4
 #-------------
 batchSize=10000; # number of rows in single output file
 data.file.name.export=as.character(dt5[2,2]);data.file.name.export
-out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\02_redcap_import_Nov17\\",sep="");out.dir
 
 chunks=split(dt5, floor(0:(nrow(dt5)-1)/batchSize))
 for (i in 1:length(chunks))
@@ -567,7 +561,7 @@ for (i in 1:length(chunks))
 } # end second loop
 
 # clear slate
-rm(baby.seb, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
+rm(baby.seb, dat, newdata,chunks, newdata2, newdata3, dt, dt3, dt4, dt5)
 
 # **************************************************************************** #
 # ***************                 baby_clinic_hemangioma                                              
@@ -590,8 +584,8 @@ baby.hem=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Hemangioma (C
 dat=baby.hem
 
 # rename
-newdata=rename(dat, part_id = `Baby Id`, infant_hemangioma_date=`Service/Charge Date`, infant_hemangioma_icd=`Hemangioma ICD9/ICD10`);newdata
-unique(newdata$infant_hemangioma_icd)
+newdata=rename(dat, part_id = `Baby Id`, baby_hemangioma_date=`Service/Charge Date`, baby_hemangioma_icd=`Hemangioma ICD9/ICD10`);newdata
+unique(newdata$baby_hemangioma_icd)
 
 # unique ID? Some moms had multiple babies in data set
 length(unique(newdata$part_id)) # 473
@@ -599,7 +593,7 @@ length(newdata$part_id)         # 1035
 names(newdata); head(newdata)
 
 # sort
-newdata2 <- newdata[order(newdata$part_id, as.Date(newdata$infant_hemangioma_date,format='%Y-%m-%d')),]
+newdata2 <- newdata[order(newdata$part_id, as.Date(newdata$baby_hemangioma_date,format='%Y-%m-%d')),]
 names(newdata2); head(newdata2)
 
 # redcap_repeat_instrument
@@ -609,7 +603,7 @@ names(newdata3); head(newdata3)
 
 # create "redcap_repeat_instance" variable
 dt <- as.data.table(newdata3)            
-setkeyv(dt, c("part_id", "infant_hemangioma_date","infant_hemangioma_icd","redcap_repeat_instrument"))  
+setkeyv(dt, c("part_id", "baby_hemangioma_date","baby_hemangioma_icd","redcap_repeat_instrument"))  
 dt3 <- dt[, redcap_repeat_instance := seq_len(.N), by = "part_id"]        
 head(dt3); range(dt3$redcap_repeat_instance) 
 max(unique(dt3$redcap_repeat_instance)) # 18
@@ -633,7 +627,6 @@ dt5=dt4
 #-------------
 batchSize=10000; # number of rows in single output file
 data.file.name.export=as.character(dt5[2,2]);data.file.name.export
-out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\02_redcap_import_Nov17\\",sep="");out.dir
 
 chunks=split(dt5, floor(0:(nrow(dt5)-1)/batchSize))
 for (i in 1:length(chunks))
@@ -642,7 +635,7 @@ for (i in 1:length(chunks))
 } # end second loop
 
 # clear slate
-rm(baby.hem, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
+rm(baby.hem, dat, newdata,chunks, newdata2, newdata3, dt, dt3, dt4, dt5)
 
 # **************************************************************************** #
 # ***************                 baby_obesity_clinic                                              
@@ -665,8 +658,8 @@ baby.ob=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Obesity (Clini
 dat=baby.ob
 
 # rename
-newdata=rename(dat, part_id = `Baby Id`, infant_obesity_date=`Service/Charge Date`, infant_obesity_icd=`Obesity ICD9/ICD10`);newdata
-unique(newdata$infant_obesity_icd)
+newdata=rename(dat, part_id = `Baby Id`, baby_obesity_date=`Service/Charge Date`, baby_obesity_icd=`Obesity ICD9/ICD10`);newdata
+unique(newdata$baby_obesity_icd)
 
 # unique ID? Some moms had multiple babies in data set
 length(unique(newdata$part_id)) # 316
@@ -674,7 +667,7 @@ length(newdata$part_id)         # 490
 names(newdata); head(newdata)
 
 # sort
-newdata2 <- newdata[order(newdata$part_id, as.Date(newdata$infant_obesity_date,format='%Y-%m-%d')),]
+newdata2 <- newdata[order(newdata$part_id, as.Date(newdata$baby_obesity_date,format='%Y-%m-%d')),]
 names(newdata2); head(newdata2)
 
 # redcap_repeat_instrument
@@ -684,7 +677,7 @@ names(newdata3); head(newdata3)
 
 # create "redcap_repeat_instance" variable
 dt <- as.data.table(newdata3)            
-setkeyv(dt, c("part_id", "infant_obesity_date","infant_obesity_icd","redcap_repeat_instrument"))  
+setkeyv(dt, c("part_id", "baby_obesity_date","baby_obesity_icd","redcap_repeat_instrument"))  
 dt3 <- dt[, redcap_repeat_instance := seq_len(.N), by = "part_id"]        
 head(dt3); range(dt3$redcap_repeat_instance) 
 max(unique(dt3$redcap_repeat_instance)) # 11
@@ -708,7 +701,6 @@ dt5=dt4
 #-------------
 batchSize=10000; # number of rows in single output file
 data.file.name.export=as.character(dt5[2,2]);data.file.name.export
-out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\02_redcap_import_Nov17\\",sep="");out.dir
 
 chunks=split(dt5, floor(0:(nrow(dt5)-1)/batchSize))
 for (i in 1:length(chunks))
@@ -717,4 +709,4 @@ for (i in 1:length(chunks))
 } # end second loop
 
 # clear slate
-rm(baby.ob, dat, newdata, newdata2, newdata3, dt, dt3, dt4, dt5)
+rm(baby.ob, dat, newdata,chunks, newdata2, newdata3, dt, dt3, dt4, dt5)
