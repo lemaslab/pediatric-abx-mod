@@ -257,7 +257,7 @@ dt4$mom_prenat_ht2=paste0("&",dt4$mom_prenat_ht2,"&")
 dt4$mom_prenat_ht2=gsub(" ","_",dt4$mom_prenat_ht2) 
 head(dt4)
 
-# drop baby_dob
+# drop baby_dob & days2_cut
 dt4$baby_dob <- NULL 
 dt4$day2_cut <- NULL 
 dt5=dt4
@@ -275,4 +275,127 @@ for (i in 1:length(chunks))
 
 # drop un-needed objects
 rm(chunks, dat.new, dt, dt3, dt4, dt5, mdata.d, mom.baby, mom.baby.visits, newdata, newdata3, prenat.dat, mom.baby.visits.2)
+
+# **************************************************************************** #
+# ***************                Mom Medications.xlsx                                              
+# **************************************************************************** # 
+
+# file parameters
+n_max=10000
+data.file.name="Mom Medications.xlsx";data.file.name
+
+# **************************************************************************** #
+# ***************                mom_antibiotics_ip                                              
+# **************************************************************************** #
+
+# mom_antibiotics_ip
+#-----------------
+# rows: 51398
+# cols: 4
+# unique id: 6740
+# repeat: 574
+# ICD9/10: NA
+
+# read data
+mom.abxip.dat=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Mom Antibiotics IP Admin", range = NULL, col_names = TRUE,
+                        col_types = NULL, na = "", trim_ws = TRUE, skip = 0, n_max = Inf,
+                        guess_max = min(1000, n_max));mom.abxip.dat
+
+# rename
+newdata=rename(mom.abxip.dat, mom_id = `Mom ID`, mom_prenat_abxip_date3=`Taken Datetime`,mom_prenat_abxip_action3= `MAR Action`, mom_prenat_abxip3=Antibiotics)
+head(newdata)
+
+# merge
+mom.baby.abxip <- left_join(newdata, mom.baby.merge, by = c('mom_id'));dim(mom.baby.abxip) # 16607
+head(mom.baby.abxip)
+
+# rename: mom_id
+mom.baby.abxip=rename(mom.baby.abxip, mom_id3 = mom_id)
+names(mom.baby.abxip); head(mom.baby.abxip)
+
+# days_to variable(s)
+mom.baby.abxip$days2_prenatal_abxip3=as.Date(mom.baby.abxip$mom_prenat_abxip_date3,format="%Y-%m-%d")-as.Date(mom.baby.abxip$baby_dob,format="%Y-%m-%d")
+head(mom.baby.abxip);names(mom.baby.abxip)
+
+# dplyr for data wrangle
+#----------------------
+dat.new=mom.baby.abxip %>%
+  group_by(part_id) %>%
+  mutate(day2_cut=ifelse(days2_prenatal_abxip3 >= -365 & days2_prenatal_abxip3<=0, 1, 0));head(dat.new);names(dat.new)
+
+# subset
+mdata.d=subset(dat.new, day2_cut==1);dim(mdata.d) # 13046
+head(mdata.d)
+
+# redcap_repeat_instrument
+newdata3=mdata.d
+newdata3$redcap_repeat_instrument="mom_baby_antibiotics_ip"
+names(newdata3); head(newdata3)
+
+# create "redcap_repeat_instance" variable
+dt <- as.data.table(newdata3)            
+setkeyv(dt, c("mom_id3","mom_prenat_abxip_date3"))  
+dt3 <- dt[, redcap_repeat_instance := seq_len(.N), by = "mom_id3"]        
+head(dt3); range(dt3$redcap_repeat_instance) 
+max(unique(dt3$redcap_repeat_instance)) # 438
+table(dt3$redcap_repeat_instance)
+
+# create "redcap_event_name" variable
+dt3$redcap_event_name=paste("visit_",dt3$redcap_repeat_instance,"_arm_1",sep="")
+head(dt3)
+unique(dt3$redcap_event_name)
+names(dt3);head(dt3)
+
+# characters
+dt3$mom_prenat_abxip3=gsub(" ","_",dt3$mom_prenat_abxip3) 
+dt3$mom_prenat_abxip3=gsub(",","&",dt3$mom_prenat_abxip3) 
+head(dt3)
+
+# order columns for export
+col.names=names(dt3);col.names
+col.first=c("part_id","redcap_repeat_instrument","redcap_repeat_instance","redcap_event_name");col.first
+col.next=subset(col.names, !(col.names%in%col.first));col.next
+colFixed=append(col.first, col.next, after=length(col.first));colFixed
+dt4=setcolorder(dt3, colFixed)
+names(dt4);head(dt4)
+
+# drop baby_dob & days2_cut
+dt4$baby_dob <- NULL 
+dt4$day2_cut <- NULL 
+dt5=dt4
+
+# export data
+#-------------
+batchSize=10000; # number of rows in single output file
+data.file.name.export=as.character(dt5[2,2]);data.file.name.export
+
+chunks=split(dt5, floor(0:(nrow(dt5)-1)/batchSize))
+for (i in 1:length(chunks))
+{ # second loop
+  write.table(chunks[[i]],paste0(out.dir,data.file.name.export,i,'.csv'),row.names=F, sep=";")
+} # end second loop
+
+# drop un-needed objects
+rm(chunks, dat.new, dt, dt3, dt4, dt5, mdata.d, mom.baby.abxip, newdata, newdata3, mom.abxip.dat)
+
+# **************************************************************************** #
+# ***************                mom_antibiotics_rx                                              
+# **************************************************************************** #
+
+# mom_antibiotics_rx
+#-----------------
+# rows: 22927
+# cols: 3
+# unique id: 5787
+# repeat: 55
+# ICD9/10: NA
+
+# read data
+mom.abxscript.dat=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Mom Antibiotics Prescription", range = NULL, col_names = TRUE,
+                            col_types = NULL, na = "", trim_ws = TRUE, skip = 0, n_max = Inf,
+                            guess_max = min(1000, n_max));mom.abxscript.dat
+
+# rename
+newdata=rename(dat, part_id = `Mom ID`, mom_prenat_abxrx_date=`Order Datetime`, mom_prenat_abxrx=Antibiotics)
+head(newdata)
 
