@@ -396,6 +396,268 @@ mom.abxscript.dat=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Mom 
                             guess_max = min(1000, n_max));mom.abxscript.dat
 
 # rename
-newdata=rename(dat, part_id = `Mom ID`, mom_prenat_abxrx_date=`Order Datetime`, mom_prenat_abxrx=Antibiotics)
+newdata=rename(mom.abxscript.dat, mom_id = `Mom ID`, mom_prenat_abxrx_date4=`Order Datetime`, mom_prenat_abxrx4=Antibiotics)
 head(newdata)
 
+# merge
+mom.baby.abxrx <- left_join(newdata, mom.baby.merge, by = c('mom_id'));dim(mom.baby.abxrx) # 16607
+head(mom.baby.abxrx)
+
+# rename: mom_id
+mom.baby.abxrx=rename(mom.baby.abxrx, mom_id4 = mom_id)
+names(mom.baby.abxrx); head(mom.baby.abxrx)
+
+# days_to variable(s)
+mom.baby.abxrx$days2_prenatal_abxrx4=as.Date(mom.baby.abxrx$mom_prenat_abxrx_date4,format="%Y-%m-%d")-as.Date(mom.baby.abxrx$baby_dob,format="%Y-%m-%d")
+head(mom.baby.abxrx);names(mom.baby.abxrx)
+
+# dplyr for data wrangle
+#----------------------
+dat.new=mom.baby.abxrx %>%
+  group_by(part_id) %>%
+  mutate(day2_cut=ifelse(days2_prenatal_abxrx4 >= -365 & days2_prenatal_abxrx4<=0, 1, 0));head(dat.new);names(dat.new)
+
+# subset
+mdata.d=subset(dat.new, day2_cut==1);dim(mdata.d) # 4879
+head(mdata.d)
+
+# redcap_repeat_instrument
+newdata3=mdata.d
+newdata3$redcap_repeat_instrument="mom_baby_prenatal_abx_rx"
+names(newdata3);head(newdata3)
+
+# create "redcap_repeat_instance" variable
+dt <- as.data.table(newdata3)            
+setkeyv(dt, c("mom_id4","mom_prenat_abxrx_date4"))  
+dt3 <- dt[, redcap_repeat_instance := seq_len(.N), by = "mom_id4"]        
+head(dt3); range(dt3$redcap_repeat_instance) 
+max(unique(dt3$redcap_repeat_instance)) # 22
+table(dt3$redcap_repeat_instance)
+
+# create "redcap_event_name" variable
+dt3$redcap_event_name=paste("visit_",dt3$redcap_repeat_instance,"_arm_1",sep="")
+head(dt3)
+unique(dt3$redcap_event_name)
+names(dt3);head(dt3)
+
+# characters
+dt3$mom_prenat_abxrx4=gsub(" ","_",dt3$mom_prenat_abxrx4) 
+head(dt3)
+
+# order columns for export
+col.names=names(dt3);col.names
+col.first=c("part_id","redcap_repeat_instrument","redcap_repeat_instance","redcap_event_name");col.first
+col.next=subset(col.names, !(col.names%in%col.first));col.next
+colFixed=append(col.first, col.next, after=length(col.first));colFixed
+dt4=setcolorder(dt3, colFixed)
+names(dt4);head(dt4)
+
+# drop baby_dob & days2_cut
+dt4$baby_dob <- NULL 
+dt4$day2_cut <- NULL 
+dt5=dt4
+
+# export data
+#-------------
+batchSize=10000; # number of rows in single output file
+data.file.name.export=as.character(dt5[2,2]);data.file.name.export
+
+chunks=split(dt5, floor(0:(nrow(dt5)-1)/batchSize))
+for (i in 1:length(chunks))
+{ # second loop
+  write.table(chunks[[i]],paste0(out.dir,data.file.name.export,i,'.csv'),row.names=F, sep=";")
+} # end second loop
+
+# drop un-needed objects
+rm(chunks, dat.new, dt, dt3, dt4, dt5, mdata.d, mom.baby.abxip, newdata, newdata3, mom.abxscript.dat, mom.baby.abxrx)
+
+# **************************************************************************** #
+# ***************                mom_medications_rx                                              
+# **************************************************************************** #
+
+# mom_medications_rx
+#-----------------
+# rows: 23357
+# cols: 3
+# unique id: 5811
+# repeat: 55
+# ICD9/10: NA
+
+# read data
+mom.script.dat=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Mom Prescriptions", range = NULL, col_names = TRUE,
+                         col_types = NULL, na = "", trim_ws = TRUE, skip = 0, n_max = Inf,
+                         guess_max = min(1000, n_max));mom.script.dat
+
+# rename
+newdata=rename(mom.script.dat, mom_id = `Mom ID`, mom_med_rx_date5=`Order Datetime`, mom_prenat_med_rx5=Medication)
+head(newdata)
+
+# merge
+mom.baby.script <- left_join(newdata, mom.baby.merge, by = c('mom_id'));dim(mom.baby.script) # 16607
+head(mom.baby.script)
+
+# rename: mom_id
+mom.baby.script=rename(mom.baby.script, mom_id5 = mom_id)
+names(mom.baby.script); head(mom.baby.script)
+
+# days_to variable(s)
+mom.baby.script$days2_prenat_med_rx5=as.Date(mom.baby.script$mom_med_rx_date5,format="%Y-%m-%d")-as.Date(mom.baby.script$baby_dob,format="%Y-%m-%d")
+head(mom.baby.script);names(mom.baby.script)
+
+# dplyr for data wrangle
+#----------------------
+dat.new=mom.baby.script %>%
+  group_by(part_id) %>%
+  mutate(day2_cut=ifelse(days2_prenat_med_rx5 >= -365 & days2_prenat_med_rx5<=0, 1, 0));head(dat.new);names(dat.new)
+
+# subset
+mdata.d=subset(dat.new, day2_cut==1);dim(mdata.d) # 13046
+head(mdata.d)
+
+# redcap_repeat_instrument
+newdata3=mdata.d
+newdata3$redcap_repeat_instrument="mom_baby_prental_meds_rx"
+names(newdata3); head(newdata3)
+
+# create "redcap_repeat_instance" variable
+dt <- as.data.table(newdata3)            
+setkeyv(dt, c("mom_id3","mom_med_rx_date5"))  
+dt3 <- dt[, redcap_repeat_instance := seq_len(.N), by = "mom_id5"]        
+head(dt3); range(dt3$redcap_repeat_instance) 
+max(unique(dt3$redcap_repeat_instance)) # 22
+table(dt3$redcap_repeat_instance)
+
+# create "redcap_event_name" variable
+dt3$redcap_event_name=paste("visit_",dt3$redcap_repeat_instance,"_arm_1",sep="")
+head(dt3)
+unique(dt3$redcap_event_name)
+names(dt3);head(dt3)
+
+# characters
+dt3$mom_prenat_med_rx5=gsub(" ","_",dt3$mom_prenat_med_rx5) 
+head(dt3)
+
+# order columns for export
+col.names=names(dt3);col.names
+col.first=c("part_id","redcap_repeat_instrument","redcap_repeat_instance","redcap_event_name");col.first
+col.next=subset(col.names, !(col.names%in%col.first));col.next
+colFixed=append(col.first, col.next, after=length(col.first));colFixed
+dt4=setcolorder(dt3, colFixed)
+names(dt4);head(dt4)
+
+# drop baby_dob & days2_cut
+dt4$baby_dob <- NULL 
+dt4$day2_cut <- NULL 
+dt5=dt4
+
+# export data
+#-------------
+batchSize=10000; # number of rows in single output file
+data.file.name.export=as.character(dt5[2,2]);data.file.name.export
+
+chunks=split(dt5, floor(0:(nrow(dt5)-1)/batchSize))
+for (i in 1:length(chunks))
+{ # second loop
+  write.table(chunks[[i]],paste0(out.dir,data.file.name.export,i,'.csv'),row.names=F, sep=";")
+} # end second loop
+
+# drop un-needed objects
+rm(chunks, dat.new, dt, dt3, dt4, dt5, mdata.d, mom.script.dat, newdata, newdata3, mom.baby.script, )
+
+# **************************************************************************** #
+# ***************                mom_medications_ip 1 & 2                                             
+# **************************************************************************** #
+
+# mom_medications_ip 
+#-----------------
+# rows: 1107716
+# cols: 4
+# unique id: 9239
+# repeat: 11205
+# ICD9/10: NA
+
+# read data1
+mom.medip1.dat=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Mom IP Medications", range = NULL, col_names = TRUE,
+                         col_types = NULL, na = "", trim_ws = TRUE, skip = 0, n_max = Inf,
+                         guess_max = min(1000, n_max));mom.medip1.dat
+
+# read data2
+mom.medip2.dat=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Mom IP Medications(1)", range = NULL, col_names = TRUE,
+                         col_types = NULL, na = "", trim_ws = TRUE, skip = 0, n_max = Inf,
+                         guess_max = min(1000, n_max));mom.medip2.dat
+
+# combine datasets
+mom.meds.dat=bind_rows(mom.medip1.dat,mom.medip2.dat);mom.meds.dat
+
+# rename
+newdata=rename(mom.meds.dat, mom_id = `Mom ID`, mom_medip_date6=`Taken Datetime`, mom_prenat_medip6=Medication, mom_prenat_med_act6=`MAR Action`)
+head(newdata)
+
+# merge
+mom.baby.meds <- left_join(newdata, mom.baby.merge, by = c('mom_id'));dim(mom.baby.meds) # 16607
+head(mom.baby.meds)
+
+# rename: mom_id
+mom.baby.meds=rename(mom.baby.meds, mom_id6 = mom_id)
+names(mom.baby.meds); head(mom.baby.meds)
+
+# days_to variable(s)
+mom.baby.meds$days2_prenatal_medip4=as.Date(mom.baby.meds$mom_medip_date6,format="%Y-%m-%d")-as.Date(mom.baby.meds$baby_dob,format="%Y-%m-%d")
+head(mom.baby.meds);names(mom.baby.meds)
+
+# dplyr for data wrangle
+#----------------------
+dat.new=mom.baby.meds %>%
+  group_by(part_id) %>%
+  mutate(day2_cut=ifelse(days2_prenatal_medip4 >= -365 & days2_prenatal_medip4<=0, 1, 0));head(dat.new);names(dat.new)
+
+# subset
+mdata.d=subset(dat.new, day2_cut==1);dim(mdata.d) # 4879
+head(mdata.d)
+
+# redcap_repeat_instrument
+newdata3=mdata.d
+newdata3$redcap_repeat_instrument="mom_baby_prenatal_med_ip"
+names(newdata3);head(newdata3)
+
+# create "redcap_repeat_instance" variable
+dt <- as.data.table(newdata3)            
+setkeyv(dt, c("mom_id6","mom_medip_date6"))  
+dt3 <- dt[, redcap_repeat_instance := seq_len(.N), by = "mom_id6"]        
+head(dt3); range(dt3$redcap_repeat_instance) 
+max(unique(dt3$redcap_repeat_instance)) # 6984
+table(dt3$redcap_repeat_instance)
+
+# create "redcap_event_name" variable
+dt3$redcap_event_name=paste("visit_",dt3$redcap_repeat_instance,"_arm_1",sep="")
+head(dt3)
+unique(dt3$redcap_event_name)
+names(dt3);head(dt3)
+
+# characters
+dt3$mom_prenat_medip6=gsub(" ","_",dt3$mom_prenat_medip6) 
+head(dt3)
+
+# order columns for export
+col.names=names(dt3);col.names
+col.first=c("part_id","redcap_repeat_instrument","redcap_repeat_instance","redcap_event_name");col.first
+col.next=subset(col.names, !(col.names%in%col.first));col.next
+colFixed=append(col.first, col.next, after=length(col.first));colFixed
+dt4=setcolorder(dt3, colFixed)
+names(dt4);head(dt4)
+
+# drop baby_dob & days2_cut
+dt4$baby_dob <- NULL 
+dt4$day2_cut <- NULL 
+dt5=dt4
+
+# export data
+#-------------
+batchSize=10000; # number of rows in single output file
+data.file.name.export=as.character(dt5[2,2]);data.file.name.export
+
+chunks=split(dt5, floor(0:(nrow(dt5)-1)/batchSize))
+for (i in 1:length(chunks))
+{ # second loop
+  write.table(chunks[[i]],paste0(out.dir,data.file.name.export,i,'.csv'),row.names=F, sep=";")
+} # end second loop
