@@ -18,9 +18,9 @@
 # location="Dominick";location
 
 # Directory Locations
-work.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\raw_data\\",sep="");work.dir
-data.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\raw_data\\",sep="");data.dir
-out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\03_redcap_import_Jan18\\",sep="");out.dir
+work.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\02_Projects\\UFHEALTH\\RedCap\\redcap_import\\raw_data\\",sep="");work.dir
+data.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\02_Projects\\UFHEALTH\\RedCap\\redcap_import\\raw_data\\",sep="");data.dir
+out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\02_Projects\\UFHEALTH\\RedCap\\redcap_import\\redcap_import_Jan18\\",sep="");out.dir
 
 # Set Working Directory
 setwd(work.dir)
@@ -114,7 +114,7 @@ n_max=10000
 data.file.name="Mom Prenatals.xlsx";data.file.name
 
 # **************************************************************************** #
-# ***************                mom_demography                                              
+# ***************                linked_mom_demography                                              
 # **************************************************************************** #
 
 # Note: import maternal demography and merge with "mom.baby.merge"
@@ -125,7 +125,7 @@ mom.dat=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Mom", range = 
                   guess_max = min(1000, n_max));mom.dat
 
 # rename
-newdata.mom=rename(mom.dat, mom_id=`Mom-Id`, mom_race2=Race, mom_ethnicity2=Ethnicity)
+newdata.mom=rename(mom.dat, mom_id=`Mom-Id`, mom_race_link=Race, mom_ethnicity_link=Ethnicity)
 names(newdata.mom); head(newdata.mom)
 
 # merge
@@ -133,7 +133,7 @@ mom.baby.demo <- left_join(mom.baby.merge, newdata.mom, by = c('mom_id'));dim(mo
 
 # redcap_repeat_instrument
 newdata3=mom.baby.demo
-newdata3$redcap_repeat_instrument="mom_baby_demography"
+newdata3$redcap_repeat_instrument="linked_mom_demography"
 names(newdata3); head(newdata3)
 
 # create "redcap_repeat_instance" variable
@@ -174,10 +174,10 @@ for (i in 1:length(chunks))
 } # end second loop
 
 # drop un-needed objects
-rm(dt,dt5, dt3, dt4, mom.baby.demo, mom.dat, newdata.mom, newdata3)
+rm(chunks, dt,dt5, dt3, dt4, mom.baby.demo, mom.dat, newdata.mom, newdata3)
 
 # **************************************************************************** #
-# ***************                mom_prenatal_apt                                               
+# ***************                linked_mom_prenatal_apt                                               
 # **************************************************************************** #
 
 # Note: import maternal prenatal_apt and merge with "mom.baby.merge"
@@ -188,7 +188,7 @@ prenat.dat=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Prenatals b
                      guess_max = min(1000, n_max));prenat.dat
 
 # rename
-newdata=rename(prenat.dat, mom_id = `Mom ID`, mom_prenat_apt_date2= `Appt Time`, mom_prenat_enc_type2= `Enc Type`,mom_prenat_ht2=Height, mom_prenat_wt_oz2=Weight)
+newdata=rename(prenat.dat, mom_id = `Mom ID`, mom_prenat_apt_date_link= `Appt Time`, mom_prenat_enc_type_link= `Enc Type`,mom_prenat_ht_link=Height, mom_prenat_wt_oz_link=Weight)
 names(newdata); head(newdata)
 
 # merge
@@ -196,18 +196,18 @@ mom.baby.visits <- left_join(newdata, mom.baby.merge, by = c('mom_id'));dim(mom.
 head(mom.baby.visits)
 
 # rename: mom_id
-mom.baby.visits.2=rename(mom.baby.visits, mom_id2 = mom_id)
+mom.baby.visits.2=rename(mom.baby.visits, mom_id3 = mom_id)
 names(mom.baby.visits.2); head(mom.baby.visits.2)
 
 # days_to variable(s)
-mom.baby.visits.2$days2_prenatal_apt=as.Date(mom.baby.visits.2$mom_prenat_apt_date2,format="%Y-%m-%d")-as.Date(mom.baby.visits.2$baby_dob,format="%Y-%m-%d")
+mom.baby.visits.2$days2_prenatal_apt_link=as.Date(mom.baby.visits.2$mom_prenat_apt_date_link,format="%Y-%m-%d")-as.Date(mom.baby.visits.2$baby_dob,format="%Y-%m-%d")
 head(mom.baby.visits.2);names(mom.baby.visits.2)
 
 # dplyr for data wrangle
 #----------------------
 dat.new=mom.baby.visits.2 %>%
   group_by(part_id) %>%
-    mutate(day2_cut=ifelse(days2_prenatal_apt >= -365 & days2_prenatal_apt<=0, 1, 0));head(dat.new);names(dat.new)
+    mutate(day2_cut=ifelse(days2_prenatal_apt_link >= -365 & days2_prenatal_apt_link<=0, 1, 0));head(dat.new);names(dat.new)
 
 # subset
 mdata.d=subset(dat.new, day2_cut==1);dim(mdata.d) # 32124
@@ -215,13 +215,13 @@ head(mdata.d)
 
 # redcap_repeat_instrument
 newdata3=mdata.d
-newdata3$redcap_repeat_instrument="mom_baby_prenatal_apt"
+newdata3$redcap_repeat_instrument="linked_mom_prenatal_apt"
 names(newdata3); head(newdata3)
 
 # create "redcap_repeat_instance" variable
 dt <- as.data.table(newdata3)            
-setkeyv(dt, c("mom_id2","mom_prenat_apt_date2"))  
-dt3 <- dt[, redcap_repeat_instance := seq_len(.N), by = "mom_id2"]        
+setkeyv(dt, c("mom_id3","mom_prenat_apt_date_link"))  
+dt3 <- dt[, redcap_repeat_instance := seq_len(.N), by = "mom_id3"]        
 head(dt3); range(dt3$redcap_repeat_instance) 
 max(unique(dt3$redcap_repeat_instance)) # 82
 table(dt3$redcap_repeat_instance)
@@ -241,20 +241,20 @@ dt4=setcolorder(dt3, colFixed)
 names(dt4);head(dt4)
 
 # compute "mom_prenat_ht_inch"
-dt4$tmp=dt4$mom_prenat_ht2
+dt4$tmp=dt4$mom_prenat_ht_link
 dt4$tmp=gsub("'"," ",dt4$tmp)
 dt4$tmp=gsub('"'," ",dt4$tmp)
 dt4$tmp=trimws(dt4$tmp, "b") 
 dt4$tmp=gsub('  '," ",dt4$tmp)
-dt4$mom_prenat_ht_inch2=sapply(strsplit(as.character(dt4$tmp)," "), function(x){12*as.numeric(x[1]) + as.numeric(x[2])})
+dt4$mom_prenat_ht_inch_link=sapply(strsplit(as.character(dt4$tmp)," "), function(x){12*as.numeric(x[1]) + as.numeric(x[2])})
 dt4=dt4[,-c("tmp")]
 
 # compute "mom_prenat_wt_lb"
-dt4$mom_prenat_wt_lb2=dt4$mom_prenat_wt_oz2/16
+dt4$mom_prenat_wt_lb_link=dt4$mom_prenat_wt_oz_link/16
 
 # format "mom_prenat_ht"
-dt4$mom_prenat_ht2=paste0("&",dt4$mom_prenat_ht2,"&")
-dt4$mom_prenat_ht2=gsub(" ","_",dt4$mom_prenat_ht2) 
+dt4$mom_prenat_ht_link=paste0("&",dt4$mom_prenat_ht_link,"&")
+dt4$mom_prenat_ht_link=gsub(" ","_",dt4$mom_prenat_ht_link) 
 head(dt4)
 
 # drop baby_dob & days2_cut
@@ -285,7 +285,7 @@ n_max=10000
 data.file.name="Mom Medications.xlsx";data.file.name
 
 # **************************************************************************** #
-# ***************                mom_antibiotics_ip                                              
+# ***************                linked_mom_antibiotics_ip                                              
 # **************************************************************************** #
 
 # mom_antibiotics_ip
@@ -302,7 +302,7 @@ mom.abxip.dat=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Mom Anti
                         guess_max = min(1000, n_max));mom.abxip.dat
 
 # rename
-newdata=rename(mom.abxip.dat, mom_id = `Mom ID`, mom_prenat_abxip_date3=`Taken Datetime`,mom_prenat_abxip_action3= `MAR Action`, mom_prenat_abxip3=Antibiotics)
+newdata=rename(mom.abxip.dat, mom_id = `Mom ID`, mom_prenat_abxip_date_link=`Taken Datetime`,mom_prenat_abxip_action_link= `MAR Action`, mom_prenat_abxip_link=Antibiotics)
 head(newdata)
 
 # merge
@@ -310,18 +310,18 @@ mom.baby.abxip <- left_join(newdata, mom.baby.merge, by = c('mom_id'));dim(mom.b
 head(mom.baby.abxip)
 
 # rename: mom_id
-mom.baby.abxip=rename(mom.baby.abxip, mom_id3 = mom_id)
+mom.baby.abxip=rename(mom.baby.abxip, mom_id4 = mom_id)
 names(mom.baby.abxip); head(mom.baby.abxip)
 
 # days_to variable(s)
-mom.baby.abxip$days2_prenatal_abxip3=as.Date(mom.baby.abxip$mom_prenat_abxip_date3,format="%Y-%m-%d")-as.Date(mom.baby.abxip$baby_dob,format="%Y-%m-%d")
+mom.baby.abxip$days2_prenatal_abxip_link=as.Date(mom.baby.abxip$mom_prenat_abxip_date_link,format="%Y-%m-%d")-as.Date(mom.baby.abxip$baby_dob,format="%Y-%m-%d")
 head(mom.baby.abxip);names(mom.baby.abxip)
 
 # dplyr for data wrangle
 #----------------------
 dat.new=mom.baby.abxip %>%
   group_by(part_id) %>%
-  mutate(day2_cut=ifelse(days2_prenatal_abxip3 >= -365 & days2_prenatal_abxip3<=0, 1, 0));head(dat.new);names(dat.new)
+  mutate(day2_cut=ifelse(days2_prenatal_abxip_link >= -365 & days2_prenatal_abxip_link<=0, 1, 0));head(dat.new);names(dat.new)
 
 # subset
 mdata.d=subset(dat.new, day2_cut==1);dim(mdata.d) # 13046
@@ -329,13 +329,13 @@ head(mdata.d)
 
 # redcap_repeat_instrument
 newdata3=mdata.d
-newdata3$redcap_repeat_instrument="mom_baby_antibiotics_ip"
+newdata3$redcap_repeat_instrument="linked_mom_antibiotics_ip"
 names(newdata3); head(newdata3)
 
 # create "redcap_repeat_instance" variable
 dt <- as.data.table(newdata3)            
-setkeyv(dt, c("mom_id3","mom_prenat_abxip_date3"))  
-dt3 <- dt[, redcap_repeat_instance := seq_len(.N), by = "mom_id3"]        
+setkeyv(dt, c("mom_id4","mom_prenat_abxip_date_link"))  
+dt3 <- dt[, redcap_repeat_instance := seq_len(.N), by = "mom_id4"]        
 head(dt3); range(dt3$redcap_repeat_instance) 
 max(unique(dt3$redcap_repeat_instance)) # 438
 table(dt3$redcap_repeat_instance)
@@ -347,8 +347,8 @@ unique(dt3$redcap_event_name)
 names(dt3);head(dt3)
 
 # characters
-dt3$mom_prenat_abxip3=gsub(" ","_",dt3$mom_prenat_abxip3) 
-dt3$mom_prenat_abxip3=gsub(",","&",dt3$mom_prenat_abxip3) 
+dt3$mom_prenat_abxip_link=gsub(" ","_",dt3$mom_prenat_abxip_link) 
+dt3$mom_prenat_abxip_link=gsub(",","&",dt3$mom_prenat_abxip_link) 
 head(dt3)
 
 # order columns for export
@@ -379,7 +379,7 @@ for (i in 1:length(chunks))
 rm(chunks, dat.new, dt, dt3, dt4, dt5, mdata.d, mom.baby.abxip, newdata, newdata3, mom.abxip.dat)
 
 # **************************************************************************** #
-# ***************                mom_antibiotics_rx                                              
+# ***************                linked_mom_prenatal_abx_rx                                              
 # **************************************************************************** #
 
 # mom_antibiotics_rx
@@ -396,7 +396,7 @@ mom.abxscript.dat=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Mom 
                             guess_max = min(1000, n_max));mom.abxscript.dat
 
 # rename
-newdata=rename(mom.abxscript.dat, mom_id = `Mom ID`, mom_prenat_abxrx_date4=`Order Datetime`, mom_prenat_abxrx4=Antibiotics)
+newdata=rename(mom.abxscript.dat, mom_id = `Mom ID`, mom_prenat_abxrx_date_link=`Order Datetime`, mom_prenat_abxrx_link=Antibiotics)
 head(newdata)
 
 # merge
@@ -404,18 +404,18 @@ mom.baby.abxrx <- left_join(newdata, mom.baby.merge, by = c('mom_id'));dim(mom.b
 head(mom.baby.abxrx)
 
 # rename: mom_id
-mom.baby.abxrx=rename(mom.baby.abxrx, mom_id4 = mom_id)
+mom.baby.abxrx=rename(mom.baby.abxrx, mom_id5 = mom_id)
 names(mom.baby.abxrx); head(mom.baby.abxrx)
 
 # days_to variable(s)
-mom.baby.abxrx$days2_prenatal_abxrx4=as.Date(mom.baby.abxrx$mom_prenat_abxrx_date4,format="%Y-%m-%d")-as.Date(mom.baby.abxrx$baby_dob,format="%Y-%m-%d")
+mom.baby.abxrx$days2_prenatal_abxrx_link=as.Date(mom.baby.abxrx$mom_prenat_abxrx_date_link,format="%Y-%m-%d")-as.Date(mom.baby.abxrx$baby_dob,format="%Y-%m-%d")
 head(mom.baby.abxrx);names(mom.baby.abxrx)
 
 # dplyr for data wrangle
 #----------------------
 dat.new=mom.baby.abxrx %>%
   group_by(part_id) %>%
-  mutate(day2_cut=ifelse(days2_prenatal_abxrx4 >= -365 & days2_prenatal_abxrx4<=0, 1, 0));head(dat.new);names(dat.new)
+  mutate(day2_cut=ifelse(days2_prenatal_abxrx_link >= -365 & days2_prenatal_abxrx_link<=0, 1, 0));head(dat.new);names(dat.new)
 
 # subset
 mdata.d=subset(dat.new, day2_cut==1);dim(mdata.d) # 4879
@@ -423,13 +423,13 @@ head(mdata.d)
 
 # redcap_repeat_instrument
 newdata3=mdata.d
-newdata3$redcap_repeat_instrument="mom_baby_prenatal_abx_rx"
+newdata3$redcap_repeat_instrument="linked_mom_prenatal_abx_rx"
 names(newdata3);head(newdata3)
 
 # create "redcap_repeat_instance" variable
 dt <- as.data.table(newdata3)            
-setkeyv(dt, c("mom_id4","mom_prenat_abxrx_date4"))  
-dt3 <- dt[, redcap_repeat_instance := seq_len(.N), by = "mom_id4"]        
+setkeyv(dt, c("mom_id5","mom_prenat_abxrx_date_link"))  
+dt3 <- dt[, redcap_repeat_instance := seq_len(.N), by = "mom_id5"]        
 head(dt3); range(dt3$redcap_repeat_instance) 
 max(unique(dt3$redcap_repeat_instance)) # 22
 table(dt3$redcap_repeat_instance)
@@ -441,7 +441,7 @@ unique(dt3$redcap_event_name)
 names(dt3);head(dt3)
 
 # characters
-dt3$mom_prenat_abxrx4=gsub(" ","_",dt3$mom_prenat_abxrx4) 
+dt3$mom_prenat_abxrx_link=gsub(" ","_",dt3$mom_prenat_abxrx_link) 
 head(dt3)
 
 # order columns for export
@@ -472,7 +472,7 @@ for (i in 1:length(chunks))
 rm(chunks, dat.new, dt, dt3, dt4, dt5, mdata.d, mom.baby.abxip, newdata, newdata3, mom.abxscript.dat, mom.baby.abxrx)
 
 # **************************************************************************** #
-# ***************                mom_medications_rx                                              
+# ***************                linked_mom_prental_meds_rx                                              
 # **************************************************************************** #
 
 # mom_medications_rx
@@ -489,7 +489,7 @@ mom.script.dat=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "Mom Pre
                          guess_max = min(1000, n_max));mom.script.dat
 
 # rename
-newdata=rename(mom.script.dat, mom_id = `Mom ID`, mom_med_rx_date5=`Order Datetime`, mom_prenat_med_rx5=Medication)
+newdata=rename(mom.script.dat, mom_id = `Mom ID`, mom_med_rx_date_link=`Order Datetime`, mom_prenat_med_rx_link=Medication)
 head(newdata)
 
 # merge
@@ -497,18 +497,18 @@ mom.baby.script <- left_join(newdata, mom.baby.merge, by = c('mom_id'));dim(mom.
 head(mom.baby.script)
 
 # rename: mom_id
-mom.baby.script=rename(mom.baby.script, mom_id5 = mom_id)
+mom.baby.script=rename(mom.baby.script, mom_id6 = mom_id)
 names(mom.baby.script); head(mom.baby.script)
 
 # days_to variable(s)
-mom.baby.script$days2_prenat_med_rx5=as.Date(mom.baby.script$mom_med_rx_date5,format="%Y-%m-%d")-as.Date(mom.baby.script$baby_dob,format="%Y-%m-%d")
+mom.baby.script$days2_prenat_med_rx_link=as.Date(mom.baby.script$mom_med_rx_date_link,format="%Y-%m-%d")-as.Date(mom.baby.script$baby_dob,format="%Y-%m-%d")
 head(mom.baby.script);names(mom.baby.script)
 
 # dplyr for data wrangle
 #----------------------
 dat.new=mom.baby.script %>%
   group_by(part_id) %>%
-  mutate(day2_cut=ifelse(days2_prenat_med_rx5 >= -365 & days2_prenat_med_rx5<=0, 1, 0));head(dat.new);names(dat.new)
+  mutate(day2_cut=ifelse(days2_prenat_med_rx_link >= -365 & days2_prenat_med_rx_link<=0, 1, 0));head(dat.new);names(dat.new)
 
 # subset
 mdata.d=subset(dat.new, day2_cut==1);dim(mdata.d) # 13046
@@ -516,13 +516,13 @@ head(mdata.d)
 
 # redcap_repeat_instrument
 newdata3=mdata.d
-newdata3$redcap_repeat_instrument="mom_baby_prental_meds_rx"
+newdata3$redcap_repeat_instrument="linked_mom_prental_meds_rx"
 names(newdata3); head(newdata3)
 
 # create "redcap_repeat_instance" variable
 dt <- as.data.table(newdata3)            
-setkeyv(dt, c("mom_id3","mom_med_rx_date5"))  
-dt3 <- dt[, redcap_repeat_instance := seq_len(.N), by = "mom_id5"]        
+setkeyv(dt, c("mom_id6","mom_med_rx_date_link"))  
+dt3 <- dt[, redcap_repeat_instance := seq_len(.N), by = "mom_id6"]        
 head(dt3); range(dt3$redcap_repeat_instance) 
 max(unique(dt3$redcap_repeat_instance)) # 22
 table(dt3$redcap_repeat_instance)
@@ -534,7 +534,7 @@ unique(dt3$redcap_event_name)
 names(dt3);head(dt3)
 
 # characters
-dt3$mom_prenat_med_rx5=gsub(" ","_",dt3$mom_prenat_med_rx5) 
+dt3$mom_prenat_med_rx_link=gsub(" ","_",dt3$mom_prenat_med_rx_link) 
 head(dt3)
 
 # order columns for export
@@ -565,7 +565,7 @@ for (i in 1:length(chunks))
 rm(chunks, dat.new, dt, dt3, dt4, dt5, mdata.d, mom.script.dat, newdata, newdata3, mom.baby.script, )
 
 # **************************************************************************** #
-# ***************                mom_medications_ip 1 & 2                                             
+# ***************                mom_medications_ip 1 & 2 (start here, name changes)                                            
 # **************************************************************************** #
 
 # mom_medications_ip 
