@@ -8,7 +8,7 @@
 # IRB:
 # Description: Data management for link mom-baby data extracted from RedCap. 
 # Data: C:\Users\Dominick\Dropbox (UFL)\IRB\UF\UFHealth\redcap_export
-# Analysis: Curate data for mode of delivery and infant outcomes
+# Analysis: Curate data for maternal prenatal visits
 
 # **************************************************************************** #
 # ***************                Directory Variables           *************** #
