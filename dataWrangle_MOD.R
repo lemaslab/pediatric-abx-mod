@@ -64,13 +64,14 @@ str(dat.s)
 
 # subset to include only babies 
 test=is.na(dat.s$delivery_mode);test[1:30]
-which(is.na(newdata$baby_birth_wt_gr))
+which(is.na(dat.s$baby_birth_wt_gr))
 newdata <- subset(dat.s, is.na(dat.s$delivery_mode)=='FALSE' & is.na(dat.s$baby_birth_wt_gr)=="FALSE")
 head(newdata)
 
 # format data
 newdata$part_id=as.character(newdata$part_id)
 newdata$delivery_mode=as.character(newdata$delivery_mode)
+str(newdata)
 
 # recode variables
 unique(newdata$delivery_mode) # how many unique entries for MOD; 24 (below)
@@ -105,6 +106,7 @@ newdata$mod=ifelse(newdata$delivery_mode=="Vaginal&_Breech","vaginal",newdata$mo
 newdata$mod=ifelse(newdata$delivery_mode=="Extramural_Delivery",NA,newdata$mod)
 newdata$mod=ifelse(newdata$delivery_mode=="Other",NA,newdata$mod)
 head(newdata) # did recode work? yes
+unique(newdata$mod)
 
 # what does distribution of c-section vs vaginal delivery
 table(newdata$mod)
@@ -119,10 +121,10 @@ newdata$mod1=ifelse(newdata$mod=="vaginal",1,newdata$mod)
 newdata$mod1=ifelse(newdata$mod=="c-section",2,newdata$mod1)
 newdata$mod1=as.factor(newdata$mod1)
 head(newdata)
-t.test(newdata$mod1, newdata$baby_birth_wt_gr, na.rm=TRUE)
+t.test(newdata$mod1, newdata$baby_birth_wt_gr, na.action=na.omit)
 
 hist(newdata$baby_birth_wt_gr)
-boxplot(newdata$mod1,newdata$baby_birth_wt_gr)
+boxplot(newdata$baby_birth_wt_gr~newdata$mod1)
 
 ### need to consider gestational age, LOS in NICU
 
