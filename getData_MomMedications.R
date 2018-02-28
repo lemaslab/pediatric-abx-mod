@@ -106,6 +106,9 @@ dt4=setcolorder(dt3, colFixed)
 names(dt4);head(dt4)
 dt5=dt4
 
+# what are unique medications?
+unique(dt5$mom_prenat_abxip)
+
 # export data
 #-------------
 batchSize=10000; # number of rows in single output file
@@ -181,6 +184,9 @@ colFixed=append(col.first, col.next, after=length(col.first));colFixed
 dt4=setcolorder(dt3, colFixed)
 names(dt4);head(dt4)
 dt5=dt4
+
+# what are unique medications?
+unique(dt5$mom_prenat_abxrx)
 
 # export data
 #-------------
@@ -266,6 +272,10 @@ dt4=setcolorder(dt3, colFixed)
 names(dt4);head(dt4)
 dt5=dt4
 
+# what are unique medications?
+temp=unique(dt5$mom_prenat_medip);temp
+# write.csv(temp, file="prenatal_medications_ip.csv")
+
 # export data
 #-------------
 batchSize=10000; # number of rows in single output file
@@ -341,6 +351,10 @@ colFixed=append(col.first, col.next, after=length(col.first));colFixed
 dt4=setcolorder(dt3, colFixed)
 names(dt4);head(dt4)
 dt5=dt4
+
+# what are unique medications?
+temp=unique(dt5$mom_prenat_med_rx);temp
+# write.csv(temp, file="prenatal_medications_rx.csv")
 
 # export data
 #-------------
