@@ -99,18 +99,30 @@ dat.s1 %>%
 
 
 df2=data.frame(
-  id = c(1, 1, 1, 1, 1, 2, 2, 3, 4),
-  date = c("2015-01-01", 
-           "2015-01-01", 
-           "2015-01-05", 
-           "2015-01-25",
-           "2015-02-15",
-           "2015-05-05", 
-           "2015-01-01", 
-           "2015-08-01", 
-           "2015-01-01"),
-  n_widgets = c(1,2,3,4,4,5,2,4,5)
-)
+  id = c(01,01,01,01,01,02,02,03,04),
+  date = c("2015-01-01 11:00", 
+           "2015-01-06 13:29", 
+           "2015-01-10 12:46", 
+           "2015-01-25 14:45",
+           "2015-02-15 13:30",
+           "2015-01-01 10:00",
+           "2015-05-05 15:20",
+           "2015-01-01 15:19",
+           "2015-08-01 13:15"),
+  abx = c("AMPICILLIN","ERYTHROMYCIN","NEOMYCIN","AMPICILLIN","VANCOMYCIN","VANCOMYCIN","NEOMYCIN","PENICILLIN","ERYTHROMYCIN"));df2
+
+
+id             date          abx    episode
+1  1 2015-01-01 11:00   AMPICILLIN  1 
+2  1 2015-01-06 13:29 ERYTHROMYCIN  1
+3  1 2015-01-10 12:46     NEOMYCIN  1
+4  1 2015-01-25 14:45   AMPICILLIN  2
+5  1 2015-02-15 13:30   VANCOMYCIN  3
+6  2 2015-01-01 10:00   VANCOMYCIN  
+7  2 2015-05-05 15:20     NEOMYCIN
+8  3 2015-01-01 15:19   PENICILLIN
+9  4 2015-08-01 13:15 ERYTHROMYCIN
+
 
 df_full<- df2 %>%
   mutate(date=as.Date(date))  %>%
