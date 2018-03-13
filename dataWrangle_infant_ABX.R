@@ -55,13 +55,31 @@ head(dat); str(dat); names(dat)
 abx.op=unique(dat$baby_meds);abx.op
 abx.ip=unique(dat$baby_med_ip);abx.ip
 
-# episode calculation
-dat.s=dat[,c(1,13:15)]
+# episode calculation (remove abx names for moment)
+dat.s=dat[,c(1,14:15)]
 head(dat.s)
 
 # drop NA observations
 dat.s1=subset(dat.s, is.na(days2_baby_meds_ip)==F)
 head(dat.s1)
+
+# compute episode variable
+head(dat.s1)
+dat2=dat.s1 %>%
+  group_by(part_id) %>%
+  mutate(date = as.Date(baby_med_ip_date, format="%m/%d/%Y")) %>%
+  mutate(temp1=first(date)) %>%
+  
+
+head(dat2)
+
+  mutate(episode = date %>% as.Date %>% as.numeric) %>%
+  ungroup
+
+dat2$date.new=ifelse(first(dat2$date), 1, NA)
+
+
+
 
 # mock data
 df2=data.frame(
