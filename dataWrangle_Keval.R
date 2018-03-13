@@ -43,11 +43,6 @@ library(reshape2)
 
 # UFHealth_EHR_MomBaby_Prenatal_16Jan18.csv
 #-----------------
-# rows: 
-# cols:  
-# unique id: 
-# repeat: 
-# ICD9/10: 
 
 #Read Data
 data.file.name="UFHealth_EHR_MomBaby_Prenatal_16Jan18.csv";data.file.name
