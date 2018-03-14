@@ -67,31 +67,29 @@ dat.s2=dat.s1[c(1:1000),c(1:2)];dat.s2
 head(dat.s2)
 dat.s2[1:30,]
 dat.s2$baby_med_ip_date=as.character(dat.s2$baby_med_ip_date)
-str(dat.s2)
+str(dat.s2);head(dat.s2)
+
+# test data
+test=dat.s2 %>%
+  mutate(baby_med_ip_date=dplyr::recode(baby_med_ip_date,"2/16/2013 12:46"="2/28/2013 12:46",
+                                                        "6/2/2011 14:30"="6/10/2011 14:30",
+                                                         "6/3/2011 2:30"="6/28/2011 2:30"))
+head(test)
+test[1:10,]
 
 # compute episode variable
 head(dat.s2)
-dat2=dat.s2 %>%
+dat2=test %>%
   group_by(part_id) %>%
   mutate(date = as.Date(baby_med_ip_date, format="%m/%d/%Y")) %>%
-  mutate(temp1=first(date)) %>%
-  mutate(temp2=ifelse(date%in%temp1,1,NA)) %>%
-  mutate(lag.date = dplyr::lag(date, n=1, default = NA)) %>%
-  mutate(tim.dif=as.numeric(date-lag.date)) 
-  dat2$episode=1
-
-dat3=as.data.frame(dat2);str(dat3)
-dat4=dat3 %>%
-  mutate(time.diff.new=ifelse(tim.dif=="NA",1,tim.dif))
-  mutate(episode=ifelse(temp2==1,1,ifelse(temp3<7, dplyr::lag(temp2), temp2+1)))
-head(dat4)
-
-mutate(temp1=first(date)) %>%
-  -  mutate(temp2=ifelse(date%in%temp1,1,NA))
-
-mutate(temp2=ifelse(date%in%temp1,1,NA)) 
-
-head(dat2)
+  mutate(date1=first(date)) %>%
+  mutate(temp2=ifelse(date%in%date1,1,NA)) %>%
+  mutate(lag.date = dplyr::lag(date, n=1, default=NA)) %>%
+  mutate(dif=as.numeric(date-lag.date)) %>%
+  mutate(diff.2=if_else(dif>0,dif,0,missing=0)) %>%
+  mutate(ep=if_else(diff.2<7,1,diff.2)) %>%
+  mutate(ep2=if_else(ep>1,dplyr::lag(ep2+1),ep));dat2
+  
 
 # write.csv(dat2, file="test.csv")
 dat2=newdata
