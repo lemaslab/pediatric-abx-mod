@@ -86,15 +86,38 @@ dat2=test %>%
   mutate(temp2=ifelse(date%in%date1,1,NA)) %>%
   mutate(lag.date = dplyr::lag(date, n=1, default=NA)) %>%
   mutate(dif=as.numeric(date-lag.date)) %>%
+  select(part_id,date,lag.date,dif) %>%
   mutate(diff.2=if_else(dif>0,dif,0,missing=0)) %>%
-  mutate(ep=if_else(diff.2<7,1,diff.2)) %>%
-  mutate(ep2=if_else(ep>1,dplyr::lag(ep2+1),ep));dat2
+  mutate(ep.logic=if_else(diff.2<7,TRUE,FALSE)) %>%
+  #add_tally(ep.logic==F) %>%
+  mutate(ep=1) %>%
+  #mutate(ep1=if_else(diff.2==0,ep,dplyr::lag(ep+1))) %>%
+  mutate
+  mutate(count=)
+  mutate(ep2=if_else(ep1==2,seq(0,10,by=1),ep1))
   
+dat3=dat2 %>%
+  group_by(part_id,ep1) %>%
+  mutate(count = seq(n()))
+  
+  add_tally(ep.logic==F) %>%
+  mutate(ep1=if_else(ep.1==0,dplyr::lag(ep.1+1),ep.1));dat2
 
 # write.csv(dat2, file="test.csv")
 dat2=newdata
 dat3=subset(dat2, part_id=="Baby-0141")
 dat4=dat3[95:110,]
+
+data <- data.frame(v = c(1,1,1,2,2,2,2,3,4,4))
+data %>%
+  group_by(v) %>%
+  #mutate(v.counter = row_number())
+ mutate(cumsum = cumsum(v))
+
+OrderHistory %>%
+  group_by(customer,item) %>%
+  mutate(count = seq(n()))
+
 
 dat2=dat4
 
