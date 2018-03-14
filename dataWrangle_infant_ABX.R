@@ -1,6 +1,3 @@
-
-# this is a test
-
 ##-------------- 
 # **************************************************************************** #
 # ***************                Project Overview              *************** #
@@ -67,6 +64,9 @@ dat.s1=subset(dat.s, is.na(days2_baby_meds_ip)==F)
 head(dat.s1)
 dat.s2=dat.s1[c(1:1000),c(1:3)];dat.s2
 head(dat.s2)
+dat.s2[1:30,]
+dat.s2$baby_med_ip_date=as.character(dat.s2$baby_med_ip_date)
+str(dat.s2)
 
 # compute episode variable
 head(dat.s2)
@@ -74,24 +74,33 @@ dat2=dat.s2 %>%
   group_by(part_id) %>%
   mutate(date = as.Date(baby_med_ip_date, format="%m/%d/%Y")) %>%
   mutate(temp1=first(date)) %>%
-  mutate(temp2=ifelse(date%in%temp1,1,NA)) %>%
+  mutate(temp2=ifelse(date%in%temp1,1,NA)) 
+head(dat2)
+
+# write.csv(dat2, file="test.csv")
+dat2=newdata
+dat3=subset(dat2, part_id=="Baby-0141")
+dat4=dat3[95:110,]
+
+dat2=dat4
 
 # create index
 #-------------
-index=unique(as.character(dat2$part_id));index
 myIndex=length(index);myIndex
 i=3
 for (i in 1:length(index))
 { # second loop
   temp1=subset(dat2, part_id==index[i])
-  dates=as.Date(temp1$baby_med_ip_date,format="%m/%d/%Y")
+  # dates=as.Date(temp1$baby_med_ip_date,format="%Y-%m-%d")
+  dates=aindex=unique(as.character(dat2$part_id));index
+s.Date(temp1$baby_med_ip_date,format="%m/%d/%Y") # real data
   obs=length(dates)
-  for (j in 1:length(dates)){
-    start_date=dates[j]
+  for(j in 1:length(dat4$baby_med_ip_date)){
+    start_date=dat4$baby_med_ip_date[j]
     past_date=start_date-7
     #future_date=start_date+7
     date_range=seq(past_date, start_date, by="days")
-    dat2$episode=ifelse(start_date%in%date_range,dat2$temp2,dat2$temp2+1)
+    temp1$episode=ifelse(date[j]%in%date_range,temp1$temp2,temp1$temp2+1)
   }
 } # end second loop
 
@@ -110,7 +119,7 @@ df2=data.frame(
   id = c("A1","A2","A2","A3","A3","A3","A3","A3","A3","A3","A3"),
   date = c("2015-01-01 11:00", 
            "2015-01-05 13:29", 
-           "2015-01-10 12:46", 
+           "2015-01-25 12:46", 
            "2015-01-25 14:45",
            "2015-01-25 13:30",
            "2015-01-26 10:00",
@@ -120,6 +129,9 @@ df2=data.frame(
            "2015-02-08 13:15",
            "2015-02-25 13:15"),
   abx = c("AMPICILLIN","ERYTHROMYCIN","NEOMYCIN","AMPICILLIN","VANCOMYCIN","VANCOMYCIN","NEOMYCIN","PENICILLIN","ERYTHROMYCIN","NEOMYCIN","PENICILLIN"));df2
+newdata=rename(dat2, part_id = id, baby_med_ip_date=date, baby_med_ip=abx);newdata
+newdata$baby_med_ip_date=as.Date(newdata$baby_med_ip_date,format="%Y-%m-%d")
+
 
 # want
 id             date          abx     episode
