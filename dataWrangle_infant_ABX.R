@@ -73,8 +73,12 @@ head(dat.s2)
 dat2=dat.s2 %>%
   group_by(part_id) %>%
   mutate(date = as.Date(baby_med_ip_date, format="%m/%d/%Y")) %>%
-  mutate(temp1=first(date)) %>%
+  mutate(lag.date = dplyr::lag(date, n = 1, default = NA)) %>%
+  mutate(episode=ifelse(lag.date==NA,1,    ) %>%
   mutate(temp2=ifelse(date%in%temp1,1,NA)) 
+         
+mutate(temp2=ifelse(date%in%temp1,1,NA)) 
+
 head(dat2)
 
 # write.csv(dat2, file="test.csv")
