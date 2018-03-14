@@ -56,13 +56,14 @@ abx.op=unique(dat$baby_meds);abx.op
 abx.ip=unique(dat$baby_med_ip);abx.ip
 
 # episode calculation (remove abx names for moment)
-dat.s=dat[,c(1,15,13,14)]
+head(dat);names(dat)
+dat.s=dat[,c(1,15,14)]
 head(dat.s)
 
 # drop NA observations
 dat.s1=subset(dat.s, is.na(days2_baby_meds_ip)==F)
 head(dat.s1)
-dat.s2=dat.s1[c(1:1000),c(1:3)];dat.s2
+dat.s2=dat.s1[c(1:1000),c(1:2)];dat.s2
 head(dat.s2)
 dat.s2[1:30,]
 dat.s2$baby_med_ip_date=as.character(dat.s2$baby_med_ip_date)
@@ -73,10 +74,21 @@ head(dat.s2)
 dat2=dat.s2 %>%
   group_by(part_id) %>%
   mutate(date = as.Date(baby_med_ip_date, format="%m/%d/%Y")) %>%
-  mutate(lag.date = dplyr::lag(date, n = 1, default = NA)) %>%
-  mutate(episode=ifelse(lag.date==NA,1,    ) %>%
-  mutate(temp2=ifelse(date%in%temp1,1,NA)) 
-         
+  mutate(temp1=first(date)) %>%
+  mutate(temp2=ifelse(date%in%temp1,1,NA)) %>%
+  mutate(lag.date = dplyr::lag(date, n=1, default = NA)) %>%
+  mutate(tim.dif=as.numeric(date-lag.date)) 
+  dat2$episode=1
+
+dat3=as.data.frame(dat2);str(dat3)
+dat4=dat3 %>%
+  mutate(time.diff.new=ifelse(tim.dif=="NA",1,tim.dif))
+  mutate(episode=ifelse(temp2==1,1,ifelse(temp3<7, dplyr::lag(temp2), temp2+1)))
+head(dat4)
+
+mutate(temp1=first(date)) %>%
+  -  mutate(temp2=ifelse(date%in%temp1,1,NA))
+
 mutate(temp2=ifelse(date%in%temp1,1,NA)) 
 
 head(dat2)
