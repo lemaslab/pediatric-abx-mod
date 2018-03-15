@@ -68,21 +68,25 @@ head(dat.s2)
 dat.s2[1:30,]
 dat.s2$baby_med_ip_date=as.character(dat.s2$baby_med_ip_date)
 str(dat.s2);head(dat.s2)
-
-# test data
-test=dat.s2 %>%
-  mutate(baby_med_ip_date=dplyr::recode(baby_med_ip_date,"2/16/2013 12:46"="2/28/2013 12:46",
-                                                        "6/2/2011 14:30"="6/10/2011 14:30",
-                                                         "6/3/2011 2:30"="6/28/2011 2:30"))
-head(test)
-test[1:10,]
+# write.csv(dat.s2, file="test.csv", row.names=F) # output and modified for test data
+  #Read test Data
+    # data.file.name="test2.csv";data.file.name
+    # data.file.path=paste0(data.dir,"\\",data.file.name);data.file.path
+    # ufhealth.test<- read.csv(data.file.path);ufhealth.test
+    # test=ufhealth.test
 
 # compute episode variable
 head(dat.s2)
-dat2=test %>%
+dat2=dat.s2 %>%
   group_by(part_id) %>%
   mutate(date = as.Date(baby_med_ip_date, format="%m/%d/%Y")) %>%
   mutate(date1=first(date)) %>%
+  mutate(obsvn=date-date1) %>%
+  mutate(ith = cumsum(c(1,diff(obsvn)>=7)))
+
+ #write.csv(dat2, file="test_output.csv", row.names=F)
+
+
   mutate(temp2=ifelse(date%in%date1,1,NA)) %>%
   mutate(lag.date = dplyr::lag(date, n=1, default=NA)) %>%
   mutate(dif=as.numeric(date-lag.date)) %>%
