@@ -81,5 +81,30 @@ dat2=dat.s2 %>%
   mutate(obsvn=date-date1) %>%
   mutate(abx_episode = cumsum(c(1,diff(obsvn)>=7))) %>%
   select(part_id,baby_mar_action_ip,baby_med_code_ip,baby_med_ip,days2_baby_meds_ip,baby_med_ip_date,abx_episode)
+  names(dat2)
+# Notes on Wellness Visit (https://ufhealth.org/well-child-visits), 
+# child wellness visits should occur at the following times: 
+# By 1 month, 2 months, 4 months, 6 months, 9 months, 12 months, 15 months, 18 months, 2 year, 2.5 years, 3 years, each year until 21. Other sources have the same guidance:
+# https://medlineplus.gov/ency/article/001928.htm
+# https://www.healthychildren.org/English/family-life/health-management/Pages/Well-Child-Care-A-Check-Up-for-Success.aspx 
 
- 
+# 2 weeks Variable
+dat2$two_weeks=ifelse(dat2$days2_baby_meds_ip<17, 1, 0)  
+
+# 1 month Variable
+dat2$one_month=ifelse(dat2$days2_baby_meds_ip>17 & dat2$days2_baby_meds_ip<35, 1, 0)
+
+# 2 month Variable
+dat2$two_month=ifelse(dat2$days2_baby_meds_ip>17 & dat2$days2_baby_meds_ip<35, 1, 0)
+
+# 4 month Variable
+dat2$four_month=ifelse(dat2$days2_baby_meds_ip>17 & dat2$days2_baby_meds_ip<35, 1, 0)
+
+# 6 month Variable
+dat2$six_month=ifelse(dat2$days2_baby_meds_ip>17 & dat2$days2_baby_meds_ip<35, 1, 0)
+
+# 9 month Variable
+dat2$nine_month=ifelse(dat2$days2_baby_meds_ip>17 & dat2$days2_baby_meds_ip<35, 1, 0)
+
+# 12 month Variable
+dat2$twelve_month=ifelse(dat2$days2_baby_meds_ip>17 & dat2$days2_baby_meds_ip<35, 1, 0)
