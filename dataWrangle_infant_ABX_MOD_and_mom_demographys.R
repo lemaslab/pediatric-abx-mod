@@ -43,61 +43,131 @@ library(reshape2)
 # ****  UFHealthEarlyLifeExp_DATA_2_Infant_ABX_MOD_Mom_Visits_018-03-18_1152.csv                                              
 # **************************************************************************** # 
 
-#Read Data
+# Read Data
 data.file.name="UFHealthEarlyLifeExp_DATA_2_Infant_ABX_MOD_Mom_Visits_018-03-18_1152.csv";data.file.name
 data.file.path=paste0(data.dir,"\\",data.file.name);data.file.path
-ufhealth.abx<- read.csv(data.file.path);ufhealth.abx
-# need to create NA from blanks
-ufhealth.abx[ufhealth.abx==" "|ufhealth.abx==" "]<-NA
-ufhealth.abx[ufhealth.abx=="<NA>"]=NA 
-head(ufhealth.abx)
+ufhealth.abx<- read.csv(data.file.path,na.strings=c("","NA"));ufhealth.abx
+
+  # need to create NA from blanks
+    # ufhealth.abx[ufhealth.abx==" "|ufhealth.abx==" "]<-NA
+    # ufhealth.abx[ufhealth.abx=="<NA>"]=NA 
+    # head(ufhealth.abx)
 
 # look at data
 dat=ufhealth.abx
 head(dat); str(dat); names(dat)
 dat$baby_med_date
 
-# unique list of infant abx
+# unique list of infant abx ip
 abx.op=unique(dat$baby_meds);abx.op
 abx.ip=unique(dat$baby_med_ip);abx.ip
 
 # reshape
-head(dat);names(dat)
-dat.reshape=melt(dat, id=c("part_id","redcap_repeat_instrument"));head(dat.reshape)
-head(dat.na)
+# head(dat);names(dat)
+# dat.reshape=melt(dat, id=c("part_id","redcap_repeat_instrument"));head(dat.reshape)
+# head(dat.na)
+
+# **************************************************************************** #
+# ***********      Create mom-baby demography data set (with mode of delivery)                                             
+# **************************************************************************** # 
 
 # link mom-baby demography
+head(dat);names(dat)
 dat2=dat %>%
   group_by(part_id) %>%
-  select(part_id,redcap_repeat_instrument,baby_race, baby_ethnicity,mom_race_link, mom_ethnicity_link) %>%
+  select(part_id,redcap_repeat_instrument,baby_race, baby_ethnicity,mom_race_link, mom_ethnicity_link,baby_birth_wt_gr,delivery_mode,baby_gest_age) %>%
   filter(redcap_repeat_instrument %in% c("baby_demography", "linked_mom_demography")) %>%
-  filter(grepl("Baby",part_id))
+  filter(grepl("Baby",part_id));head(dat2);names(dat2)
 
-# mom demography
-dat.mom=dat2 %>%  # Limit only to babys with linked data 
+# mom-baby demography
+dat.mom_baby=dat2 %>%  # Limit only to babys with linked data 
   group_by(part_id) %>%
-  filter(redcap_repeat_instrument=="linked_mom_demography") %>%
-  select(part_id, redcap_repeat_instrument, mom_race_link, mom_ethnicity_link)
-  length(unique(dat.mom$part_id)) # 16607
-  head(dat.mom)
+  mutate(mom_race = first(mom_race_link[!is.na(mom_race_link)]),
+         mom_ethnicity=first(mom_ethnicity_link[!is.na(mom_ethnicity_link)])) %>%
+  select(part_id, redcap_repeat_instrument, baby_race, mom_race,baby_ethnicity, mom_ethnicity,baby_birth_wt_gr,delivery_mode,baby_gest_age) %>%
+  filter(redcap_repeat_instrument=="baby_demography") 
+  # check data
+  length(unique(dat.mom_baby$part_id)) # 16684
+  head(dat.mom_baby);names(dat.mom_baby)
 
-# baby demography
-dat.baby=dat2 %>%
+# **************************************************************************** #
+# ***************      Format mode-of-delivery variables                                              
+# **************************************************************************** #
+
+# recode variables
+unique(dat.mom_baby$delivery_mode) # how many unique entries for MOD; 24 (below)
+
+# [1] Vaginal&_Spontaneous_Delivery   C-Section&_Low_Transverse       Vaginal&_Vacuum_(Extractor)    
+# [4] C-Section&_Unspecified          Vaginal&_Forceps                Vertical_C-Section             
+# [7] C-Section&_Low_Vertical         NOT_INCLUDED_IN_ORIGINAL_SOURCE VBAC&_Spontaneous              
+# [10] C-Section&_Classical            Vaginal&_Breech                 Extramural_Delivery            
+# [13] Other                           C-Section,_Low_Transverse       Vaginal,_Spontaneous_Delivery  
+# [16] C-Section,_Unspecified          C-Section,_Low_Vertical         Vaginal,_Vacuum_(Extractor)    
+# [19] C-Section,_Classical            VBAC,_Spontaneous               Vaginal,_Breech                
+# [22] Vaginal,_Forceps
+
+# **************************************************************************** #
+# *****      Combine baby in-patient and out-patient abx (with mode of delivery)                                              
+# **************************************************************************** # 
+
+# In-patient data
+head(dat);names(dat)
+dat.abx.ip=dat %>%
   group_by(part_id) %>%
-  filter(redcap_repeat_instrument=="baby_demography") %>%
-  select(part_id, redcap_repeat_instrument, baby_race, baby_ethnicity)
-  length(unique(dat.baby$part_id)) # 16684
-  head(dat.baby)
+  select(part_id,redcap_repeat_instrument,delivery_mode, baby_med_order_ip, 
+         baby_mar_action_ip, baby_med_code_ip, 
+         baby_med_ip, days2_baby_meds_ip, baby_med_ip_date) %>%
+  filter(redcap_repeat_instrument %in% c("baby_demography", "baby_antibiotics_ip")) %>%
+  mutate(mode_of_delivery = first(delivery_mode[!is.na(delivery_mode)])) %>%
+  select(part_id,redcap_repeat_instrument,mode_of_delivery,baby_med_order_ip, baby_mar_action_ip, 
+         baby_med_code_ip, baby_med_ip, days2_baby_meds_ip, baby_med_ip_date) %>%
+  filter(redcap_repeat_instrument %in% c("baby_antibiotics_ip")) %>%
+  # check data
+  head(dat.abx.ip);names(dat.abx.ip)
+## rename variables for merge
+#----------------------------
+dat.abx.ip.final=rename(dat.abx.ip, baby_med_order=baby_med_order_ip, baby_mar_action=baby_mar_action_ip,
+                        baby_med_code=baby_med_code_ip, baby_meds=baby_med_ip, days2_baby_meds=days2_baby_meds_ip,
+                        baby_med_date=baby_med_ip_date);head(dat.abx.ip.final);names(dat.abx.ip.final)
+       
 
-# merge mom-baby demography
-dat.demography=left_join(dat.baby, dat.mom, by = c("part_id")) %>%
-  select(part_id, baby_race, baby_ethnicity, mom_race_link, mom_ethnicity_link)
-
-
-    mutate(mom_race = first(mom_race_link[!is.blank(mom_race_link)]))
-  head(dat2)
-  dim(dat2)
+# out-patient data
+dat.abx.op=dat %>%
+  group_by(part_id) %>%
+  select(part_id,redcap_repeat_instrument,delivery_mode, baby_med_order, 
+         baby_med_code, baby_meds, days2_baby_meds, baby_med_date) %>%
+  filter(redcap_repeat_instrument %in% c("baby_demography", "baby_antibiotics_rx")) %>%
+  mutate(mode_of_delivery = first(delivery_mode[!is.na(delivery_mode)])) %>%
+  select(part_id,redcap_repeat_instrument,mode_of_delivery,baby_med_order, 
+         baby_med_code, baby_meds, days2_baby_meds, baby_med_date) %>%
+  filter(redcap_repeat_instrument %in% c("baby_antibiotics_rx"))
+  # check data
+  head(dat.abx.op);names(dat.abx.op)
+  # modify for merge
+  dat.abx.op$baby_mar_action=NA
+## arrange variables for merge
+#----------------------------
+dat.abx.op.final=dat.abx.op %>%
+    group_by(part_id) %>%
+    select(part_id,redcap_repeat_instrument,mode_of_delivery,
+           baby_med_order, baby_mar_action, baby_med_code, 
+           baby_meds, days2_baby_meds, baby_med_date)
   
+names(dat.abx.ip.final); head(dat.abx.ip.final);str(dat.abx.ip.final)  
+names(dat.abx.op.final); head(dat.abx.op.final);str(dat.abx.op.final)
+
+# combine data.frames
+dat.abx.ALL=rbind(as.data.frame(dat.abx.ip.final),as.data.frame(dat.abx.op.final))
+names(dat.abx.ALL);head(dat.abx.ALL)
+
+# sort by part_id
+dat.abx.ALL.sort=arrange(dat.abx.ALL,part_id)
+dat.abx.ALL.sort2=arrange(dat.abx.ALL.sort,baby_med_date)
+
+head(dat.abx.ALL.sort2)
+# check data
+write.csv(dat.abx.ALL.sort2,file="test.csv", row.names=F)
+unique(dat.abx.ALL.sort$redcap_repeat_instrument)
 # episode calculation (remove abx names for moment)
 head(dat);names(dat)
 dat.s=dat[,c(1,11:15)]
