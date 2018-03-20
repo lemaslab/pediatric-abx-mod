@@ -47,20 +47,56 @@ library(reshape2)
 data.file.name="UFHealthEarlyLifeExp_DATA_2_Infant_ABX_MOD_Mom_Visits_018-03-18_1152.csv";data.file.name
 data.file.path=paste0(data.dir,"\\",data.file.name);data.file.path
 ufhealth.abx<- read.csv(data.file.path);ufhealth.abx
+# need to create NA from blanks
+ufhealth.abx[ufhealth.abx==" "|ufhealth.abx==" "]<-NA
+ufhealth.abx[ufhealth.abx=="<NA>"]=NA 
+head(ufhealth.abx)
 
 # look at data
 dat=ufhealth.abx
 head(dat); str(dat); names(dat)
+dat$baby_med_date
 
 # unique list of infant abx
 abx.op=unique(dat$baby_meds);abx.op
 abx.ip=unique(dat$baby_med_ip);abx.ip
 
+# reshape
+head(dat);names(dat)
+dat.reshape=melt(dat, id=c("part_id","redcap_repeat_instrument"));head(dat.reshape)
+head(dat.na)
+
 # link mom-baby demography
 dat2=dat %>%
+  group_by(part_id) %>%
   select(part_id,redcap_repeat_instrument,baby_race, baby_ethnicity,mom_race_link, mom_ethnicity_link) %>%
-  filter(redcap_repeat_instrument %in% c("baby_demography", "linked_mom_demography"))
+  filter(redcap_repeat_instrument %in% c("baby_demography", "linked_mom_demography")) %>%
+  filter(grepl("Baby",part_id))
+
+# mom demography
+dat.mom=dat2 %>%  # Limit only to babys with linked data 
+  group_by(part_id) %>%
+  filter(redcap_repeat_instrument=="linked_mom_demography") %>%
+  select(part_id, redcap_repeat_instrument, mom_race_link, mom_ethnicity_link)
+  length(unique(dat.mom$part_id)) # 16607
+  head(dat.mom)
+
+# baby demography
+dat.baby=dat2 %>%
+  group_by(part_id) %>%
+  filter(redcap_repeat_instrument=="baby_demography") %>%
+  select(part_id, redcap_repeat_instrument, baby_race, baby_ethnicity)
+  length(unique(dat.baby$part_id)) # 16684
+  head(dat.baby)
+
+# merge mom-baby demography
+dat.demography=left_join(dat.baby, dat.mom, by = c("part_id")) %>%
+  select(part_id, baby_race, baby_ethnicity, mom_race_link, mom_ethnicity_link)
+
+
+    mutate(mom_race = first(mom_race_link[!is.blank(mom_race_link)]))
   head(dat2)
+  dim(dat2)
   
 # episode calculation (remove abx names for moment)
 head(dat);names(dat)
