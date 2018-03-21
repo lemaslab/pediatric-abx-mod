@@ -121,7 +121,7 @@ dat.abx.ip=dat %>%
   mutate(mode_of_delivery = first(delivery_mode[!is.na(delivery_mode)])) %>%
   select(part_id,redcap_repeat_instrument,mode_of_delivery,baby_med_order_ip, baby_mar_action_ip, 
          baby_med_code_ip, baby_med_ip, days2_baby_meds_ip, baby_med_ip_date) %>%
-  filter(redcap_repeat_instrument %in% c("baby_antibiotics_ip")) %>%
+  filter(redcap_repeat_instrument %in% c("baby_antibiotics_ip"))
   # check data
   head(dat.abx.ip);names(dat.abx.ip)
 ## rename variables for merge
@@ -153,43 +153,44 @@ dat.abx.op.final=dat.abx.op %>%
            baby_med_order, baby_mar_action, baby_med_code, 
            baby_meds, days2_baby_meds, baby_med_date)
   
-names(dat.abx.ip.final); head(dat.abx.ip.final);str(dat.abx.ip.final)  
-names(dat.abx.op.final); head(dat.abx.op.final);str(dat.abx.op.final)
+names(dat.abx.ip.final); head(dat.abx.ip.final);str(dat.abx.ip.final);dim(dat.abx.ip.final)  
+names(dat.abx.op.final); head(dat.abx.op.final);str(dat.abx.op.final);dim(dat.abx.op.final)
 
 # combine data.frames
 dat.abx.ALL=rbind(as.data.frame(dat.abx.ip.final),as.data.frame(dat.abx.op.final))
 names(dat.abx.ALL);head(dat.abx.ALL)
+str(dat.abx.ALL)
+dat.abx.ALL$baby_med_date=as.Date(dat.abx.ALL$baby_med_date, format="%m/%d/%Y")
 
-# sort by part_id
-dat.abx.ALL.sort=arrange(dat.abx.ALL,part_id)
-dat.abx.ALL.sort2=arrange(dat.abx.ALL.sort,baby_med_date)
+# sort by part_id (checked and works!)
+dat.abx.ALL.sort=arrange(dat.abx.ALL,part_id, baby_med_date)
+head(dat.abx.ALL.sort)
 
-head(dat.abx.ALL.sort2)
-# check data
-write.csv(dat.abx.ALL.sort2,file="test.csv", row.names=F)
-unique(dat.abx.ALL.sort$redcap_repeat_instrument)
-# episode calculation (remove abx names for moment)
-head(dat);names(dat)
-dat.s=dat[,c(1,11:15)]
-head(dat.s)
+# **************************************************************************** #
+# *****      episode calculation (with mode of delivery)                                              
+# **************************************************************************** # 
 
-# drop NA observations
-dat.s2=subset(dat.s, is.na(days2_baby_meds_ip)==F)
-head(dat.s2)
-dat.s2$baby_med_ip_date=as.character(dat.s2$baby_med_ip_date)
-str(dat.s2);head(dat.s2)
-
+# status of data
+dim(dat.abx.ALL.sort)  # 75523     9
+dat.s2=dat.abx.ALL.sort
+names(dat.s2)
 
 # compute episode variable
 head(dat.s2)
 dat2=dat.s2 %>%
   group_by(part_id) %>%
-  mutate(date = as.Date(baby_med_ip_date, format="%m/%d/%Y")) %>%
+  mutate(date = as.Date(baby_med_date, format="%m/%d/%Y")) %>%
   mutate(date1=first(date)) %>%
   mutate(obsvn=date-date1) %>%
   mutate(abx_episode = cumsum(c(1,diff(obsvn)>=7))) %>%
-  select(part_id,baby_mar_action_ip,baby_med_code_ip,baby_med_ip,days2_baby_meds_ip,baby_med_ip_date,abx_episode)
-  names(dat2)
+  select(part_id,baby_mar_action,baby_med_code,baby_meds,days2_baby_meds,baby_med_date,abx_episode)
+names(dat2)
+head(dat2)
+
+# **************************************************************************** #
+# *****      Wellness Visit Variables (with mode of delivery)                                              
+# **************************************************************************** # 
+
 # Notes on Wellness Visit (https://ufhealth.org/well-child-visits), 
 # child wellness visits should occur at the following times: 
 # By 1 month, 2 months, 4 months, 6 months, 9 months, 12 months, 15 months, 18 months, 2 year, 2.5 years, 3 years, each year until 21. Other sources have the same guidance:
