@@ -175,6 +175,9 @@ dim(dat.abx.ALL.sort)  # 75523     9
 dat.s2=dat.abx.ALL.sort
 names(dat.s2)
 
+# select out mar_action (need to code out subset)
+
+
 # compute episode variable
 head(dat.s2)
 dat2=dat.s2 %>%
@@ -183,7 +186,7 @@ dat2=dat.s2 %>%
   mutate(date1=first(date)) %>%
   mutate(obsvn=date-date1) %>%
   mutate(abx_episode = cumsum(c(1,diff(obsvn)>=7))) %>%
-  select(part_id,baby_mar_action,baby_med_code,baby_meds,days2_baby_meds,baby_med_date,abx_episode)
+  select(part_id,redcap_repeat_instrument,mode_of_delivery,baby_med_order,baby_mar_action,baby_med_code,baby_meds,days2_baby_meds,baby_med_date,abx_episode)
 names(dat2)
 head(dat2)
 
@@ -197,23 +200,59 @@ head(dat2)
 # https://medlineplus.gov/ency/article/001928.htm
 # https://www.healthychildren.org/English/family-life/health-management/Pages/Well-Child-Care-A-Check-Up-for-Success.aspx 
 
-# 2 weeks Variable
-dat2$two_weeks=ifelse(dat2$days2_baby_meds_ip<17, 1, 0)  
+# time variable
+range(dat2$days2_baby_meds)
+dat2$wellness.visit=NA
+dat2$wellness.visit[1:20]
 
-# 1 month Variable
-dat2$one_month=ifelse(dat2$days2_baby_meds_ip>17 & dat2$days2_baby_meds_ip<35, 1, 0)
+# 3 days variable (0-3 days)
+dat2$wellness.visit=ifelse(dat2$days2_baby_meds<=3,"3_days", dat2$wellness.visit)  
 
-# 2 month Variable
-dat2$two_month=ifelse(dat2$days2_baby_meds_ip>17 & dat2$days2_baby_meds_ip<35, 1, 0)
+# 2 weeks Variable (14 days)
+dat2$wellness.visit=ifelse(dat2$days2_baby_meds>3 & dat2$days2_baby_meds<=14,"2_wks", dat2$wellness.visit)  
 
-# 4 month Variable
-dat2$four_month=ifelse(dat2$days2_baby_meds_ip>17 & dat2$days2_baby_meds_ip<35, 1, 0)
+# 1 month Variable (15-30 days)
+dat2$wellness.visit=ifelse(dat2$days2_baby_meds>14 & dat2$days2_baby_meds<=30,"1_mo", dat2$wellness.visit)
 
-# 6 month Variable
-dat2$six_month=ifelse(dat2$days2_baby_meds_ip>17 & dat2$days2_baby_meds_ip<35, 1, 0)
+# 2 month Variable (31-60 days)
+dat2$wellness.visit=ifelse(dat2$days2_baby_meds>30 & dat2$days2_baby_meds<=60,"2_mo", dat2$wellness.visit)
 
-# 9 month Variable
-dat2$nine_month=ifelse(dat2$days2_baby_meds_ip>17 & dat2$days2_baby_meds_ip<35, 1, 0)
+# 4 month Variable (61-120 days)
+dat2$wellness.visit=ifelse(dat2$days2_baby_meds>60 & dat2$days2_baby_meds<=120,"4_mo", dat2$wellness.visit)
 
-# 12 month Variable
-dat2$twelve_month=ifelse(dat2$days2_baby_meds_ip>17 & dat2$days2_baby_meds_ip<35, 1, 0)
+# 6 month Variable (121-180 days)
+dat2$wellness.visit=ifelse(dat2$days2_baby_meds>120 & dat2$days2_baby_meds<=180,"6_mo", dat2$wellness.visit)
+
+# 9 month Variable (181-270 days)
+dat2$wellness.visit=ifelse(dat2$days2_baby_meds>181 & dat2$days2_baby_meds<=270,"9_mo", dat2$wellness.visit)
+
+# 12 month Variable (271-365 days)
+dat2$wellness.visit=ifelse(dat2$days2_baby_meds>271 & dat2$days2_baby_meds<=365,"12_mo", dat2$wellness.visit)
+
+# 15 months variable (366-450 days)
+dat2$wellness.visit=ifelse(dat2$days2_baby_meds>366 & dat2$days2_baby_meds<=450,"15_mo", dat2$wellness.visit)
+
+# 18 month variable (451-540 days)
+dat2$wellness.visit=ifelse(dat2$days2_baby_meds>451 & dat2$days2_baby_meds<=540,"18_mo", dat2$wellness.visit)
+
+# 2 year variable (540-730 days)
+dat2$wellness.visit=ifelse(dat2$days2_baby_meds>540 & dat2$days2_baby_meds<=730,"2_yr", dat2$wellness.visit)
+
+# 2.5 year variable (731-910 days)
+dat2$wellness.visit=ifelse(dat2$days2_baby_meds>731 & dat2$days2_baby_meds<=910,"2.5_yr", dat2$wellness.visit)
+
+# 3 year variable (911-1095 days)
+dat2$wellness.visit=ifelse(dat2$days2_baby_meds>911 & dat2$days2_baby_meds<=1095,"3_yr", dat2$wellness.visit)
+
+# 4 year variable (1096-1460 days)
+dat2$wellness.visit=ifelse(dat2$days2_baby_meds>1096 & dat2$days2_baby_meds<=1460,"4_yr", dat2$wellness.visit)
+
+# 5 year variable (1461-1825 days)
+dat2$wellness.visit=ifelse(dat2$days2_baby_meds>1461,">4_yr", dat2$wellness.visit)
+
+# **************************************************************************** #
+# *****      Counts by wellness.visit (with mode of delivery)                                              
+# **************************************************************************** # 
+
+# report highest episode within part_id and wellness.visit
+last() function
