@@ -312,3 +312,7 @@ names(A)
 names(dat)
 http://stcorp.nl/R_course/tutorial_dplyr.html
 
+http://markhneedham.com/blog/2015/06/27/r-dplyr-squashing-multiple-rows-per-group-into-one/
+  
+  http://www.datacarpentry.org/dc_zurich/R-ecology/04-dplyr.html
+
