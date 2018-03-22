@@ -200,59 +200,115 @@ head(dat2)
 # https://medlineplus.gov/ency/article/001928.htm
 # https://www.healthychildren.org/English/family-life/health-management/Pages/Well-Child-Care-A-Check-Up-for-Success.aspx 
 
-# time variable
+# time variable (intervals)
 range(dat2$days2_baby_meds)
 dat2$wellness.visit=NA
 dat2$wellness.visit[1:20]
 
 # 3 days variable (0-3 days)
-dat2$wellness.visit=ifelse(dat2$days2_baby_meds<=3,"3_days", dat2$wellness.visit)  
+dat2$wellness.visit=ifelse(dat2$days2_baby_meds<=3,"t.3_days", dat2$wellness.visit)  
 
 # 2 weeks Variable (14 days)
-dat2$wellness.visit=ifelse(dat2$days2_baby_meds>3 & dat2$days2_baby_meds<=14,"2_wks", dat2$wellness.visit)  
+dat2$wellness.visit=ifelse(dat2$days2_baby_meds>3 & dat2$days2_baby_meds<=14,"t.2_wks", dat2$wellness.visit)  
 
 # 1 month Variable (15-30 days)
-dat2$wellness.visit=ifelse(dat2$days2_baby_meds>14 & dat2$days2_baby_meds<=30,"1_mo", dat2$wellness.visit)
+dat2$wellness.visit=ifelse(dat2$days2_baby_meds>14 & dat2$days2_baby_meds<=30,"t.1_mo", dat2$wellness.visit)
 
 # 2 month Variable (31-60 days)
-dat2$wellness.visit=ifelse(dat2$days2_baby_meds>30 & dat2$days2_baby_meds<=60,"2_mo", dat2$wellness.visit)
+dat2$wellness.visit=ifelse(dat2$days2_baby_meds>30 & dat2$days2_baby_meds<=60,"t.2_mo", dat2$wellness.visit)
 
 # 4 month Variable (61-120 days)
-dat2$wellness.visit=ifelse(dat2$days2_baby_meds>60 & dat2$days2_baby_meds<=120,"4_mo", dat2$wellness.visit)
+dat2$wellness.visit=ifelse(dat2$days2_baby_meds>60 & dat2$days2_baby_meds<=120,"t.4_mo", dat2$wellness.visit)
 
 # 6 month Variable (121-180 days)
-dat2$wellness.visit=ifelse(dat2$days2_baby_meds>120 & dat2$days2_baby_meds<=180,"6_mo", dat2$wellness.visit)
+dat2$wellness.visit=ifelse(dat2$days2_baby_meds>120 & dat2$days2_baby_meds<=180,"t.6_mo", dat2$wellness.visit)
 
 # 9 month Variable (181-270 days)
-dat2$wellness.visit=ifelse(dat2$days2_baby_meds>181 & dat2$days2_baby_meds<=270,"9_mo", dat2$wellness.visit)
+dat2$wellness.visit=ifelse(dat2$days2_baby_meds>181 & dat2$days2_baby_meds<=270,"t.9_mo", dat2$wellness.visit)
 
 # 12 month Variable (271-365 days)
-dat2$wellness.visit=ifelse(dat2$days2_baby_meds>271 & dat2$days2_baby_meds<=365,"12_mo", dat2$wellness.visit)
+dat2$wellness.visit=ifelse(dat2$days2_baby_meds>271 & dat2$days2_baby_meds<=365,"t.12_mo", dat2$wellness.visit)
 
 # 15 months variable (366-450 days)
-dat2$wellness.visit=ifelse(dat2$days2_baby_meds>366 & dat2$days2_baby_meds<=450,"15_mo", dat2$wellness.visit)
+dat2$wellness.visit=ifelse(dat2$days2_baby_meds>366 & dat2$days2_baby_meds<=450,"t.15_mo", dat2$wellness.visit)
 
 # 18 month variable (451-540 days)
-dat2$wellness.visit=ifelse(dat2$days2_baby_meds>451 & dat2$days2_baby_meds<=540,"18_mo", dat2$wellness.visit)
+dat2$wellness.visit=ifelse(dat2$days2_baby_meds>451 & dat2$days2_baby_meds<=540,"t.18_mo", dat2$wellness.visit)
 
 # 2 year variable (540-730 days)
-dat2$wellness.visit=ifelse(dat2$days2_baby_meds>540 & dat2$days2_baby_meds<=730,"2_yr", dat2$wellness.visit)
+dat2$wellness.visit=ifelse(dat2$days2_baby_meds>540 & dat2$days2_baby_meds<=730,"t.2_yr", dat2$wellness.visit)
 
 # 2.5 year variable (731-910 days)
-dat2$wellness.visit=ifelse(dat2$days2_baby_meds>731 & dat2$days2_baby_meds<=910,"2.5_yr", dat2$wellness.visit)
+dat2$wellness.visit=ifelse(dat2$days2_baby_meds>731 & dat2$days2_baby_meds<=910,"t.2.5_yr", dat2$wellness.visit)
 
 # 3 year variable (911-1095 days)
-dat2$wellness.visit=ifelse(dat2$days2_baby_meds>911 & dat2$days2_baby_meds<=1095,"3_yr", dat2$wellness.visit)
+dat2$wellness.visit=ifelse(dat2$days2_baby_meds>911 & dat2$days2_baby_meds<=1095,"t.3_yr", dat2$wellness.visit)
 
 # 4 year variable (1096-1460 days)
-dat2$wellness.visit=ifelse(dat2$days2_baby_meds>1096 & dat2$days2_baby_meds<=1460,"4_yr", dat2$wellness.visit)
+dat2$wellness.visit=ifelse(dat2$days2_baby_meds>1096 & dat2$days2_baby_meds<=1460,"t.4_yr", dat2$wellness.visit)
 
 # 5 year variable (1461-1825 days)
-dat2$wellness.visit=ifelse(dat2$days2_baby_meds>1461,">4_yr", dat2$wellness.visit)
+dat2$wellness.visit=ifelse(dat2$days2_baby_meds>1461,"t.5_yr", dat2$wellness.visit)
+
+# order the factor levels
+dat2$wellness.visit=as.factor(dat2$wellness.visit)
+dat2$wellness.visit <- factor(dat2$wellness.visit, levels = c("t.3_days","t.2_wks","t.1_mo","t.2_mo","t.4_mo","t.6_mo","t.9_mo","t.12_mo","t.15_mo",
+                                                "t.18_mo","t.2_yr","t.2.5_yr","t.3_yr","t.4_yr", "t.5_yr"))
+levels(dat2$wellness.visit)
+
 
 # **************************************************************************** #
 # *****      Counts by wellness.visit (with mode of delivery)                                              
 # **************************************************************************** # 
 
 # report highest episode within part_id and wellness.visit
-last() function
+head(dat2)
+names(dat2)
+
+
+# counts of abx episodes within wellness visits
+dat2 %>%
+  group_by(wellness.visit) %>%
+  count(abx_episode)
+
+# counts of abx within each time cat
+dat2 %>%
+  group_by(wellness.visit) %>%
+  tally(abx_episode)
+
+# mean of abx within each time cat
+dat2 %>%
+  group_by(wellness.visit) %>%
+  tally(mean(abx_episode))
+
+# spread the wellness categorical variable
+dat.wide<- dcast(dat2, part_id + redcap_repeat_instrument + mode_of_delivery + baby_med_order 
+             + baby_mar_action + baby_med_code + baby_meds + days2_baby_meds 
+             + baby_med_date ~ wellness.visit)
+dat=as.data.table(dat.wide)
+
+A=dat %>%
+  as.data.table() %>%
+  transmute(t.3day=t.3_days,
+            t.2wk=t.3_days+t.2_wks,
+            t.1mo=t.3_days+t.2_wks+t.1_mo,
+            t.2mo=t.3_days+t.2_wks+t.1_mo+t.2_mo,
+            t.4mo=t.3_days+t.2_wks+t.1_mo+t.2_mo+t.4_mo,
+            t.6mo=t.3_days+t.2_wks+t.1_mo+t.2_mo+t.4_mo+t.6_mo,
+            t.9mo=t.3_days+t.2_wks+t.1_mo+t.2_mo+t.4_mo+t.6_mo+t.9_mo,
+            t.12mo=t.3_days+t.2_wks+t.1_mo+t.2_mo+t.4_mo+t.6_mo+t.9_mo+t.12_mo,
+            t.15mo=t.3_days+t.2_wks+t.1_mo+t.2_mo+t.4_mo+t.6_mo+t.9_mo+t.12_mo+t.15_mo,
+            t.18mo=t.3_days+t.2_wks+t.1_mo+t.2_mo+t.4_mo+t.6_mo+t.9_mo+t.12_mo+t.15_mo+t.18_mo,
+            t.2yr=t.3_days+t.2_wks+t.1_mo+t.2_mo+t.4_mo+t.6_mo+t.9_mo+t.12_mo+t.15_mo+t.18_mo+t.2_yr,
+            t.3yr=t.3_days+t.2_wks+t.1_mo+t.2_mo+t.4_mo+t.6_mo+t.9_mo+t.12_mo+t.15_mo+t.18_mo+t.2_yr+t.3_yr,
+            t.4yr=t.3_days+t.2_wks+t.1_mo+t.2_mo+t.4_mo+t.6_mo+t.9_mo+t.12_mo+t.15_mo+t.18_mo+t.2_yr+t.3_yr+t.4_yr,
+            t.5yr=t.3_days+t.2_wks+t.1_mo+t.2_mo+t.4_mo+t.6_mo+t.9_mo+t.12_mo+t.15_mo+t.18_mo+t.2_yr+t.3_yr+t.4_yr+t.5_yr) %>%
+    as.data.table() %>%
+    tally(t.3day,t.2wk,t.1mo,t.2mo)
+
+A
+range(A$t.3day)
+names(A)
+names(dat)
+http://stcorp.nl/R_course/tutorial_dplyr.html
+
