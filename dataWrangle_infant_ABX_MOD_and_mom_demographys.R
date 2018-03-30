@@ -71,6 +71,8 @@ abx.ip=unique(dat$baby_med_ip);abx.ip
 # ***********      Create mom-baby demography data set (with mode of delivery)                                             
 # **************************************************************************** # 
 
+# keep repeat counter for later
+
 # link mom-baby demography
 head(dat);names(dat)
 dat2=dat %>%
@@ -167,7 +169,7 @@ dat.abx.ALL.sort=arrange(dat.abx.ALL,part_id, baby_med_date)
 head(dat.abx.ALL.sort)
 
 # **************************************************************************** #
-# *****      episode calculation (with mode of delivery)                                              
+# *****     episode calculation (with mode of delivery)                                              
 # **************************************************************************** # 
 
 # status of data
@@ -264,7 +266,6 @@ levels(dat2$wellness.visit)
 # report highest episode within part_id and wellness.visit
 head(dat2)
 names(dat2)
-
 
 # counts of abx episodes within wellness visits
 dat2 %>%
