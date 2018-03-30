@@ -95,16 +95,34 @@ dat.mom_baby=dat2 %>%  # Limit only to babys with linked data
 # **************************************************************************** #
 
 # recode variables
-unique(dat.mom_baby$delivery_mode) # how many unique entries for MOD; 24 (below)
+unique(dat.mom_baby$delivery_mode) # how many unique entries for MOD; 22 (below)
 
-# [1] Vaginal&_Spontaneous_Delivery   C-Section&_Low_Transverse       Vaginal&_Vacuum_(Extractor)    
-# [4] C-Section&_Unspecified          Vaginal&_Forceps                Vertical_C-Section             
-# [7] C-Section&_Low_Vertical         NOT_INCLUDED_IN_ORIGINAL_SOURCE VBAC&_Spontaneous              
-# [10] C-Section&_Classical            Vaginal&_Breech                 Extramural_Delivery            
-# [13] Other                           C-Section,_Low_Transverse       Vaginal,_Spontaneous_Delivery  
-# [16] C-Section,_Unspecified          C-Section,_Low_Vertical         Vaginal,_Vacuum_(Extractor)    
-# [19] C-Section,_Classical            VBAC,_Spontaneous               Vaginal,_Breech                
-# [22] Vaginal,_Forceps
+# condense down to binary (vaginal/c-section)
+dat.mom_baby$mod=NA
+dat.mom_baby$mod=ifelse(dat.mom_baby$delivery_mode=="Vaginal&_Spontaneous_Delivery","vaginal",dat.mom_baby$mod)
+dat.mom_baby$mod=ifelse(dat.mom_baby$delivery_mode=="C-Section&_Low_Transverse","c-section",dat.mom_baby$mod)
+dat.mom_baby$mod=ifelse(dat.mom_baby$delivery_mode=="Vaginal&_Vacuum_(Extractor)","vaginal",dat.mom_baby$mod)
+dat.mom_baby$mod=ifelse(dat.mom_baby$delivery_mode=="C-Section&_Unspecified","c-section",dat.mom_baby$mod)
+dat.mom_baby$mod=ifelse(dat.mom_baby$delivery_mode=="Vaginal&_Forceps","vaginal",dat.mom_baby$mod)
+dat.mom_baby$mod=ifelse(dat.mom_baby$delivery_mode=="Vertical_C-Section","vaginal",dat.mom_baby$mod)
+dat.mom_baby$mod=ifelse(dat.mom_baby$delivery_mode=="C-Section&_Low_Vertical","c-section",dat.mom_baby$mod)
+dat.mom_baby$mod=ifelse(dat.mom_baby$delivery_mode=="NOT_INCLUDED_IN_ORIGINAL_SOURCE",NA,dat.mom_baby$mod)
+dat.mom_baby$mod=ifelse(dat.mom_baby$delivery_mode=="VBAC&_Spontaneous","vaginal",dat.mom_baby$mod)
+dat.mom_baby$mod=ifelse(dat.mom_baby$delivery_mode=="C-Section&_Classical","c-section",dat.mom_baby$mod)
+dat.mom_baby$mod=ifelse(dat.mom_baby$delivery_mode=="Vaginal&_Breech","vaginal",dat.mom_baby$mod)
+dat.mom_baby$mod=ifelse(dat.mom_baby$delivery_mode=="Extramural_Delivery",NA,dat.mom_baby$mod)
+dat.mom_baby$mod=ifelse(dat.mom_baby$delivery_mode=="Other",NA,dat.mom_baby$mod)
+dat.mom_baby$mod=ifelse(dat.mom_baby$delivery_mode=="C-Section,_Low_Transverse","c-section",dat.mom_baby$mod)
+dat.mom_baby$mod=ifelse(dat.mom_baby$delivery_mode=="Vaginal,_Spontaneous_Delivery","vaginal",dat.mom_baby$mod)
+dat.mom_baby$mod=ifelse(dat.mom_baby$delivery_mode=="C-Section,_Unspecified","c-section",dat.mom_baby$mod)
+dat.mom_baby$mod=ifelse(dat.mom_baby$delivery_mode=="C-Section,_Low_Vertical","c-section",dat.mom_baby$mod)
+dat.mom_baby$mod=ifelse(dat.mom_baby$delivery_mode=="Vaginal,_Vacuum_(Extractor)","vaginal",dat.mom_baby$mod)
+dat.mom_baby$mod=ifelse(dat.mom_baby$delivery_mode=="C-Section,_Classical","c-section",dat.mom_baby$mod)
+dat.mom_baby$mod=ifelse(dat.mom_baby$delivery_mode=="VBAC,_Spontaneous","vaginal",dat.mom_baby$mod)
+dat.mom_baby$mod=ifelse(dat.mom_baby$delivery_mode=="Vaginal,_Breech","vaginal",dat.mom_baby$mod)
+dat.mom_baby$mod=ifelse(dat.mom_baby$delivery_mode=="Vaginal,_Forceps","vaginal",dat.mom_baby$mod)
+head(dat.mom_baby) # did recode work? yes
+
 
 # **************************************************************************** #
 # *****      Combine baby in-patient and out-patient abx (with mode of delivery)                                              
