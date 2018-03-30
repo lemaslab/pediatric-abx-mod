@@ -72,7 +72,6 @@ dat2=dat %>%
   filter(grepl("Baby",part_id));head(dat2);names(dat2)
 length(unique(dat$part_id)) # 30540 (mom annd baby)
 length(unique(dat2$part_id)) # 16684
-names
 
 # mom-baby demography
 dat.mom_baby=dat2 %>%  # Recode gaps in data due to redcap export
@@ -153,6 +152,9 @@ dat.abx.ALL$baby_med_date=as.Date(dat.abx.ALL$baby_med_date, format="%m/%d/%Y")
 # sort by part_id (checked and works!)
 dat.abx.ALL.sort=arrange(dat.abx.ALL,part_id, baby_med_date)
 head(dat.abx.ALL.sort);names(dat.abx.ALL.sort)
+length(unique(dat.abx.ALL.sort$part_id)) # 16684
+dim(dat.abx.ALL.sort)
+names(dat.abx.ALL.sort)
 
 # **************************************************************************** #
 # ***************      Format mode-of-delivery variables                                              
@@ -220,8 +222,7 @@ dat2=dat.s2 %>%
   mutate(date = as.Date(baby_med_date, format="%m/%d/%Y")) %>%
   mutate(date1=first(date)) %>%
   mutate(obsvn=date-date1) %>%
-  mutate(abx_episode = cumsum(c(1,diff(obsvn)>=7))) %>%
-  #select(part_id,redcap_repeat_instrument,mode_of_delivery,baby_med_order,baby_mar_action,baby_med_code,baby_meds,days2_baby_meds,baby_med_date,abx_episode)
+  mutate(abx_episode = cumsum(c(1,diff(obsvn)>=7)))
 names(dat2)
 head(dat2)
 
@@ -236,7 +237,7 @@ head(dat2)
 # https://www.healthychildren.org/English/family-life/health-management/Pages/Well-Child-Care-A-Check-Up-for-Success.aspx 
 
 # time variable (intervals)
-range(dat2$days2_baby_meds)
+range(dat2$days2_baby_meds, na.rm=T)
 dat2$wellness.visit=NA
 dat2$wellness.visit[1:20]
 
@@ -291,19 +292,22 @@ dat2$wellness.visit <- factor(dat2$wellness.visit, levels = c("t.3_days","t.2_wk
                                                 "t.18_mo","t.2_yr","t.2.5_yr","t.3_yr","t.4_yr", "t.5_yr"))
 levels(dat2$wellness.visit)
 
-
 # **************************************************************************** #
 # *****      Counts by wellness.visit (with mode of delivery)                                              
 # **************************************************************************** # 
 
 # report highest episode within part_id and wellness.visit
+# pull the highest rank abx episode for each wellness.visit category.
+# summarize by mod of delivery and wellness.visit.
+# also compute some smaller time-frame buckets (i.e. 0-6 months)
 head(dat2)
 names(dat2)
 
 # counts of abx episodes within wellness visits
-dat2 %>%
-  group_by(wellness.visit) %>%
+a=dat2 %>%
+  group_by(mod, wellness.visit) %>%
   count(abx_episode)
+write.csv(a, file="test.csv", row.names=F)
 
 # counts of abx within each time cat
 dat2 %>%
