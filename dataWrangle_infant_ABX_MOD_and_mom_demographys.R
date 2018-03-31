@@ -292,83 +292,37 @@ dat2$wellness.visit <- factor(dat2$wellness.visit, levels = c("t.3_days","t.2_wk
                                                 "t.18_mo","t.2_yr","t.2.5_yr","t.3_yr","t.4_yr", "t.5_yr"))
 levels(dat2$wellness.visit)
 
+# need to define some broad categories (0-6 months, 6-12 months, ect)
+
+
 # **************************************************************************** #
-# *****      Counts by wellness.visit (with mode of delivery)                                              
+# *****      Summarize the data set                                              
 # **************************************************************************** # 
 
-set.seed(1)
-df <- expand.grid(list(A = 1:5, B = 1:5, C = 1:5))
-df$value <- runif(nrow(df))
+# create a tibble
+dat2_df=tbl_df(dat2)
+dat2_df
 
-result <- df %>% 
-  group_by(A, B) %>%
-  filter(value == max(value)) %>%
-  arrange(A,B,C)
-
-head(dat2)
-results=dat2 %>%
+# Compute variable with highest rank abx_episodes for each participant
+# within each wellness visits category
+dat3_df=dat2_df %>%
   group_by(part_id, wellness.visit) %>%
   mutate(abx_max=last(abx_episode)) %>%
   select(part_id, wellness.visit,mod,days2_baby_meds, abx_episode,abx_max)
-results
 
-# report highest episode within part_id and wellness.visit
-# pull the highest rank abx episode for each wellness.visit category.
-# summarize by mod of delivery and wellness.visit.
-# also compute some smaller time-frame buckets (i.e. 0-6 months)
-head(dat2)
-names(dat2)
+# Compute mean number of abx_episodes for entire cohort
+summarize(dat2_df, abx_mean_epi=mean(abx_episode, na.rm=T)) # 1.88
 
-# counts of abx episodes within wellness visits
-a=results %>%
-  group_by(part_id) %>%
-  filter(wellness.visit==NA)
-  mutate(mean_abx_episode=mean(abx_max))
-  count(abx_max)
-write.csv(a, file="test.csv", row.names=F)
+# SUCCESS! 
+# Compute count & mean abx_episode_max according to wellness and mod
+wellness.abx=dat3_df %>%
+  group_by(wellness.visit, mod) %>%
+  summarise(count = n(),                                # total count
+            count.unique = n_distinct(part_id),         # count of unique participants
+            abx_epi_mean=mean(abx_episode, na.rm=T),    # mean abx_episode
+            abx_epi_sd=sd(abx_episode, na.rm=T),        # sd abx_episode
+            abx_max_mean=mean(abx_max, na.rm=T),        # mean abx_episode_max
+            abx_max_sd=sd(abx_max, na.rm=T))            # sd abx_episode_max
 
-# counts of abx within each time cat
-dat2 %>%
-  group_by(wellness.visit) %>%
-  tally(abx_episode)
-
-# mean of abx within each time cat
-dat2 %>%
-  group_by(wellness.visit) %>%
-  tally(mean(abx_episode))
-
-# spread the wellness categorical variable
-dat.wide<- dcast(dat2, part_id + redcap_repeat_instrument + mode_of_delivery + baby_med_order 
-             + baby_mar_action + baby_med_code + baby_meds + days2_baby_meds 
-             + baby_med_date ~ wellness.visit)
-dat=as.data.table(dat.wide)
-
-A=dat %>%
-  as.data.table() %>%
-  transmute(t.3day=t.3_days,
-            t.2wk=t.3_days+t.2_wks,
-            t.1mo=t.3_days+t.2_wks+t.1_mo,
-            t.2mo=t.3_days+t.2_wks+t.1_mo+t.2_mo,
-            t.4mo=t.3_days+t.2_wks+t.1_mo+t.2_mo+t.4_mo,
-            t.6mo=t.3_days+t.2_wks+t.1_mo+t.2_mo+t.4_mo+t.6_mo,
-            t.9mo=t.3_days+t.2_wks+t.1_mo+t.2_mo+t.4_mo+t.6_mo+t.9_mo,
-            t.12mo=t.3_days+t.2_wks+t.1_mo+t.2_mo+t.4_mo+t.6_mo+t.9_mo+t.12_mo,
-            t.15mo=t.3_days+t.2_wks+t.1_mo+t.2_mo+t.4_mo+t.6_mo+t.9_mo+t.12_mo+t.15_mo,
-            t.18mo=t.3_days+t.2_wks+t.1_mo+t.2_mo+t.4_mo+t.6_mo+t.9_mo+t.12_mo+t.15_mo+t.18_mo,
-            t.2yr=t.3_days+t.2_wks+t.1_mo+t.2_mo+t.4_mo+t.6_mo+t.9_mo+t.12_mo+t.15_mo+t.18_mo+t.2_yr,
-            t.3yr=t.3_days+t.2_wks+t.1_mo+t.2_mo+t.4_mo+t.6_mo+t.9_mo+t.12_mo+t.15_mo+t.18_mo+t.2_yr+t.3_yr,
-            t.4yr=t.3_days+t.2_wks+t.1_mo+t.2_mo+t.4_mo+t.6_mo+t.9_mo+t.12_mo+t.15_mo+t.18_mo+t.2_yr+t.3_yr+t.4_yr,
-            t.5yr=t.3_days+t.2_wks+t.1_mo+t.2_mo+t.4_mo+t.6_mo+t.9_mo+t.12_mo+t.15_mo+t.18_mo+t.2_yr+t.3_yr+t.4_yr+t.5_yr) %>%
-    as.data.table() %>%
-    tally(t.3day,t.2wk,t.1mo,t.2mo)
-
-A
-range(A$t.3day)
-names(A)
-names(dat)
-http://stcorp.nl/R_course/tutorial_dplyr.html
-
-http://markhneedham.com/blog/2015/06/27/r-dplyr-squashing-multiple-rows-per-group-into-one/
-  
-  http://www.datacarpentry.org/dc_zurich/R-ecology/04-dplyr.html
-
+# test with R
+https://sebastiansauer.github.io/multiple-t-tests-with-dplyr/
