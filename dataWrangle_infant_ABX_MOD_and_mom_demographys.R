@@ -296,6 +296,22 @@ levels(dat2$wellness.visit)
 # *****      Counts by wellness.visit (with mode of delivery)                                              
 # **************************************************************************** # 
 
+set.seed(1)
+df <- expand.grid(list(A = 1:5, B = 1:5, C = 1:5))
+df$value <- runif(nrow(df))
+
+result <- df %>% 
+  group_by(A, B) %>%
+  filter(value == max(value)) %>%
+  arrange(A,B,C)
+
+head(dat2)
+results=dat2 %>%
+  group_by(part_id, wellness.visit) %>%
+  mutate(abx_max=last(abx_episode)) %>%
+  select(part_id, wellness.visit,mod,days2_baby_meds, abx_episode,abx_max)
+results
+
 # report highest episode within part_id and wellness.visit
 # pull the highest rank abx episode for each wellness.visit category.
 # summarize by mod of delivery and wellness.visit.
@@ -304,9 +320,11 @@ head(dat2)
 names(dat2)
 
 # counts of abx episodes within wellness visits
-a=dat2 %>%
-  group_by(mod, wellness.visit) %>%
-  count(abx_episode)
+a=results %>%
+  group_by(part_id) %>%
+  filter(wellness.visit==NA)
+  mutate(mean_abx_episode=mean(abx_max))
+  count(abx_max)
 write.csv(a, file="test.csv", row.names=F)
 
 # counts of abx within each time cat
