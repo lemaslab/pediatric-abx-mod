@@ -324,5 +324,237 @@ wellness.abx=dat3_df %>%
             abx_max_mean=mean(abx_max, na.rm=T),        # mean abx_episode_max
             abx_max_sd=sd(abx_max, na.rm=T))            # sd abx_episode_max
 
-# test with R
-https://sebastiansauer.github.io/multiple-t-tests-with-dplyr/
+# **************************************************************************** #
+# *****      Analysis of MOD and abx_episode/ days2_abx                                              
+# **************************************************************************** # 
+
+#  ALL TIME POINTS
+# t-test: abx_episode and days2_baby_med ~ mod
+out.all=dat3_df %>% ungroup() %>%
+  select(days2_baby_meds, abx_episode, mod) %>%
+  filter(!abx_episode=="NA", !days2_baby_meds=="NA", !mod=="NA") %>%
+  gather(key = variable, value = value, -mod) %>%
+  group_by(mod, variable) %>% 
+  summarise(value = list(value)) %>% 
+  spread(mod, value) %>% 
+  group_by(variable) %>% 
+  mutate(p_value = t.test(unlist(`c-section`), unlist(vaginal))$p.value,
+         t_value = t.test(unlist(`c-section`), unlist(vaginal))$statistic,
+         mean1 = t.test(unlist(`c-section`), unlist(vaginal))$estimate[1],
+         mean2 = t.test(unlist(`c-section`), unlist(vaginal))$estimate[2],
+         time_point="ALL")
+
+#  TIME POINT: t.3_days (no variation) : DONE
+# t-test: abx_episode and days2_baby_med ~ mod
+# out.3day=dat3_df %>% ungroup() %>%
+#   select(days2_baby_meds, abx_episode, mod, wellness.visit) %>%
+#   filter(!abx_episode=="NA", !days2_baby_meds=="NA", !mod=="NA", wellness.visit=="t.3_days") %>% 
+#   gather(key = variable, value = value, -mod, -wellness.visit) %>%
+#   group_by(mod, variable) %>% 
+#   summarise(value = list(value)) %>% 
+#   spread(mod, value) %>% 
+#   group_by(variable) %>% 
+#   mutate(p_value = t.test(unlist(`c-section`), unlist(vaginal))$p.value,
+#          t_value = t.test(unlist(`c-section`), unlist(vaginal))$statistic,
+#          time_point="t.3days")
+
+#  TIME POINT: t.2_wks (sig.dif) : DONE
+# t-test: abx_episode and days2_baby_med ~ mod
+out.2wk=dat3_df %>% ungroup() %>%
+  select(days2_baby_meds, abx_episode, mod, wellness.visit) %>%
+  filter(!abx_episode=="NA", !days2_baby_meds=="NA", !mod=="NA", wellness.visit=="t.2_wks") %>% 
+  gather(key = variable, value = value, -mod, -wellness.visit) %>%
+  group_by(mod, variable) %>% 
+  summarise(value = list(value)) %>% 
+  spread(mod, value) %>% 
+  group_by(variable) %>% 
+  mutate(p_value = t.test(unlist(`c-section`), unlist(vaginal))$p.value,
+         t_value = t.test(unlist(`c-section`), unlist(vaginal))$statistic,
+         time_point="t.2_wks")
+
+#  TIME POINT: t.1_mo (sig.dif) # DONE
+# t-test: abx_episode and days2_baby_med ~ mod
+out.1mo=dat3_df %>% ungroup() %>%
+  select(days2_baby_meds, abx_episode, mod, wellness.visit) %>%
+  filter(!abx_episode=="NA", !days2_baby_meds=="NA", !mod=="NA", wellness.visit=="t.1_mo") %>% 
+  gather(key = variable, value = value, -mod, -wellness.visit) %>%
+  group_by(mod, variable) %>% 
+  summarise(value = list(value)) %>% 
+  spread(mod, value) %>% 
+  group_by(variable) %>% 
+  mutate(p_value = t.test(unlist(`c-section`), unlist(vaginal))$p.value,
+         t_value = t.test(unlist(`c-section`), unlist(vaginal))$statistic,
+         time_point="t.1_mo")
+
+#  TIME POINT: t.2_mo (sig.dif) # DONE
+# t-test: abx_episode and days2_baby_med ~ mod
+out.2mo=dat3_df %>% ungroup() %>%
+  select(days2_baby_meds, abx_episode, mod, wellness.visit) %>%
+  filter(!abx_episode=="NA", !days2_baby_meds=="NA", !mod=="NA", wellness.visit=="t.2_mo") %>% 
+  gather(key = variable, value = value, -mod, -wellness.visit) %>%
+  group_by(mod, variable) %>% 
+  summarise(value = list(value)) %>% 
+  spread(mod, value) %>% 
+  group_by(variable) %>% 
+  mutate(p_value = t.test(unlist(`c-section`), unlist(vaginal))$p.value,
+         t_value = t.test(unlist(`c-section`), unlist(vaginal))$statistic,
+         time_point="t.2_mo")
+
+#  TIME POINT: t.4_mo (sig.dif) # DONE
+# t-test: abx_episode and days2_baby_med ~ mod
+out.4mo=dat3_df %>% ungroup() %>%
+  select(days2_baby_meds, abx_episode, mod, wellness.visit) %>%
+  filter(!abx_episode=="NA", !days2_baby_meds=="NA", !mod=="NA", wellness.visit=="t.4_mo") %>% 
+  gather(key = variable, value = value, -mod, -wellness.visit) %>%
+  group_by(mod, variable) %>% 
+  summarise(value = list(value)) %>% 
+  spread(mod, value) %>% 
+  group_by(variable) %>% 
+  mutate(p_value = t.test(unlist(`c-section`), unlist(vaginal))$p.value,
+         t_value = t.test(unlist(`c-section`), unlist(vaginal))$statistic,
+         time_point="t.4_mo")
+
+#  TIME POINT: t.6_mo (sig.dif) # DONE
+# t-test: abx_episode and days2_baby_med ~ mod
+out.6mo=dat3_df %>% ungroup() %>%
+  select(days2_baby_meds, abx_episode, mod, wellness.visit) %>%
+  filter(!abx_episode=="NA", !days2_baby_meds=="NA", !mod=="NA", wellness.visit=="t.6_mo") %>% 
+  gather(key = variable, value = value, -mod, -wellness.visit) %>%
+  group_by(mod, variable) %>% 
+  summarise(value = list(value)) %>% 
+  spread(mod, value) %>% 
+  group_by(variable) %>% 
+  mutate(p_value = t.test(unlist(`c-section`), unlist(vaginal))$p.value,
+         t_value = t.test(unlist(`c-section`), unlist(vaginal))$statistic,
+         time_point="t.6_mo")
+
+#  TIME POINT: t.9_mo (sig.dif) # DONE
+# t-test: abx_episode and days2_baby_med ~ mod
+out.9mo=dat3_df %>% ungroup() %>%
+  select(days2_baby_meds, abx_episode, mod, wellness.visit) %>%
+  filter(!abx_episode=="NA", !days2_baby_meds=="NA", !mod=="NA", wellness.visit=="t.9_mo") %>% 
+  gather(key = variable, value = value, -mod, -wellness.visit) %>%
+  group_by(mod, variable) %>% 
+  summarise(value = list(value)) %>% 
+  spread(mod, value) %>% 
+  group_by(variable) %>% 
+  mutate(p_value = t.test(unlist(`c-section`), unlist(vaginal))$p.value,
+         t_value = t.test(unlist(`c-section`), unlist(vaginal))$statistic,
+         time_point="t.9_mo")
+
+#  TIME POINT: t.12_mo (sig.dif) # DONE
+# t-test: abx_episode and days2_baby_med ~ mod
+out.12mo=dat3_df %>% ungroup() %>%
+  select(days2_baby_meds, abx_episode, mod, wellness.visit) %>%
+  filter(!abx_episode=="NA", !days2_baby_meds=="NA", !mod=="NA", wellness.visit=="t.12_mo") %>% 
+  gather(key = variable, value = value, -mod, -wellness.visit) %>%
+  group_by(mod, variable) %>% 
+  summarise(value = list(value)) %>% 
+  spread(mod, value) %>% 
+  group_by(variable) %>% 
+  mutate(p_value = t.test(unlist(`c-section`), unlist(vaginal))$p.value,
+         t_value = t.test(unlist(`c-section`), unlist(vaginal))$statistic,
+         time_point="t.12_mo")
+
+#  TIME POINT: t.15_mo (sig.dif) # DONE
+# t-test: abx_episode and days2_baby_med ~ mod
+out.15mo=dat3_df %>% ungroup() %>%
+  select(days2_baby_meds, abx_episode, mod, wellness.visit) %>%
+  filter(!abx_episode=="NA", !days2_baby_meds=="NA", !mod=="NA", wellness.visit=="t.15_mo") %>% 
+  gather(key = variable, value = value, -mod, -wellness.visit) %>%
+  group_by(mod, variable) %>% 
+  summarise(value = list(value)) %>% 
+  spread(mod, value) %>% 
+  group_by(variable) %>% 
+  mutate(p_value = t.test(unlist(`c-section`), unlist(vaginal))$p.value,
+         t_value = t.test(unlist(`c-section`), unlist(vaginal))$statistic,
+         time_point="t.15_mo")
+
+#  TIME POINT: t.18_mo (sig.dif) # DONE
+# t-test: abx_episode and days2_baby_med ~ mod
+out.18mo=dat3_df %>% ungroup() %>%
+  select(days2_baby_meds, abx_episode, mod, wellness.visit) %>%
+  filter(!abx_episode=="NA", !days2_baby_meds=="NA", !mod=="NA", wellness.visit=="t.18_mo") %>% 
+  gather(key = variable, value = value, -mod, -wellness.visit) %>%
+  group_by(mod, variable) %>% 
+  summarise(value = list(value)) %>% 
+  spread(mod, value) %>% 
+  group_by(variable) %>% 
+  mutate(p_value = t.test(unlist(`c-section`), unlist(vaginal))$p.value,
+         t_value = t.test(unlist(`c-section`), unlist(vaginal))$statistic,
+         time_point="t.18_mo")
+
+#  TIME POINT: t.2_yr (sig.dif) # DONE
+# t-test: abx_episode and days2_baby_med ~ mod
+out.2yr=dat3_df %>% ungroup() %>%
+  select(days2_baby_meds, abx_episode, mod, wellness.visit) %>%
+  filter(!abx_episode=="NA", !days2_baby_meds=="NA", !mod=="NA", wellness.visit=="t.2_yr") %>% 
+  gather(key = variable, value = value, -mod, -wellness.visit) %>%
+  group_by(mod, variable) %>% 
+  summarise(value = list(value)) %>% 
+  spread(mod, value) %>% 
+  group_by(variable) %>% 
+  mutate(p_value = t.test(unlist(`c-section`), unlist(vaginal))$p.value,
+         t_value = t.test(unlist(`c-section`), unlist(vaginal))$statistic,
+         time_point="t.2_yr")
+
+#  TIME POINT: t.2.5_yr (sig.dif) # DONE
+# t-test: abx_episode and days2_baby_med ~ mod
+out.2_5yr=dat3_df %>% ungroup() %>%
+  select(days2_baby_meds, abx_episode, mod, wellness.visit) %>%
+  filter(!abx_episode=="NA", !days2_baby_meds=="NA", !mod=="NA", wellness.visit=="t.2.5_yr") %>% 
+  gather(key = variable, value = value, -mod, -wellness.visit) %>%
+  group_by(mod, variable) %>% 
+  summarise(value = list(value)) %>% 
+  spread(mod, value) %>% 
+  group_by(variable) %>% 
+  mutate(p_value = t.test(unlist(`c-section`), unlist(vaginal))$p.value,
+         t_value = t.test(unlist(`c-section`), unlist(vaginal))$statistic,
+         time_point="t.2.5_yr")
+
+#  TIME POINT: t.3_yr (sig.dif) # DONE
+# t-test: abx_episode and days2_baby_med ~ mod
+out.3yr=dat3_df %>% ungroup() %>%
+  select(days2_baby_meds, abx_episode, mod, wellness.visit) %>%
+  filter(!abx_episode=="NA", !days2_baby_meds=="NA", !mod=="NA", wellness.visit=="t.3_yr") %>% 
+  gather(key = variable, value = value, -mod, -wellness.visit) %>%
+  group_by(mod, variable) %>% 
+  summarise(value = list(value)) %>% 
+  spread(mod, value) %>% 
+  group_by(variable) %>% 
+  mutate(p_value = t.test(unlist(`c-section`), unlist(vaginal))$p.value,
+         t_value = t.test(unlist(`c-section`), unlist(vaginal))$statistic,
+         time_point="t.3_yr")
+
+#  TIME POINT: t.4_yr (sig.dif) # DONE
+# t-test: abx_episode and days2_baby_med ~ mod
+out.4yr=dat3_df %>% ungroup() %>%
+  select(days2_baby_meds, abx_episode, mod, wellness.visit) %>%
+  filter(!abx_episode=="NA", !days2_baby_meds=="NA", !mod=="NA", wellness.visit=="t.4_yr") %>% 
+  gather(key = variable, value = value, -mod, -wellness.visit) %>%
+  group_by(mod, variable) %>% 
+  summarise(value = list(value)) %>% 
+  spread(mod, value) %>% 
+  group_by(variable) %>% 
+  mutate(p_value = t.test(unlist(`c-section`), unlist(vaginal))$p.value,
+         t_value = t.test(unlist(`c-section`), unlist(vaginal))$statistic,
+         time_point="t.4_yr")
+
+#  TIME POINT: t.5_yr (sig.dif) # DONE
+# t-test: abx_episode and days2_baby_med ~ mod
+out.5yr=dat3_df %>% ungroup() %>%
+  select(days2_baby_meds, abx_episode, mod, wellness.visit) %>%
+  filter(!abx_episode=="NA", !days2_baby_meds=="NA", !mod=="NA", wellness.visit=="t.5_yr") %>% 
+  gather(key = variable, value = value, -mod, -wellness.visit) %>%
+  group_by(mod, variable) %>% 
+  summarise(value = list(value)) %>% 
+  spread(mod, value) %>% 
+  group_by(variable) %>% 
+  mutate(p_value = t.test(unlist(`c-section`), unlist(vaginal))$p.value,
+         t_value = t.test(unlist(`c-section`), unlist(vaginal))$statistic,
+         time_point="t.5_yr")
+
+# combine results into single data.frame
+results=bind_rows(out.all,out.2wk,out.1mo,out.2mo,out.4mo,out.6mo,out.9mo,
+                  out.12mo,out.15mo,out.18mo,out.2yr,out.2_5yr,out.3yr,
+                  out.4yr,out.5yr);results
