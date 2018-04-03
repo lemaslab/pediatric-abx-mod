@@ -163,12 +163,11 @@ names(dat.abx.ALL.sort)
 dat=tbl_df(dat.abx.ALL.sort)
 names(dat)
 
-A=dat[1:30,]
-
-A %>%
-  select(part_id,baby_gest_age) %>%
-  separate(baby_gest_age, c("temp1","temp2"), " ") 
-
+new=dat %>%
+  separate(baby_gest_age, c("temp_wk","temp_day"), " ") %>%
+  separate(temp_day, c("day","temp_blank"), "/") %>%
+  mutate(gest_age_days=temp_day*7+day)
+new$gest_age_days
 
 # **************************************************************************** #
 # ***************      Format mode-of-delivery variables                                              
