@@ -115,6 +115,7 @@ output2$variable[output2$value!=""] <- ""
 now=Sys.Date(); today=format(now, format="%d%b%y")
 write.csv(output, file=paste0(out.dir,"abx_mod_table01_cat_",today,".csv"), row.names=F)
 
+#-----------------
 # Continuous data
 #-----------------
 names(dat4)
@@ -158,12 +159,13 @@ out.all=dat6 %>% ungroup() %>%
   summarise(value = list(value)) %>% 
   spread(mod, value) %>% 
   group_by(variable) %>% 
-  mutate(p_value = t.test(unlist(`c-section`), unlist(vaginal))$p.value,
-         t_value = t.test(unlist(`c-section`), unlist(vaginal))$statistic,
-         mean_csec = t.test(unlist(`c-section`), unlist(vaginal))$estimate[1],
-         mean_vag = t.test(unlist(`c-section`), unlist(vaginal))$estimate[2],
-         time_point="ALL")
+  mutate(p_value = round(t.test(unlist(`c-section`), unlist(vaginal))$p.value,4),
+         t_value = round(t.test(unlist(`c-section`), unlist(vaginal))$statistic,2),
+         mean_csec = round(t.test(unlist(`c-section`), unlist(vaginal))$estimate[1],2),
+         mean_vag = round(t.test(unlist(`c-section`), unlist(vaginal))$estimate[2],2),
+         time_point="ALL") %>%
+  select(variable,p_value, t_value, mean_csec, mean_vag, time_point)
 
 # export table: continuous t-tes
 #-------------
-write_csv(as.data.frame(out.all), file=paste0(out.dir,"abx_mod_table01_cont_ttest",today,".csv"))
+write.csv(out.all, file=paste0(out.dir,"abx_mod_table01_cont_ttest_",today,".csv"),row.names=F)
