@@ -35,6 +35,7 @@ library(data.table)
 library(tidyr)
 library(dplyr)
 library(reshape2)
+library(tidyverse)
 
 # **************************************************************************** #
 # *****      l             load data: abx_mod_04Apr18.rdata       
@@ -76,22 +77,93 @@ length(unique(dat4$part_id)) # 4942
 
 head(dat4)
 dat4$abx_episode_max
+names(dat4)
 
 # https://stackoverflow.com/questions/34587317/using-dplyr-to-create-summary-proportion-table-with-several-categorical-factor-v
 
-dat4 %>%
-  summarize(dat4)
-m_mtcars <- melt(mtcars,measure.vars=c("gear","carb","cyl"))
-res <- m_mtcars %>%
-  group_by(am, variable, value) %>%
+# Categorical data
+#-----------------
+
+dat5 <- melt(dat4, measure.vars=c("baby_race","baby_ethnicity","mom_ethnicity_link", "mom_race_link","abx_episode_max","wellness.visit","wellness.visit_cats"))
+res <- dat5 %>%
+  group_by(mod, variable, value) %>%
   summarise (n = n()) %>%
-  mutate(freq = n / sum(n))
+  mutate(freq = n / sum(n));res
+
+#make an 'export' variable
+res$export <- with(res, sprintf("%i (%.1f%%)", n, freq*100))
+
+#reshape again
+output <- dcast(variable+value~mod, value.var="export", data=res, fill="missing") #use drop=F to prevent silent missings 
+#'silent missings'
+output$variable <- as.character(output$variable)
+#make 'empty lines' 
+empties <- data.frame(variable=unique(output$variable), stringsAsFactors=F)
+empties[,colnames(output)[-1]] <- ""
+
+#bind them together
+output2 <- rbind(empties,output)
+output2 <- output2[order(output2$variable,output2$value),]
+
+#optional: 'remove' variable if value present
+
+output2$variable[output2$value!=""] <- ""
+
+# export table: categorical
+#-------------
+
+now=Sys.Date(); today=format(now, format="%d%b%y")
+write.csv(output, file=paste0(out.dir,"abx_mod_table01_cat_",today,".csv"), row.names=F)
+
+# Continuous data
+#-----------------
+names(dat4)
+dat6 <- melt(dat4, measure.vars=c("days2_baby_meds","baby_birth_wt_gr","gest_age_wk", "baby_nicu_los","abx_episode"))
 
 
-mtcars %>%
-  gather(variable, value, gear, carb, cyl) %>% # head()
-  group_by(am, variable, value) %>%
-  summarise (n = n()) %>%
-  mutate(freq = n / sum(n))
-  
-  
+res=dat6 %>%
+  group_by(mod,variable) %>%
+  select(mod,variable,value) %>%
+  summarize(mean=mean(value, na.rm=T), sd=sd(value, na.rm=T));res
+
+#make an 'export' variable
+res$export <- with(res, sprintf("%g (%.1f%%)", mean, sd))
+
+#reshape again
+output <- dcast(variable~mod, value.var="export", data=res, fill="missing") #use drop=F to prevent silent missings 
+#'silent missings'
+output$variable <- as.character(output$variable)
+#make 'empty lines' 
+empties <- data.frame(variable=unique(output$variable), stringsAsFactors=F)
+empties[,colnames(output)[-1]] <- ""
+
+#bind them together
+output2 <- rbind(empties,output)
+output2 <- output2[order(output2$variable),]
+
+# export table: continuous
+#-------------
+
+now=Sys.Date(); today=format(now, format="%d%b%y")
+write.csv(output2, file=paste0(out.dir,"abx_mod_table01_cont_",today,".csv"), row.names=F)
+
+# t-test
+#-------------
+#  ALL TIME POINTS
+out.all=dat6 %>% ungroup() %>%
+  select(variable, value, mod) %>%
+  filter(!value=="NA", !mod=="NA", !variable=="abx_episode") %>%
+  #gather(key = variable, value = value, -mod) %>%
+  group_by(mod, variable) %>% 
+  summarise(value = list(value)) %>% 
+  spread(mod, value) %>% 
+  group_by(variable) %>% 
+  mutate(p_value = t.test(unlist(`c-section`), unlist(vaginal))$p.value,
+         t_value = t.test(unlist(`c-section`), unlist(vaginal))$statistic,
+         mean_csec = t.test(unlist(`c-section`), unlist(vaginal))$estimate[1],
+         mean_vag = t.test(unlist(`c-section`), unlist(vaginal))$estimate[2],
+         time_point="ALL")
+
+# export table: continuous t-tes
+#-------------
+write_csv(as.data.frame(out.all), file=paste0(out.dir,"abx_mod_table01_cont_ttest",today,".csv"))
