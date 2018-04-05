@@ -157,7 +157,7 @@ dim(dat.abx.ALL.sort)
 names(dat.abx.ALL.sort)
 
 # **************************************************************************** #
-# ***************      Format gestational age variables                                              
+# ********      Format gestational age variables: gest_age_wk                                              
 # **************************************************************************** #
 
 dat=tbl_df(dat.abx.ALL.sort)
@@ -165,12 +165,15 @@ names(dat)
 dat$baby_gest_age
 
 new=dat %>%
-  separate(baby_gest_age, c("gest_wk","gest_day"), " ") 
-  #separate(temp_day, c("day","temp_blank"), "/") %>%
-  #mutate(gest_age_days=temp_day*7+day)
-new$gest_wk
-new$gest_day
-new$baby_birth_wt_gr
+  separate(baby_gest_age, c("gest_wk","gest_day"), " ")
+  new$gest_wk=as.numeric(new$gest_wk)
+new1=new %>%
+  mutate(gest_age_days=gest_wk*7) %>%
+  separate(gest_day, c("day","temp_blank"), "/") 
+new1$day=as.numeric(new1$day)
+new2=new1 %>%
+  mutate(gest_age_days=gest_age_days+day,
+         gest_age_wk=gest_age_days/7)
   
 # **************************************************************************** #
 # ***************      Format mode-of-delivery variables                                              
@@ -214,6 +217,9 @@ names(dat.abx.ALL.sort)
 
 names(dat.abx.ALL.sort)
 unique(dat.abx.ALL.sort$baby_mar_action)
+
+dat.new=dat.abx.ALL.sort %>%
+  filter(baby_mar_action==c("GIVEN", "GIVEN BY OTHER"))
 
 # [1] GIVEN                      <NA>                       GIVEN BY OTHER            
 # [4] DUE                        MISSED                     CANCELED ENTRY            
