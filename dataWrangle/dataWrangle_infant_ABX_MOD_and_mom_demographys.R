@@ -248,9 +248,11 @@ dat2=dat.s2 %>%
   mutate(date = as.Date(baby_med_date, format="%m/%d/%Y")) %>%
   mutate(date1=first(date)) %>%
   mutate(obsvn=date-date1) %>%
-  mutate(abx_episode = cumsum(c(1,diff(obsvn)>=7)))
+  mutate(abx_episode = cumsum(c(1,diff(obsvn)>=7)),
+         abx_episode_max=max(abx_episode))
 names(dat2)
 head(dat2)
+dat2$abx_episode_max
 
 # visualize
 hist(dat2$abx_episode)
