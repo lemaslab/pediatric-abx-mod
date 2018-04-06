@@ -118,6 +118,7 @@ wellness.abx2=dat3_df %>%
 # **************************************************************************** # 
 
 # need to add sd and output as proper table
+# need to convert tibble with list to proper data.frame 
 
 # WELLNESS CATS
 #-------------
