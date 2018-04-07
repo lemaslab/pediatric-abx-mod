@@ -228,217 +228,237 @@ write.csv(results_well_cats.final, file=paste0(out.dir,"MOD_ABX_wellcats_ttest_"
 # WELLNESS LOTS OF CATS
 #----------------------
 
-#  TIME POINT: t.3_days (no variation) : DONE
-# t-test: abx_episode and days2_baby_med ~ mod
-# out.3day=dat3_df %>% ungroup() %>%
-#   select(days2_baby_meds, abx_episode, mod, wellness.visit) %>%
-#   filter(!abx_episode=="NA", !days2_baby_meds=="NA", !mod=="NA", wellness.visit=="t.3_days") %>% 
-#   gather(key = variable, value = value, -mod, -wellness.visit) %>%
-#   group_by(mod, variable) %>% 
-#   summarise(value = list(value)) %>% 
-#   spread(mod, value) %>% 
-#   group_by(variable) %>% 
-#   mutate(p_value = t.test(unlist(`c-section`), unlist(vaginal))$p.value,
-#          t_value = t.test(unlist(`c-section`), unlist(vaginal))$statistic,
-#          time_point="t.3days")
-
-#  TIME POINT: t.2_wks (sig.dif) : DONE
+#  TIME POINT: t.2_wks 
 # t-test: abx_episode and days2_baby_med ~ mod
 out.2wk=dat3_df %>% ungroup() %>%
   select(days2_baby_meds, abx_episode, mod, wellness.visit) %>%
-  filter(!abx_episode=="NA", !days2_baby_meds=="NA", !mod=="NA", wellness.visit=="t.2_wks") %>% 
+  filter(wellness.visit=="t.2_wks") %>% 
   gather(key = variable, value = value, -mod, -wellness.visit) %>%
   group_by(mod, variable) %>% 
   summarise(value = list(value)) %>% 
   spread(mod, value) %>% 
   group_by(variable) %>% 
-  mutate(p_value = t.test(unlist(`c-section`), unlist(vaginal))$p.value,
-         t_value = t.test(unlist(`c-section`), unlist(vaginal))$statistic,
-         time_point="t.2_wks")
+  mutate(p_value = round(t.test(unlist(`c-section`), unlist(vaginal))$p.value,4),
+         t_value = round(t.test(unlist(`c-section`), unlist(vaginal))$statistic,2),
+         mean_csec = round(t.test(unlist(`c-section`), unlist(vaginal))$estimate[1],2),
+         mean_vag = round(t.test(unlist(`c-section`), unlist(vaginal))$estimate[2],2),
+         time_point="t.2_wks");out.2wk
 
-#  TIME POINT: t.1_mo (sig.dif) # DONE
+#  TIME POINT: t.1_mo 
 # t-test: abx_episode and days2_baby_med ~ mod
 out.1mo=dat3_df %>% ungroup() %>%
   select(days2_baby_meds, abx_episode, mod, wellness.visit) %>%
-  filter(!abx_episode=="NA", !days2_baby_meds=="NA", !mod=="NA", wellness.visit=="t.1_mo") %>% 
+  filter(wellness.visit=="t.1_mo") %>% 
   gather(key = variable, value = value, -mod, -wellness.visit) %>%
   group_by(mod, variable) %>% 
   summarise(value = list(value)) %>% 
   spread(mod, value) %>% 
   group_by(variable) %>% 
-  mutate(p_value = t.test(unlist(`c-section`), unlist(vaginal))$p.value,
-         t_value = t.test(unlist(`c-section`), unlist(vaginal))$statistic,
-         time_point="t.1_mo")
+  mutate(p_value = round(t.test(unlist(`c-section`), unlist(vaginal))$p.value,4),
+         t_value = round(t.test(unlist(`c-section`), unlist(vaginal))$statistic,2),
+         mean_csec = round(t.test(unlist(`c-section`), unlist(vaginal))$estimate[1],2),
+         mean_vag = round(t.test(unlist(`c-section`), unlist(vaginal))$estimate[2],2),
+         time_point="t.1_mo");out.1mo
 
-#  TIME POINT: t.2_mo (sig.dif) # DONE
+#  TIME POINT: t.2_mo 
 # t-test: abx_episode and days2_baby_med ~ mod
 out.2mo=dat3_df %>% ungroup() %>%
   select(days2_baby_meds, abx_episode, mod, wellness.visit) %>%
-  filter(!abx_episode=="NA", !days2_baby_meds=="NA", !mod=="NA", wellness.visit=="t.2_mo") %>% 
+  filter(wellness.visit=="t.2_mo") %>% 
   gather(key = variable, value = value, -mod, -wellness.visit) %>%
   group_by(mod, variable) %>% 
   summarise(value = list(value)) %>% 
   spread(mod, value) %>% 
   group_by(variable) %>% 
-  mutate(p_value = t.test(unlist(`c-section`), unlist(vaginal))$p.value,
-         t_value = t.test(unlist(`c-section`), unlist(vaginal))$statistic,
-         time_point="t.2_mo")
+  mutate(p_value = round(t.test(unlist(`c-section`), unlist(vaginal))$p.value,4),
+         t_value = round(t.test(unlist(`c-section`), unlist(vaginal))$statistic,2),
+         mean_csec = round(t.test(unlist(`c-section`), unlist(vaginal))$estimate[1],2),
+         mean_vag = round(t.test(unlist(`c-section`), unlist(vaginal))$estimate[2],2),
+         time_point="t.2_mo");out.2mo
 
-#  TIME POINT: t.4_mo (sig.dif) # DONE
+#  TIME POINT: t.4_mo 
 # t-test: abx_episode and days2_baby_med ~ mod
 out.4mo=dat3_df %>% ungroup() %>%
   select(days2_baby_meds, abx_episode, mod, wellness.visit) %>%
-  filter(!abx_episode=="NA", !days2_baby_meds=="NA", !mod=="NA", wellness.visit=="t.4_mo") %>% 
+  filter(wellness.visit=="t.4_mo") %>% 
   gather(key = variable, value = value, -mod, -wellness.visit) %>%
   group_by(mod, variable) %>% 
   summarise(value = list(value)) %>% 
   spread(mod, value) %>% 
   group_by(variable) %>% 
-  mutate(p_value = t.test(unlist(`c-section`), unlist(vaginal))$p.value,
-         t_value = t.test(unlist(`c-section`), unlist(vaginal))$statistic,
-         time_point="t.4_mo")
+  mutate(p_value = round(t.test(unlist(`c-section`), unlist(vaginal))$p.value,4),
+         t_value = round(t.test(unlist(`c-section`), unlist(vaginal))$statistic,2),
+         mean_csec = round(t.test(unlist(`c-section`), unlist(vaginal))$estimate[1],2),
+         mean_vag = round(t.test(unlist(`c-section`), unlist(vaginal))$estimate[2],2),
+         time_point="t.4_mo");out.4mo
 
-#  TIME POINT: t.6_mo (sig.dif) # DONE
+#  TIME POINT: t.6_mo 
 # t-test: abx_episode and days2_baby_med ~ mod
 out.6mo=dat3_df %>% ungroup() %>%
   select(days2_baby_meds, abx_episode, mod, wellness.visit) %>%
-  filter(!abx_episode=="NA", !days2_baby_meds=="NA", !mod=="NA", wellness.visit=="t.6_mo") %>% 
+  filter(wellness.visit=="t.6_mo") %>% 
   gather(key = variable, value = value, -mod, -wellness.visit) %>%
   group_by(mod, variable) %>% 
   summarise(value = list(value)) %>% 
   spread(mod, value) %>% 
   group_by(variable) %>% 
-  mutate(p_value = t.test(unlist(`c-section`), unlist(vaginal))$p.value,
-         t_value = t.test(unlist(`c-section`), unlist(vaginal))$statistic,
-         time_point="t.6_mo")
+  mutate(p_value = round(t.test(unlist(`c-section`), unlist(vaginal))$p.value,4),
+         t_value = round(t.test(unlist(`c-section`), unlist(vaginal))$statistic,2),
+         mean_csec = round(t.test(unlist(`c-section`), unlist(vaginal))$estimate[1],2),
+         mean_vag = round(t.test(unlist(`c-section`), unlist(vaginal))$estimate[2],2),
+         time_point="t.6_mo");out.6mo
 
-#  TIME POINT: t.9_mo (sig.dif) # DONE
+#  TIME POINT: t.9_mo 
 # t-test: abx_episode and days2_baby_med ~ mod
 out.9mo=dat3_df %>% ungroup() %>%
   select(days2_baby_meds, abx_episode, mod, wellness.visit) %>%
-  filter(!abx_episode=="NA", !days2_baby_meds=="NA", !mod=="NA", wellness.visit=="t.9_mo") %>% 
+  filter(wellness.visit=="t.9_mo") %>% 
   gather(key = variable, value = value, -mod, -wellness.visit) %>%
   group_by(mod, variable) %>% 
   summarise(value = list(value)) %>% 
   spread(mod, value) %>% 
   group_by(variable) %>% 
-  mutate(p_value = t.test(unlist(`c-section`), unlist(vaginal))$p.value,
-         t_value = t.test(unlist(`c-section`), unlist(vaginal))$statistic,
-         time_point="t.9_mo")
+  mutate(p_value = round(t.test(unlist(`c-section`), unlist(vaginal))$p.value,4),
+         t_value = round(t.test(unlist(`c-section`), unlist(vaginal))$statistic,2),
+         mean_csec = round(t.test(unlist(`c-section`), unlist(vaginal))$estimate[1],2),
+         mean_vag = round(t.test(unlist(`c-section`), unlist(vaginal))$estimate[2],2),
+         time_point="t.9_mo");out.9mo
 
-#  TIME POINT: t.12_mo (sig.dif) # DONE
+#  TIME POINT: t.12_mo 
 # t-test: abx_episode and days2_baby_med ~ mod
 out.12mo=dat3_df %>% ungroup() %>%
   select(days2_baby_meds, abx_episode, mod, wellness.visit) %>%
-  filter(!abx_episode=="NA", !days2_baby_meds=="NA", !mod=="NA", wellness.visit=="t.12_mo") %>% 
+  filter(wellness.visit=="t.12_mo") %>% 
   gather(key = variable, value = value, -mod, -wellness.visit) %>%
   group_by(mod, variable) %>% 
   summarise(value = list(value)) %>% 
   spread(mod, value) %>% 
   group_by(variable) %>% 
-  mutate(p_value = t.test(unlist(`c-section`), unlist(vaginal))$p.value,
-         t_value = t.test(unlist(`c-section`), unlist(vaginal))$statistic,
+  mutate(p_value = round(t.test(unlist(`c-section`), unlist(vaginal))$p.value,4),
+         t_value = round(t.test(unlist(`c-section`), unlist(vaginal))$statistic,2),
+         mean_csec = round(t.test(unlist(`c-section`), unlist(vaginal))$estimate[1],2),
+         mean_vag = round(t.test(unlist(`c-section`), unlist(vaginal))$estimate[2],2),
          time_point="t.12_mo")
 
 #  TIME POINT: t.15_mo (sig.dif) # DONE
 # t-test: abx_episode and days2_baby_med ~ mod
 out.15mo=dat3_df %>% ungroup() %>%
   select(days2_baby_meds, abx_episode, mod, wellness.visit) %>%
-  filter(!abx_episode=="NA", !days2_baby_meds=="NA", !mod=="NA", wellness.visit=="t.15_mo") %>% 
+  filter(wellness.visit=="t.15_mo") %>% 
   gather(key = variable, value = value, -mod, -wellness.visit) %>%
   group_by(mod, variable) %>% 
   summarise(value = list(value)) %>% 
   spread(mod, value) %>% 
   group_by(variable) %>% 
-  mutate(p_value = t.test(unlist(`c-section`), unlist(vaginal))$p.value,
-         t_value = t.test(unlist(`c-section`), unlist(vaginal))$statistic,
+  mutate(p_value = round(t.test(unlist(`c-section`), unlist(vaginal))$p.value,4),
+         t_value = round(t.test(unlist(`c-section`), unlist(vaginal))$statistic,2),
+         mean_csec = round(t.test(unlist(`c-section`), unlist(vaginal))$estimate[1],2),
+         mean_vag = round(t.test(unlist(`c-section`), unlist(vaginal))$estimate[2],2),
          time_point="t.15_mo")
 
 #  TIME POINT: t.18_mo (sig.dif) # DONE
 # t-test: abx_episode and days2_baby_med ~ mod
 out.18mo=dat3_df %>% ungroup() %>%
   select(days2_baby_meds, abx_episode, mod, wellness.visit) %>%
-  filter(!abx_episode=="NA", !days2_baby_meds=="NA", !mod=="NA", wellness.visit=="t.18_mo") %>% 
+  filter(wellness.visit=="t.18_mo") %>% 
   gather(key = variable, value = value, -mod, -wellness.visit) %>%
   group_by(mod, variable) %>% 
   summarise(value = list(value)) %>% 
   spread(mod, value) %>% 
   group_by(variable) %>% 
-  mutate(p_value = t.test(unlist(`c-section`), unlist(vaginal))$p.value,
-         t_value = t.test(unlist(`c-section`), unlist(vaginal))$statistic,
+  mutate(p_value = round(t.test(unlist(`c-section`), unlist(vaginal))$p.value,4),
+         t_value = round(t.test(unlist(`c-section`), unlist(vaginal))$statistic,2),
+         mean_csec = round(t.test(unlist(`c-section`), unlist(vaginal))$estimate[1],2),
+         mean_vag = round(t.test(unlist(`c-section`), unlist(vaginal))$estimate[2],2),
          time_point="t.18_mo")
 
 #  TIME POINT: t.2_yr (sig.dif) # DONE
 # t-test: abx_episode and days2_baby_med ~ mod
 out.2yr=dat3_df %>% ungroup() %>%
   select(days2_baby_meds, abx_episode, mod, wellness.visit) %>%
-  filter(!abx_episode=="NA", !days2_baby_meds=="NA", !mod=="NA", wellness.visit=="t.2_yr") %>% 
+  filter(wellness.visit=="t.2_yr") %>% 
   gather(key = variable, value = value, -mod, -wellness.visit) %>%
   group_by(mod, variable) %>% 
   summarise(value = list(value)) %>% 
   spread(mod, value) %>% 
   group_by(variable) %>% 
-  mutate(p_value = t.test(unlist(`c-section`), unlist(vaginal))$p.value,
-         t_value = t.test(unlist(`c-section`), unlist(vaginal))$statistic,
+  mutate(p_value = round(t.test(unlist(`c-section`), unlist(vaginal))$p.value,4),
+         t_value = round(t.test(unlist(`c-section`), unlist(vaginal))$statistic,2),
+         mean_csec = round(t.test(unlist(`c-section`), unlist(vaginal))$estimate[1],2),
+         mean_vag = round(t.test(unlist(`c-section`), unlist(vaginal))$estimate[2],2),
          time_point="t.2_yr")
 
 #  TIME POINT: t.2.5_yr (sig.dif) # DONE
 # t-test: abx_episode and days2_baby_med ~ mod
 out.2_5yr=dat3_df %>% ungroup() %>%
   select(days2_baby_meds, abx_episode, mod, wellness.visit) %>%
-  filter(!abx_episode=="NA", !days2_baby_meds=="NA", !mod=="NA", wellness.visit=="t.2.5_yr") %>% 
+  filter(wellness.visit=="t.2.5_yr") %>% 
   gather(key = variable, value = value, -mod, -wellness.visit) %>%
   group_by(mod, variable) %>% 
   summarise(value = list(value)) %>% 
   spread(mod, value) %>% 
   group_by(variable) %>% 
-  mutate(p_value = t.test(unlist(`c-section`), unlist(vaginal))$p.value,
-         t_value = t.test(unlist(`c-section`), unlist(vaginal))$statistic,
+  mutate(p_value = round(t.test(unlist(`c-section`), unlist(vaginal))$p.value,4),
+         t_value = round(t.test(unlist(`c-section`), unlist(vaginal))$statistic,2),
+         mean_csec = round(t.test(unlist(`c-section`), unlist(vaginal))$estimate[1],2),
+         mean_vag = round(t.test(unlist(`c-section`), unlist(vaginal))$estimate[2],2),
          time_point="t.2.5_yr")
 
 #  TIME POINT: t.3_yr (sig.dif) # DONE
 # t-test: abx_episode and days2_baby_med ~ mod
 out.3yr=dat3_df %>% ungroup() %>%
   select(days2_baby_meds, abx_episode, mod, wellness.visit) %>%
-  filter(!abx_episode=="NA", !days2_baby_meds=="NA", !mod=="NA", wellness.visit=="t.3_yr") %>% 
+  filter(wellness.visit=="t.3_yr") %>% 
   gather(key = variable, value = value, -mod, -wellness.visit) %>%
   group_by(mod, variable) %>% 
   summarise(value = list(value)) %>% 
   spread(mod, value) %>% 
   group_by(variable) %>% 
-  mutate(p_value = t.test(unlist(`c-section`), unlist(vaginal))$p.value,
-         t_value = t.test(unlist(`c-section`), unlist(vaginal))$statistic,
+  mutate(p_value = round(t.test(unlist(`c-section`), unlist(vaginal))$p.value,4),
+         t_value = round(t.test(unlist(`c-section`), unlist(vaginal))$statistic,2),
+         mean_csec = round(t.test(unlist(`c-section`), unlist(vaginal))$estimate[1],2),
+         mean_vag = round(t.test(unlist(`c-section`), unlist(vaginal))$estimate[2],2),
          time_point="t.3_yr")
 
 #  TIME POINT: t.4_yr (sig.dif) # DONE
 # t-test: abx_episode and days2_baby_med ~ mod
 out.4yr=dat3_df %>% ungroup() %>%
   select(days2_baby_meds, abx_episode, mod, wellness.visit) %>%
-  filter(!abx_episode=="NA", !days2_baby_meds=="NA", !mod=="NA", wellness.visit=="t.4_yr") %>% 
+  filter(wellness.visit=="t.4_yr") %>% 
   gather(key = variable, value = value, -mod, -wellness.visit) %>%
   group_by(mod, variable) %>% 
   summarise(value = list(value)) %>% 
   spread(mod, value) %>% 
   group_by(variable) %>% 
-  mutate(p_value = t.test(unlist(`c-section`), unlist(vaginal))$p.value,
-         t_value = t.test(unlist(`c-section`), unlist(vaginal))$statistic,
+  mutate(p_value = round(t.test(unlist(`c-section`), unlist(vaginal))$p.value,4),
+         t_value = round(t.test(unlist(`c-section`), unlist(vaginal))$statistic,2),
+         mean_csec = round(t.test(unlist(`c-section`), unlist(vaginal))$estimate[1],2),
+         mean_vag = round(t.test(unlist(`c-section`), unlist(vaginal))$estimate[2],2),
          time_point="t.4_yr")
 
 #  TIME POINT: t.5_yr (sig.dif) # DONE
 # t-test: abx_episode and days2_baby_med ~ mod
 out.5yr=dat3_df %>% ungroup() %>%
   select(days2_baby_meds, abx_episode, mod, wellness.visit) %>%
-  filter(!abx_episode=="NA", !days2_baby_meds=="NA", !mod=="NA", wellness.visit=="t.5_yr") %>% 
+  filter(wellness.visit=="t.5_yr") %>% 
   gather(key = variable, value = value, -mod, -wellness.visit) %>%
   group_by(mod, variable) %>% 
   summarise(value = list(value)) %>% 
   spread(mod, value) %>% 
   group_by(variable) %>% 
-  mutate(p_value = t.test(unlist(`c-section`), unlist(vaginal))$p.value,
-         t_value = t.test(unlist(`c-section`), unlist(vaginal))$statistic,
-         time_point="t.5_yr")
+  mutate(p_value = round(t.test(unlist(`c-section`), unlist(vaginal))$p.value,4),
+         t_value = round(t.test(unlist(`c-section`), unlist(vaginal))$statistic,2),
+         mean_csec = round(t.test(unlist(`c-section`), unlist(vaginal))$estimate[1],2),
+         mean_vag = round(t.test(unlist(`c-section`), unlist(vaginal))$estimate[2],2),
+         time_point="t.5_yr");out.5yr
 
 # combine results into single data.frame
-results=bind_rows(out.all,out.2wk,out.1mo,out.2mo,out.4mo,out.6mo,out.9mo,
+results_well_cont=bind_rows(out.all,out.2wk,out.1mo,out.2mo,out.4mo,out.6mo,out.9mo,
                   out.12mo,out.15mo,out.18mo,out.2yr,out.2_5yr,out.3yr,
-                  out.4yr,out.5yr);results
+                  out.4yr,out.5yr);results_well_cont
+
+# combine results into single data.frame
+results_well_cont.final=results_well_cont %>%
+  select(variable,p_value,t_value,mean_csec,mean_vag,time_point)
+now=Sys.Date(); today=format(now, format="%d%b%y")
+write.csv(results_well_cont.final, file=paste0(out.dir,"MOD_ABX_well_cont_ttest_",today,".csv"), row.names=F)
