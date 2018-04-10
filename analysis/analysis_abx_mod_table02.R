@@ -52,7 +52,7 @@ range(dat2$baby_birth_wt_gr, na.rm=T)
 table(is.na(dat2$baby_dob))
 
 # **************************************************************************** #
-# *****      subset the data: gest_age (wk) >37 & <42, birth_wt (gr) >500                                              
+# ***** subset the data:gest_age_wk>=37, gest_age_wk<=42, baby_birth_wt_gr>500, is.na(baby_dob)==F, is.na(mod)==F)                                            
 # **************************************************************************** # 
 
 dat3=dat2 %>%
@@ -92,14 +92,23 @@ dat3_df=dat2_df %>%
 # WELLNESS CATS
 #-------------
 #  Descriptive look abx_episode according to wellness-cats and mod
-wellness.abx=dat3_df %>%
+wellness.abx_cats_table02=dat3_df %>%
   group_by(wellness.visit_cats, mod) %>% 
   summarise(count = n(),                                   # total count
             count.unique = n_distinct(part_id),            # count of unique participants
-            abx_epi_mean=mean(abx_episode, na.rm=T),       # mean abx_episode
-            abx_epi_sd=sd(abx_episode, na.rm=T),           # sd abx_episode
-            abx_max_mean=mean(abx_max, na.rm=T),           # mean abx_episode_max
-            abx_max_sd=sd(abx_max, na.rm=T));wellness.abx  # sd abx_episode_max
+            abx_epi_mean=round(mean(abx_episode, na.rm=T),2),       # mean abx_episode
+            abx_epi_sd=round(sd(abx_episode, na.rm=T),2),           # sd abx_episode
+            abx_max_mean=round(mean(abx_max, na.rm=T),2),           # mean abx_episode_max
+            abx_max_sd=round(sd(abx_max, na.rm=T),2));              # sd abx_episode_max
+
+#make an 'export' variable
+wellness.abx_cats_table02$abx_mean_export <- with(wellness.abx_cats_table02, sprintf("%g (%.1f%%)", abx_epi_mean, abx_epi_sd))
+wellness.abx_cats_table02$abx_max_export <- with(wellness.abx_cats_table02, sprintf("%g (%.1f%%)", abx_max_mean, abx_max_sd))
+
+# export
+now=Sys.Date(); today=format(now, format="%d%b%y")
+write.csv(wellness.abx_cats_table02, file=paste0(out.dir,"table02\\abx_mod_table02_cat",today,".csv"), row.names=F)
+
 
 # WELLNESS LOTS OF CATS
 #----------------------
@@ -222,7 +231,7 @@ results_well_cats=bind_rows(out.6mo,out.6_12mo,out.12_24mo,out.24_36mo,out.36mo)
 results_well_cats.final=results_well_cats %>%
   select(variable,p_value,t_value,mean_csec,mean_vag,time_point)
 now=Sys.Date(); today=format(now, format="%d%b%y")
-write.csv(results_well_cats.final, file=paste0(out.dir,"MOD_ABX_wellcats_ttest_",today,".csv"), row.names=F)
+write.csv(results_well_cats.final, file=paste0(out.dir,"table02\\MOD_ABX_table02_wellcats_ttest_",today,".csv"), row.names=F)
 
 
 # WELLNESS LOTS OF CATS

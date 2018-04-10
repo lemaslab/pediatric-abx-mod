@@ -52,13 +52,18 @@ length(unique(dat2$part_id)) # 13661
 # *****      subset the data: gest_age (wk) >37 & <42, birth_wt (gr) >500                                               
 # **************************************************************************** # 
 
+# check before subsetting
+range(dat2$gest_age_wk, na.rm=T)
+range(dat2$baby_birth_wt_gr, na.rm=T)
+length(unique(dat2$part_id)) # 13661
+
 dat3=dat2 %>%
-  filter(gest_age_wk>=37, gest_age_wk<=42, baby_birth_wt_gr>500)   
+  filter(gest_age_wk>=37, gest_age_wk<=42, baby_birth_wt_gr>500, is.na(baby_dob)==F, is.na(mod)==F)   
 
 # check
 range(dat3$gest_age_wk)
 range(dat3$baby_birth_wt_gr)
-length(unique(dat3$part_id)) # 5194
+length(unique(dat3$part_id)) # 5025
 
 # **************************************************************************** #
 # *****      formatt/subset the data: single observations                                              
@@ -73,7 +78,7 @@ dat4=dat3 %>%
 # check
 range(dat4$gest_age_wk)
 range(dat4$baby_birth_wt_gr)
-length(unique(dat4$part_id)) # 4942
+length(unique(dat4$part_id)) # 4781
 
 head(dat4)
 dat4$abx_episode_max
@@ -81,7 +86,25 @@ names(dat4)
 
 # https://stackoverflow.com/questions/34587317/using-dplyr-to-create-summary-proportion-table-with-several-categorical-factor-v
 
-# Categorical data
+# Categorical data: ALL
+#-----------------
+
+dat5 <- melt(dat4, measure.vars=c("baby_race","baby_ethnicity","mom_ethnicity_link", "mom_race_link","abx_episode_max","wellness.visit","wellness.visit_cats"))
+res.all <- dat5 %>%
+  group_by(variable, value) %>%
+  summarise (n = n()) %>%
+  mutate(freq = n / sum(n));res.all
+
+
+#make an 'export' variable
+res.all$export <- with(res.all, sprintf("%i (%.1f%%)", n, freq*100))
+
+# export
+now=Sys.Date(); today=format(now, format="%d%b%y")
+write.csv(res.all, file=paste0(out.dir,"abx_mod_table01_cat_ALL_",today,".csv"), row.names=F)
+
+
+# Categorical data: MOD
 #-----------------
 
 dat5 <- melt(dat4, measure.vars=c("baby_race","baby_ethnicity","mom_ethnicity_link", "mom_race_link","abx_episode_max","wellness.visit","wellness.visit_cats"))
@@ -116,11 +139,31 @@ now=Sys.Date(); today=format(now, format="%d%b%y")
 write.csv(output, file=paste0(out.dir,"abx_mod_table01_cat_",today,".csv"), row.names=F)
 
 #-----------------
-# Continuous data
+# Continuous data: ALL
 #-----------------
 names(dat4)
 dat6 <- melt(dat4, measure.vars=c("days2_baby_meds","baby_birth_wt_gr","gest_age_wk", "baby_nicu_los","abx_episode"))
 
+res.all=dat6 %>%
+  group_by(variable) %>%
+  select(variable,value) %>%
+  summarize(mean=mean(value, na.rm=T), sd=sd(value, na.rm=T));res.all
+
+#make an 'export' variable
+res.all$export <- with(res.all, sprintf("%g (%.1f%%)", mean, sd))
+
+# export table: continuous
+#-------------
+
+now=Sys.Date(); today=format(now, format="%d%b%y")
+write.csv(res.all, file=paste0(out.dir,"abx_mod_table01_cont_ALL_",today,".csv"), row.names=F)
+
+
+#-----------------
+# Continuous data: MOD
+#-----------------
+names(dat4)
+dat6 <- melt(dat4, measure.vars=c("days2_baby_meds","baby_birth_wt_gr","gest_age_wk", "baby_nicu_los","abx_episode"))
 
 res=dat6 %>%
   group_by(mod,variable) %>%
