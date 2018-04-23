@@ -4,7 +4,7 @@
 # **************************************************************************** #
 
 # Author:      Dominick Lemas 
-# Date:        January 31, 2018 
+# Date:        April 23, 2018 
 # IRB:
 # Description: Data management for link mom-baby data extracted from RedCap. 
 # Data: C:\Users\Dominick\Dropbox (UFL)\IRB\UF\UFHealth\redcap_export
@@ -41,14 +41,6 @@ library(reshape2)
 # ***************      UFHealth_EHR_MomBaby_Prenatal_16Jan18.csv                                              
 # **************************************************************************** # 
 
-# UFHealth_EHR_MomBaby_Prenatal_16Jan18.csv
-#-----------------
-# rows: 
-# cols:  
-# unique id: 
-# repeat: 
-# ICD9/10: 
-
 #Read Data
 data.file.name="UFHealth_EHR_MomBaby_Prenatal_16Jan18.csv";data.file.name
 data.file.path=paste0(data.dir,"\\",data.file.name);data.file.path
@@ -58,29 +50,25 @@ ufhealth.mod<- read.csv(data.file.path);ufhealth.mod
 dat=ufhealth.mod
 head(dat); str(dat); names(dat)
 
-# limit to just a few variables
-dat.s=dat[,c("part_id","redcap_repeat_instance","mom_prenat_ht_inch_link","mom_prenat_wt_lb_link","days2_prenatal_apt_link")]
-str(dat.s)
-head(dat.s)
+dat3=dat %>%
+  select(part_id,redcap_repeat_instrument,redcap_repeat_instance,mom_id, mom_race_link, mom_ethnicity_link, mom_prenat_apt_date_link,
+         mom_prenat_ht_link, mom_prenat_wt_oz_link, mom_prenat_enc_type_link, days2_prenatal_apt_link, 
+         mom_prenat_ht_inch_link, mom_prenat_wt_lb_link) %>% 
+  mutate(mom_prenat_ht_link.save=mom_prenat_ht_link) %>%
+  filter(redcap_repeat_instrument %in% c("linked_mom_prenatal_apt")) %>%
+  separate(mom_prenat_ht_link, c("mom_ht_ft","mom_ht_in"), "_") %>%
 
-# subset to include only baby with days2-measure (i.e at least 1 prenatavl visit)
-# note need data export with appropriate mom-id
-newdata <- subset(dat.s, is.na(dat.s$days2_prenatal_apt_link)=="FALSE")
-head(newdata)
-str(newdata)
+# drop characters
+dat3$mom_ht_ft=as.numeric(gsub("'","", dat3$mom_ht_ft))
+dat3$mom_ht_in=as.numeric(gsub("'","", dat3$mom_ht_in))
 
-# format variables
-newdata$part_id=as.character(newdata$part_id)
+# compute height in inches
+dat4=dat3 %>% 
+  mutate(mom_ht_meter=((mom_ht_ft*12)+mom_ht_in)*0.0254) %>%
+  mutate(mom_wt_kg=mom_prenat_wt_lb_link*0.453592) %>%
+  mutate(mom_bmi=mom_wt_kg/mom_ht_meter^2)
 
-# look at data
-hist(newdata$days2_prenatal_apt_link)
-hist(newdata$redcap_repeat_instance)
-head(newdata)
+# plot
+hist(dat4$days2_prenatal_apt_link)
+hist(dat4$mom_bmi)
 
-# reshape the data
-mdata <- melt(newdata, id=c("part_id","mom_prenat_ht_inch_link","mom_prenat_wt_lb_link","redcap_repeat_instance"))
-head(mdata)
-mdata[1:50,]
-
-dat.new3=dcast(mdata, part_id+mom_prenat_ht_inch_link+mom_prenat_wt_lb_link~variable+redcap_repeat_instance)
-head(dat.new3)
