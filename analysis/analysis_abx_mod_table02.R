@@ -4,7 +4,7 @@
 # **************************************************************************** #
 
 # Author:      Dominick Lemas 
-# Date:        April 04, 2018 
+# Date:        April 30, 2018 
 # IRB:
 # Description: Analysis of abx and mode-of-delivery EHR data 
 # Data: C:\Users\djlemas\Dropbox (UFL)\02_Projects\UFHEALTH\RedCap\rdata
@@ -42,7 +42,7 @@ library(tidyverse)
 # *****      l             load data: abx_mod_04Apr18.rdata       
 # **************************************************************************** # 
 
-load(file="abx_mod_05Apr18.rdata")
+load(file="abx_mod_30Apr18.rdata")
 head(dat2)
 names(dat2)
 
@@ -50,6 +50,7 @@ names(dat2)
 range(dat2$gest_age_wk, na.rm=T)
 range(dat2$baby_birth_wt_gr, na.rm=T) 
 table(is.na(dat2$baby_dob))
+range(dat2$abx_episode, na.rm=T)
 
 # **************************************************************************** #
 # ***** subset the data:gest_age_wk>=37, gest_age_wk<=42, baby_birth_wt_gr>500, is.na(baby_dob)==F, is.na(mod)==F)                                            
@@ -68,8 +69,8 @@ table(dat3$mod)
 dat3 %>%
   group_by(mod) %>%
   summarize(count=n_distinct(part_id),
-            abx_mean=mean(abx_episode),
-            abx_sd=sd(abx_episode)) 
+            abx_mean=mean(abx_episode, na.rm=T),
+            abx_sd=sd(abx_episode, na.rm=T)) 
 
 # **************************************************************************** #
 # *****      Summarize the data set: wellness_cats first then wellness.visit second                                              
@@ -79,8 +80,18 @@ dat3 %>%
 dat2_df=tbl_df(dat3)
 dat2_df
 
+# what is status of cs/vaginal
+unique(dat2_df$delivery_mode)
+table(dat2_df$delivery_mode)
+
+# [1] Vaginal&_Spontaneous_Delivery (23206) 
+#  C-Section&_Low_Transverse     Vaginal&_Vacuum_(Extractor)  
+# [4] C-Section&_Unspecified        C-Section&_Low_Vertical       Vaginal&_Forceps             
+# [7] VBAC&_Spontaneous             Vertical_C-Section            C-Section&_Classical         
+# [10] Vaginal&_Breech 
+
 # Mean abx_episodes for entire cohort 
-summarize(dat2_df, abx_mean_epi=mean(abx_episode, na.rm=T)) # 1.90
+summarize(dat2_df, abx_mean_epi=mean(abx_episode, na.rm=T)) # 2.08
 
 # Compute variable with highest rank abx_episodes for each participant
 # within each wellness visits category
@@ -101,7 +112,7 @@ wellness.abx_cats_table02=dat3_df %>%
             abx_max_mean=round(mean(abx_max, na.rm=T),2),           # mean abx_episode_max
             abx_max_sd=round(sd(abx_max, na.rm=T),2));              # sd abx_episode_max
 
-#make an 'export' variable
+# make an 'export' variable
 wellness.abx_cats_table02$abx_mean_export <- with(wellness.abx_cats_table02, sprintf("%g (%.1f%%)", abx_epi_mean, abx_epi_sd))
 wellness.abx_cats_table02$abx_max_export <- with(wellness.abx_cats_table02, sprintf("%g (%.1f%%)", abx_max_mean, abx_max_sd))
 
