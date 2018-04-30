@@ -52,10 +52,21 @@ ufhealth.abx<- read.csv(data.file.path,na.strings=c("","NA"));ufhealth.abx
 dat=ufhealth.abx
 head(dat); str(dat); names(dat)
 dat$baby_med_date
+length(unique(dat$part_id))  # 30540 (mom & baby)
+
+# create mom/baby variable (need to do)
 
 # unique list of infant abx ip
 abx.op=unique(dat$baby_meds);abx.op
 abx.ip=unique(dat$baby_med_ip);abx.ip
+
+# what are the counts/observations for "abx_ip" and "abx_rx"
+unique(dat$redcap_repeat_instrument)
+table(dat$redcap_repeat_instrument)
+# baby_antibiotics_ip     baby_antibiotics_rx         baby_demography   linked_mom_demography 
+# 70367                    5156                       30540             16607 
+# linked_mom_prenatal_apt 
+# 32124 
 
 # **************************************************************************** #
 # ***********      Create mom-baby demography data set (with mode of delivery)                                             
@@ -67,9 +78,8 @@ abx.ip=unique(dat$baby_med_ip);abx.ip
 head(dat);names(dat)
 dat2=dat %>%
   group_by(part_id) %>%
-  #select(part_id,redcap_repeat_instrument,redcap_repeat_instance, baby_race, baby_ethnicity,mom_race_link, mom_ethnicity_link,baby_birth_wt_gr,delivery_mode,baby_gest_age) %>%
-  #filter(redcap_repeat_instrument %in% c("baby_demography", "linked_mom_demography")) %>%
-  filter(grepl("Baby",part_id));head(dat2);names(dat2)
+  filter(grepl("Baby",part_id));
+head(dat2);names(dat2)
 length(unique(dat$part_id)) # 30540 (mom annd baby)
 length(unique(dat2$part_id)) # 16684
 
@@ -109,12 +119,17 @@ dat.abx.ip=dat.mom_baby %>%
 
 # check data
   head(dat.abx.ip);names(dat.abx.ip)
+  length(unique(dat.abx.ip$part_id))
+  temp=dat.abx.ip$redcap_repeat_instrument=="baby_antibiotics_ip"
+  table(temp)
 ## rename variables for merge
 #----------------------------
 dat.abx.ip.final=rename(dat.abx.ip, baby_med_order=baby_med_order_ip, baby_mar_action=baby_mar_action_ip,
                         baby_med_code=baby_med_code_ip, baby_meds=baby_med_ip, days2_baby_meds=days2_baby_meds_ip,
                         baby_med_date=baby_med_ip_date);head(dat.abx.ip.final);names(dat.abx.ip.final)
-       
+# last check
+unique(dat.abx.ip.final$redcap_repeat_instrument)  
+         
 # out-patient data
 dat.abx.op=dat.mom_baby %>%
   group_by(part_id) %>%
@@ -129,14 +144,28 @@ dat.abx.op=dat.mom_baby %>%
   
 # check data
   head(dat.abx.op);names(dat.abx.op)
+  temp=dat.abx.op$redcap_repeat_instrument=="baby_antibiotics_rx"
+  table(temp)
 # modify for merge
-  dat.abx.op$baby_mar_action=NA
+  dat.abx.op$baby_mar_action="GIVEN_RX"
   dat.abx.op$baby_med_order=NA
-## arrange variables for merge
+
+  ## arrange variables for merge
 #----------------------------
-  names(dat.abx.ip.final);length(names(dat.abx.ip.final))
-  names(dat.abx.op);length(names(dat.abx.op))
-dat.abx.op.final=dat.abx.op %>%
+  # abx_ip
+  names(dat.abx.ip.final);length(names(dat.abx.ip.final));dim(dat.abx.ip.final)
+  length(unique(dat.abx.ip.final$part_id)) # 16684 participants
+  temp=dat.abx.ip.final$redcap_repeat_instrument=="baby_antibiotics_ip"
+  table(temp)
+
+  # abx_rx
+  names(dat.abx.op);length(names(dat.abx.op));dim(dat.abx.op)
+  length(unique(dat.abx.op$part_id))
+  temp=dat.abx.op$redcap_repeat_instrument=="baby_antibiotics_rx"
+  table(temp)
+  
+# limit to variable names shared between both data sets (ip and rx)
+  dat.abx.op.final=dat.abx.op %>%
     group_by(part_id) %>%
     select(intersect(names(dat.abx.ip.final),names(dat.abx.op)))
   
@@ -155,6 +184,9 @@ head(dat.abx.ALL.sort);names(dat.abx.ALL.sort)
 length(unique(dat.abx.ALL.sort$part_id)) # 16684
 dim(dat.abx.ALL.sort)
 names(dat.abx.ALL.sort)
+
+# check abx counts within groups (ip and rx)
+table(dat.abx.ALL.sort$redcap_repeat_instrument)
 
 # **************************************************************************** #
 # ********      Format gestational age variables: gest_age_wk                                              
@@ -211,6 +243,14 @@ dat.abx.ALL.sort$mod=ifelse(dat.abx.ALL.sort$delivery_mode=="Vaginal,_Forceps","
 head(dat.abx.ALL.sort) # did recode work? yes
 names(dat.abx.ALL.sort)
 
+# check data
+length(unique(dat.abx.ALL.sort$part_id)) # 16684
+dim(dat.abx.ALL.sort)
+names(dat.abx.ALL.sort)
+
+# check abx counts within groups (ip and rx)
+table(dat.abx.ALL.sort$redcap_repeat_instrument)
+
 # **************************************************************************** #
 # *****      subset according to medication order                                              
 # **************************************************************************** # 
@@ -219,9 +259,11 @@ names(dat.abx.ALL.sort)
 unique(dat.abx.ALL.sort$baby_mar_action)
 
 dat.new=dat.abx.ALL.sort %>%
-  filter(baby_mar_action %in% c("GIVEN", "GIVEN BY OTHER"))
+  filter(baby_mar_action %in% c("GIVEN", "GIVEN BY OTHER", "NA"))
 
 unique(dat.new$baby_mar_action)
+table(dat.new$redcap_repeat_instrument)
+
 
 # [1] GIVEN                      <NA>                       GIVEN BY OTHER            
 # [4] DUE                        MISSED                     CANCELED ENTRY            
