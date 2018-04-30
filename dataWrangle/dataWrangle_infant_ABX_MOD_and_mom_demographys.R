@@ -4,7 +4,7 @@
 # **************************************************************************** #
 
 # Author:      Dominick Lemas 
-# Date:        March 17, 2018 
+# Date:        April 30, 2018 
 # IRB:
 # Description: Data management for baby abx, mode of delivery and mom demography
 #              data extracted from RedCap. 
@@ -258,13 +258,7 @@ table(dat.abx.ALL.sort$redcap_repeat_instrument)
 names(dat.abx.ALL.sort)
 unique(dat.abx.ALL.sort$baby_mar_action)
 
-dat.new=dat.abx.ALL.sort %>%
-  filter(baby_mar_action %in% c("GIVEN", "GIVEN BY OTHER", "NA"))
-
-unique(dat.new$baby_mar_action)
-table(dat.new$redcap_repeat_instrument)
-
-
+# these are codes from "abx_ip" encounters
 # [1] GIVEN                      <NA>                       GIVEN BY OTHER            
 # [4] DUE                        MISSED                     CANCELED ENTRY            
 # [7] START/GIVEN                HELD                       IV STOP                   
@@ -272,14 +266,26 @@ table(dat.new$redcap_repeat_instrument)
 # [13] IV RESUME                  NEW SYRINGE/CARTRIDGE      NEW BAG-1ST DOSE EDUCATION
 # [16] STOPPED                    PENDING                    RESTARTED                 
 # [19] BOLUS                      DRUG LEVEL(S) DUE          IV PAUSE                  
-# [22] RETURN TO CABINET          SEE ALTERNATIVE           
+# [22] RETURN TO CABINET          SEE ALTERNATIVE 
+
+# NOte: we created "GIVEN_RX" to make sure we get abx_rx (outpatient visits)
+dat.new=dat.abx.ALL.sort %>%
+  filter(baby_mar_action %in% c("GIVEN", "GIVEN BY OTHER", "GIVEN_RX"))
+
+unique(dat.new$baby_mar_action)
+table(dat.new$redcap_repeat_instrument)
+
+# NOTE: limiting to "GIVEN", "GIVEN BY OTHER"
+# resulted in 62987 observations (dropped 7380 entries)
+
+length(unique(dat.new$part_id)) # 16684
 
 # **************************************************************************** #
 # *****     episode calculation (with mode of delivery)                                              
 # **************************************************************************** # 
 
 # status of data
-dim(dat.new)  # 173139     28
+dim(dat.new)  # 116951     32
 dat.s2=dat.new
 names(dat.s2)
 
