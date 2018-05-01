@@ -99,6 +99,8 @@ dat.mom_baby=dat2 %>%  # Recode gaps in data due to redcap export
 
 # In-patient data (carry everything BUT baby_meds,baby_med_code,baby_med_order,days2_baby_meds,baby_med_date)
 head(dat.mom_baby);names(dat.mom_baby)
+unique(dat.mom_baby$redcap_repeat_instrument)
+
 dat.abx.ip=dat.mom_baby %>%
   group_by(part_id) %>%
   select(part_id,redcap_event_name,redcap_repeat_instrument,redcap_repeat_instance,  #base variables
@@ -108,12 +110,13 @@ dat.abx.ip=dat.mom_baby %>%
          baby_gest_age,baby_nicu_los,
          mom_ethnicity_link,mom_race_link,
          mom_prenat_apt_date_link,mom_prenat_ht_link,mom_prenat_wt_oz_link,days2_prenatal_apt_link,
-         mom_prenat_enc_type_link,mom_prenat_ht_inch_link,mom_prenat_wt_lb_link) %>% 
-  filter(redcap_repeat_instrument %in% c("baby_demography", "baby_antibiotics_ip", "linked_mom_prenatal_apt"))
+         mom_prenat_enc_type_link,mom_prenat_ht_inch_link,mom_prenat_wt_lb_link,
+         baby_ht_cm, baby_wt_kgs, baby_head_circ_cm, days2_baby_wellvisit) %>% 
+  filter(redcap_repeat_instrument %in% c("baby_demography","baby_antibiotics_ip","linked_mom_prenatal_apt","baby_wellvisit"))
 
 # check data
   head(dat.abx.ip);names(dat.abx.ip)
-  length(unique(dat.abx.ip$part_id))
+  length(unique(dat.abx.ip$part_id)) # 16684
   temp=dat.abx.ip$redcap_repeat_instrument=="baby_antibiotics_ip"
   table(temp)
 ## rename variables for merge
@@ -133,8 +136,9 @@ dat.abx.op=dat.mom_baby %>%
          baby_gest_age,baby_nicu_los,
          mom_ethnicity_link,mom_race_link,
          mom_prenat_apt_date_link,mom_prenat_ht_link,mom_prenat_wt_oz_link,days2_prenatal_apt_link,
-         mom_prenat_enc_type_link,mom_prenat_ht_inch_link,mom_prenat_wt_lb_link) %>%
-  filter(redcap_repeat_instrument %in% c("baby_demography","baby_antibiotics_rx","linked_mom_prenatal_apt")) 
+         mom_prenat_enc_type_link,mom_prenat_ht_inch_link,mom_prenat_wt_lb_link,
+         baby_ht_cm, baby_wt_kgs, baby_head_circ_cm, days2_baby_wellvisit) %>%
+  filter(redcap_repeat_instrument %in% c("baby_demography","baby_antibiotics_rx","linked_mom_prenatal_apt","baby_wellvisit")) 
   
 # check data
   head(dat.abx.op);names(dat.abx.op)
@@ -144,7 +148,7 @@ dat.abx.op=dat.mom_baby %>%
   dat.abx.op$baby_mar_action="GIVEN_RX"
   dat.abx.op$baby_med_order=NA
 
-  ## arrange variables for merge
+## arrange variables for merge
 #----------------------------
   # abx_ip
   names(dat.abx.ip.final);length(names(dat.abx.ip.final));dim(dat.abx.ip.final)
@@ -169,6 +173,7 @@ names(dat.abx.op.final); head(dat.abx.op.final);str(dat.abx.op.final);dim(dat.ab
 # combine data.frames
 dat.abx.ALL=rbind(as.data.frame(dat.abx.ip.final),as.data.frame(dat.abx.op.final))
 names(dat.abx.ALL);head(dat.abx.ALL)
+table(dat.abx.ALL$redcap_repeat_instrument)
 str(dat.abx.ALL)
 dat.abx.ALL$baby_med_date=as.Date(dat.abx.ALL$baby_med_date, format="%m/%d/%Y")
 
@@ -193,10 +198,10 @@ abx.ip=unique(dat.abx.ALL.sort$baby_med_ip);abx.ip
 # what are the counts/observations for "abx_ip" and "abx_rx"
 unique(dat.abx.ALL.sort$redcap_repeat_instrument)
 table(dat.abx.ALL.sort$redcap_repeat_instrument)
-# baby_antibiotics_ip     baby_antibiotics_rx         baby_demography   linked_mom_demography 
-# 70367                    5156                       30540             16607 
-# linked_mom_prenatal_apt 
-# 32124 
+# baby_antibiotics_ip     baby_antibiotics_rx         baby_demography          baby_wellvisit 
+# 70367                    5156                   33368                  102882 
+# linked_mom_demography linked_mom_prenatal_apt 
+# 0                   64248  
 
 # read ABX Classification data
 data.file.name="abx_medication_names\\abx_classification_18Mar18_v2_.xlsx";data.file.name
@@ -226,6 +231,7 @@ table(abx.class2$Classification)
 # CREATE NARROW variables
 abx.name=abx.class2[2:5]
 dat.abx.ALL.sort_02=left_join(dat.abx.ALL.sort, abx.name, by = c("baby_meds"))
+table(dat.abx.ALL.sort_02$redcap_repeat_instrument.x)
 
 # notes: condense list of abx in excel file. ensure only contains 
 # unique entires (~102 should be the number) that are classified as 
@@ -235,16 +241,19 @@ dat.abx.ALL.sort_02=left_join(dat.abx.ALL.sort, abx.name, by = c("baby_meds"))
 # now=Sys.Date(); today=format(now, format="%d%b%y")
 # write.table(test, file="test_broad.csv", sep=";", row.names=F)
 
-# drop out non-abx
-dat.abx.ALL.sort_03=dat.abx.ALL.sort_02 %>%
-  filter(!Classification=="Drop")
-table(dat.abx.ALL.sort_03$Classification)  # worked
-  
+# # drop out non-abx  (## DOUBLE CHECK, looks like too much loss of observations)
+# dat.abx.ALL.sort_03=dat.abx.ALL.sort_02 %>%
+#   filter(Classification %in% c("Broad", "Macrolide", "Narrow"))
+# table(dat.abx.ALL.sort_03$Classification)  # worked
+# table(dat.abx.ALL.sort_03$redcap_repeat_instrument.x)
+
+dim(dat.abx.ALL.sort_02)
+
 # **************************************************************************** #
 # ********      Format gestational age variables: gest_age_wk                                              
 # **************************************************************************** #
 
-dat=tbl_df(dat.abx.ALL.sort_03)
+dat=tbl_df(dat.abx.ALL.sort_02)
 names(dat)
 dat$baby_gest_age
 
@@ -301,7 +310,7 @@ dim(dat.abx.ALL.sort)
 names(dat.abx.ALL.sort)
 
 # check abx counts within groups (ip and rx)
-table(dat.abx.ALL.sort$redcap_repeat_instrument)
+table(dat.abx.ALL.sort$redcap_repeat_instrument.x)
 
 # **************************************************************************** #
 # *****      subset according to medication order                                              
@@ -321,11 +330,11 @@ unique(dat.abx.ALL.sort$baby_mar_action)
 # [22] RETURN TO CABINET          SEE ALTERNATIVE 
 
 # NOte: we created "GIVEN_RX" to make sure we get abx_rx (outpatient visits)
-dat.new=dat.abx.ALL.sort %>%
-  filter(baby_mar_action %in% c("GIVEN", "GIVEN BY OTHER", "GIVEN_RX"))
+dat.new=dat.abx.ALL.sort # %>%
+#   filter(baby_mar_action %in% c("GIVEN", "GIVEN BY OTHER", "GIVEN_RX"))
 
 unique(dat.new$baby_mar_action)
-table(dat.new$redcap_repeat_instrument)
+table(dat.new$redcap_repeat_instrument.x)
 
 # NOTE: limiting to "GIVEN", "GIVEN BY OTHER"
 # resulted in 62987 observations (dropped 7380 entries)
@@ -337,7 +346,7 @@ length(unique(dat.new$part_id)) # 16684
 # **************************************************************************** # 
 
 # status of data
-dim(dat.new)  # 116951     32
+dim(dat.new)  # 343359     39
 dat.s2=dat.new
 names(dat.s2)
 
@@ -460,12 +469,20 @@ dat2$wellness.visit_cats <- factor(dat2$wellness.visit_cats, levels = c("t.<6mo"
 
 # NOTE: what are reasonable cutt-offs.
 
+range(dat2$days2_baby_meds, na.rm=T)
+hist(dat2$days2_baby_meds)
+range(dat2$days2_baby_wellvisit, na.rm=T)
+hist(dat2$days2_baby_wellvisit)
+
+
 # 2week dummy
 dat3=dat2 %>%
-  mutate(one_yr_dummy=ifelse(days2_baby_meds>=358 & days2_baby_meds<=372,1,0),
-         two_yr_dummy=ifelse(days2_baby_meds>=716 & days2_baby_meds<=744,1,0),
-         three_yr_dummy=ifelse(days2_baby_meds>=1081,1,0))
+  mutate(two_wk_dummy=ifelse(days2_baby_wellvisit<=17,1,0),
+         one_yr_dummy=ifelse(days2_baby_wellvisit>=358 & days2_baby_wellvisit<=372,1,0),
+         two_yr_dummy=ifelse(days2_baby_wellvisit>=716 & days2_baby_wellvisit<=744,1,0),
+         three_yr_dummy=ifelse(days2_baby_wellvisit>=1081,1,0))
 
+table(dat3$two_wk_dummy)
 table(dat3$one_yr_dummy)
 table(dat3$two_yr_dummy)
 table(dat3$three_yr_dummy)
