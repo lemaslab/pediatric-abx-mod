@@ -24,6 +24,7 @@
 work.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\02_Projects\\UFHEALTH\\RedCap\\redcap_export\\",sep="");work.dir
 data.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\02_Projects\\UFHEALTH\\RedCap\\redcap_export\\",sep="");data.dir
 out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\02_Projects\\UFHEALTH\\RedCap\\rdata\\",sep="");out.dir
+misc.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\02_Projects\\UFHEALTH\\RedCap\\",sep="");misc.dir
 
 # Set Working Directory
 setwd(work.dir)
@@ -33,7 +34,7 @@ list.files()
 # ***************                Library                       *************** #
 # **************************************************************************** #
 
-# library(readxl)
+library(readxl)
 library(data.table)
 library(tidyr)
 library(dplyr)
@@ -54,19 +55,12 @@ head(dat); str(dat); names(dat)
 dat$baby_med_date
 length(unique(dat$part_id))  # 30540 (mom & baby)
 
+# **************************************************************************** #
+# ***********      Create other important variables                                              
+# **************************************************************************** #
+
 # create mom/baby variable (need to do)
 
-# unique list of infant abx ip
-abx.op=unique(dat$baby_meds);abx.op
-abx.ip=unique(dat$baby_med_ip);abx.ip
-
-# what are the counts/observations for "abx_ip" and "abx_rx"
-unique(dat$redcap_repeat_instrument)
-table(dat$redcap_repeat_instrument)
-# baby_antibiotics_ip     baby_antibiotics_rx         baby_demography   linked_mom_demography 
-# 70367                    5156                       30540             16607 
-# linked_mom_prenatal_apt 
-# 32124 
 
 # **************************************************************************** #
 # ***********      Create mom-baby demography data set (with mode of delivery)                                             
@@ -189,10 +183,69 @@ names(dat.abx.ALL.sort)
 table(dat.abx.ALL.sort$redcap_repeat_instrument)
 
 # **************************************************************************** #
+# ***********      Create broad/narrow antibiotics variables                                              
+# **************************************************************************** # 
+
+# unique list of infant abx ip
+abx.op=unique(dat.abx.ALL.sort$baby_meds);abx.op
+abx.ip=unique(dat.abx.ALL.sort$baby_med_ip);abx.ip
+
+# what are the counts/observations for "abx_ip" and "abx_rx"
+unique(dat.abx.ALL.sort$redcap_repeat_instrument)
+table(dat.abx.ALL.sort$redcap_repeat_instrument)
+# baby_antibiotics_ip     baby_antibiotics_rx         baby_demography   linked_mom_demography 
+# 70367                    5156                       30540             16607 
+# linked_mom_prenatal_apt 
+# 32124 
+
+# read ABX Classification data
+data.file.name="abx_medication_names\\abx_classification_18Mar18_v2_.xlsx";data.file.name
+
+# abx.op- data
+abx.op=read_xlsx(paste(misc.dir,data.file.name,sep=""), sheet = "abx.op", range = NULL, col_names = TRUE,
+                 col_types = NULL, na = "", trim_ws = TRUE, skip = 0);abx.op
+
+# abx.ip- data
+abx.ip=read_xlsx(paste(misc.dir,data.file.name,sep=""), sheet = "abx.ip", range = NULL, col_names = TRUE,
+                 col_types = NULL, na = "", trim_ws = TRUE, skip = 0);abx.ip
+
+# combine data
+abx.class=bind_rows(abx.op,abx.ip, .id = NULL)
+abx.class2=abx.class %>%
+  rename(baby_meds=Abx.op))
+names(abx.class2)
+table(abx.class2$redcap_repeat_instrument)
+# baby_antibiotics_ip baby_antibiotics_rx 
+# 53                  82 
+
+length(abx.class2$baby_meds) #135
+length(unique(abx.class2$baby_meds)) # 102  (need to know where these observations went)
+table(abx.class2$Classification)
+# Broad      Drop Macrolide    Narrow 
+# 59        24         8        44 
+
+# CREATE NARROW variables
+abx.name=abx.class2[2:5]
+dat.abx.ALL.sort_02=left_join(dat.abx.ALL.sort, abx.name, by = c("baby_meds"))
+
+# notes: condense list of abx in excel file. ensure only contains 
+# unique entires (~102 should be the number) that are classified as 
+# either broad/narrow. We will then re-do merge and workout ways to 
+# validate our merge. 
+
+# now=Sys.Date(); today=format(now, format="%d%b%y")
+# write.table(test, file="test_broad.csv", sep=";", row.names=F)
+
+# drop out non-abx
+dat.abx.ALL.sort_03=dat.abx.ALL.sort_02 %>%
+  filter(!Classification=="Drop")
+table(dat.abx.ALL.sort_03$Classification)  # worked
+  
+# **************************************************************************** #
 # ********      Format gestational age variables: gest_age_wk                                              
 # **************************************************************************** #
 
-dat=tbl_df(dat.abx.ALL.sort)
+dat=tbl_df(dat.abx.ALL.sort_03)
 names(dat)
 dat$baby_gest_age
 
@@ -402,6 +455,21 @@ levels(dat2$wellness.visit_cats)
 dat2$wellness.visit_cats <- factor(dat2$wellness.visit_cats, levels = c("t.<6mo","t.6_12mo","t.12_24mo", 
                                                                         "t.24_36mo","t.>36mo"))
 
+# **************************************************************************** #
+# *****      Longitudinal Cutt-points                                              
+# **************************************************************************** # 
+
+# NOTE: what are reasonable cutt-offs.
+
+# 2week dummy
+dat3=dat2 %>%
+  mutate(one_yr_dummy=ifelse(days2_baby_meds>=358 & days2_baby_meds<=372,1,0),
+         two_yr_dummy=ifelse(days2_baby_meds>=716 & days2_baby_meds<=744,1,0),
+         three_yr_dummy=ifelse(days2_baby_meds>=1081,1,0))
+
+table(dat3$one_yr_dummy)
+table(dat3$two_yr_dummy)
+table(dat3$three_yr_dummy)
 
 # **************************************************************************** #
 # *****      Export data                                              
