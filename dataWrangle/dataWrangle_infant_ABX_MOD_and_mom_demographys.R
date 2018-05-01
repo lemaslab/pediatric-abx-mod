@@ -208,11 +208,10 @@ abx.op=read_xlsx(paste(misc.dir,data.file.name,sep=""), sheet = "abx.op", range 
 # abx.ip- data
 abx.ip=read_xlsx(paste(misc.dir,data.file.name,sep=""), sheet = "abx.ip", range = NULL, col_names = TRUE,
                  col_types = NULL, na = "", trim_ws = TRUE, skip = 0);abx.ip
-
 # combine data
 abx.class=bind_rows(abx.op,abx.ip, .id = NULL)
 abx.class2=abx.class %>%
-  rename(baby_meds=Abx.op))
+  rename(baby_meds=Abx.op)
 names(abx.class2)
 table(abx.class2$redcap_repeat_instrument)
 # baby_antibiotics_ip baby_antibiotics_rx 

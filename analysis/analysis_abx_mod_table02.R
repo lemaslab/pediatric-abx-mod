@@ -4,7 +4,7 @@
 # **************************************************************************** #
 
 # Author:      Dominick Lemas 
-# Date:        April 30, 2018 
+# Date:        May 01, 2018 
 # IRB:
 # Description: Analysis of abx and mode-of-delivery EHR data 
 # Data: C:\Users\djlemas\Dropbox (UFL)\02_Projects\UFHEALTH\RedCap\rdata
@@ -42,7 +42,7 @@ library(tidyverse)
 # *****      l             load data: abx_mod_04Apr18.rdata       
 # **************************************************************************** # 
 
-load(file="abx_mod_30Apr18.rdata")
+load(file="abx_mod_01May18.rdata")
 head(dat2)
 names(dat2)
 
