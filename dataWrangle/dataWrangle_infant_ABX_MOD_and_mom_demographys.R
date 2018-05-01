@@ -474,5 +474,5 @@ table(dat3$three_yr_dummy)
 # *****      Export data                                              
 # **************************************************************************** # 
 now=Sys.Date(); today=format(now, format="%d%b%y")
-save(dat2, file=paste0(out.dir,"abx_mod_",today,".rdata"))
+save(dat3, file=paste0(out.dir,"abx_mod_",today,".rdata"))
 

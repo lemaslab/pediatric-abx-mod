@@ -43,25 +43,47 @@ library(tidyverse)
 # **************************************************************************** # 
 
 load(file="abx_mod_01May18.rdata")
-head(dat2)
-names(dat2)
+head(dat3)
+names(dat3)
 
 # check
-range(dat2$gest_age_wk, na.rm=T)
-range(dat2$baby_birth_wt_gr, na.rm=T) 
-table(is.na(dat2$baby_dob))
-range(dat2$abx_episode, na.rm=T)
+range(dat3$gest_age_wk, na.rm=T)
+hist(dat3$gest_age_wk)
+range(dat3$baby_birth_wt_gr, na.rm=T) 
+hist(dat3$baby_birth_wt_gr)
+table(is.na(dat3$baby_dob))
+range(dat3$abx_episode, na.rm=T)
+hist(dat3$abx_episode)
+range(dat3$days2_baby_meds)
+hist(dat3$days2_baby_meds)
 
 # **************************************************************************** #
-# ***** subset the data:gest_age_wk>=37, gest_age_wk<=42, baby_birth_wt_gr>500, is.na(baby_dob)==F, is.na(mod)==F)                                            
+# ***** subset the data:gest_age_wk>=37, gest_age_wk<=42, baby_birth_wt_gr>2000, 
+#                       is.na(baby_dob)==F, is.na(mod)==F, one_yr_dummy==1)                                            
 # **************************************************************************** # 
 
-dat3=dat2 %>%
-  filter(gest_age_wk>=37, gest_age_wk<=42, baby_birth_wt_gr>500, is.na(baby_dob)==F, is.na(mod)==F)   
+# before
+length(unique(dat3$part_id)) #13950
+
+dat4=dat3 %>%
+  group_by(part_id) %>%
+  filter(gest_age_wk>=37, gest_age_wk<=42, baby_birth_wt_gr>2000, is.na(baby_dob)==F, is.na(mod)==F,
+         days2_baby_meds<17)   
+
+names(dat4)
 
 # check
-range(dat3$gest_age_wk)
+length(unique(dat4$part_id)) 
+    # 5129 with 500 gr
+    # 5117 with 2000 gr
+    # 4976 with 2000 gr and 2wk visit
+
+range(dat4$gest_age_wk, na.rm=T)
+hist(dat4$gest_age_wk)
 range(dat3$baby_birth_wt_gr) 
+hist(dat4$baby_birth_wt_gr)
+range(dat4$days2_baby_meds)
+hist(dat4$days2_baby_meds)
 table(is.na(dat3$baby_dob))
 table(dat3$mod)
 
