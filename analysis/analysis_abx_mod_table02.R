@@ -100,6 +100,37 @@ dat4 %>%
             abx_sd=sd(abx_episode, na.rm=T)) 
 
 # **************************************************************************** #
+# *****      subset according to medication order                                              
+# **************************************************************************** # 
+
+names(dat.abx.ALL.sort)
+unique(dat.abx.ALL.sort$baby_mar_action)
+
+# these are codes from "abx_ip" encounters
+# [1] GIVEN                      <NA>                       GIVEN BY OTHER            
+# [4] DUE                        MISSED                     CANCELED ENTRY            
+# [7] START/GIVEN                HELD                       IV STOP                   
+# [10] NEW BAG                    MAR HOLD                   GIVEN-1ST DOSE EDUCATION  
+# [13] IV RESUME                  NEW SYRINGE/CARTRIDGE      NEW BAG-1ST DOSE EDUCATION
+# [16] STOPPED                    PENDING                    RESTARTED                 
+# [19] BOLUS                      DRUG LEVEL(S) DUE          IV PAUSE                  
+# [22] RETURN TO CABINET          SEE ALTERNATIVE 
+
+# NOte: we created "GIVEN_RX" to make sure we get abx_rx (outpatient visits)
+dat.new=dat.abx.ALL.sort # %>%
+#   filter(baby_mar_action %in% c("GIVEN", "GIVEN BY OTHER", "GIVEN_RX"))
+
+unique(dat.new$baby_mar_action)
+table(dat.new$redcap_repeat_instrument.x)
+
+# NOTE: limiting to "GIVEN", "GIVEN BY OTHER"
+# resulted in 62987 observations (dropped 7380 entries)
+
+length(unique(dat.new$part_id)) # 16684
+
+
+
+# **************************************************************************** #
 # *****      Summarize the data set: wellness_cats first then wellness.visit second                                              
 # **************************************************************************** # 
 

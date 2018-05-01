@@ -56,17 +56,8 @@ dat$baby_med_date
 length(unique(dat$part_id))  # 30540 (mom & baby)
 
 # **************************************************************************** #
-# ***********      Create other important variables                                              
-# **************************************************************************** #
-
-# create mom/baby variable (need to do)
-
-
-# **************************************************************************** #
 # ***********      Create mom-baby demography data set (with mode of delivery)                                             
 # **************************************************************************** # 
-
-# keep repeat counter for later
 
 # link mom-baby demography
 head(dat);names(dat)
@@ -75,7 +66,7 @@ dat2=dat %>%
   filter(grepl("Baby",part_id));
 head(dat2);names(dat2)
 length(unique(dat$part_id)) # 30540 (mom annd baby)
-length(unique(dat2$part_id)) # 16684
+length(unique(dat2$part_id)) # 16684 (baby)
 
 # mom-baby demography
 dat.mom_baby=dat2 %>%  # Recode gaps in data due to redcap export
@@ -228,10 +219,15 @@ table(abx.class2$Classification)
 # Broad      Drop Macrolide    Narrow 
 # 59        24         8        44 
 
-# CREATE NARROW variables
+# Merge Variables into dataframe
 abx.name=abx.class2[2:5]
 dat.abx.ALL.sort_02=left_join(dat.abx.ALL.sort, abx.name, by = c("baby_meds"))
-table(dat.abx.ALL.sort_02$redcap_repeat_instrument.x)
+
+# drop duplicate variables and rename
+dat.abx.ALL.sort_03=dat.abx.ALL.sort_02 %>% 
+  select (-c(redcap_repeat_instrument.y)) %>%
+  rename(abx_name=Abx.Name, abx_class=Classification, redcap_repeat_instrument=redcap_repeat_instrument.x)
+table(dat.abx.ALL.sort_03$redcap_repeat_instrument)
 
 # notes: condense list of abx in excel file. ensure only contains 
 # unique entires (~102 should be the number) that are classified as 
@@ -247,13 +243,13 @@ table(dat.abx.ALL.sort_02$redcap_repeat_instrument.x)
 # table(dat.abx.ALL.sort_03$Classification)  # worked
 # table(dat.abx.ALL.sort_03$redcap_repeat_instrument.x)
 
-dim(dat.abx.ALL.sort_02)
+dim(dat.abx.ALL.sort_03)
 
 # **************************************************************************** #
 # ********      Format gestational age variables: gest_age_wk                                              
 # **************************************************************************** #
 
-dat=tbl_df(dat.abx.ALL.sort_02)
+dat=tbl_df(dat.abx.ALL.sort_03)
 names(dat)
 dat$baby_gest_age
 
@@ -310,44 +306,15 @@ dim(dat.abx.ALL.sort)
 names(dat.abx.ALL.sort)
 
 # check abx counts within groups (ip and rx)
-table(dat.abx.ALL.sort$redcap_repeat_instrument.x)
-
-# **************************************************************************** #
-# *****      subset according to medication order                                              
-# **************************************************************************** # 
-
-names(dat.abx.ALL.sort)
-unique(dat.abx.ALL.sort$baby_mar_action)
-
-# these are codes from "abx_ip" encounters
-# [1] GIVEN                      <NA>                       GIVEN BY OTHER            
-# [4] DUE                        MISSED                     CANCELED ENTRY            
-# [7] START/GIVEN                HELD                       IV STOP                   
-# [10] NEW BAG                    MAR HOLD                   GIVEN-1ST DOSE EDUCATION  
-# [13] IV RESUME                  NEW SYRINGE/CARTRIDGE      NEW BAG-1ST DOSE EDUCATION
-# [16] STOPPED                    PENDING                    RESTARTED                 
-# [19] BOLUS                      DRUG LEVEL(S) DUE          IV PAUSE                  
-# [22] RETURN TO CABINET          SEE ALTERNATIVE 
-
-# NOte: we created "GIVEN_RX" to make sure we get abx_rx (outpatient visits)
-dat.new=dat.abx.ALL.sort # %>%
-#   filter(baby_mar_action %in% c("GIVEN", "GIVEN BY OTHER", "GIVEN_RX"))
-
-unique(dat.new$baby_mar_action)
-table(dat.new$redcap_repeat_instrument.x)
-
-# NOTE: limiting to "GIVEN", "GIVEN BY OTHER"
-# resulted in 62987 observations (dropped 7380 entries)
-
-length(unique(dat.new$part_id)) # 16684
+table(dat.abx.ALL.sort$redcap_repeat_instrument)
 
 # **************************************************************************** #
 # *****     episode calculation (with mode of delivery)                                              
 # **************************************************************************** # 
 
 # status of data
-dim(dat.new)  # 343359     39
-dat.s2=dat.new
+dim(dat.abx.ALL.sort)  # 343359     39
+dat.s2=dat.abx.ALL.sort
 names(dat.s2)
 
 # compute episode variable
@@ -357,11 +324,11 @@ dat2=dat.s2 %>%
   mutate(date = as.Date(baby_med_date, format="%m/%d/%Y")) %>%
   mutate(date1=first(date)) %>%
   mutate(obsvn=date-date1) %>%
-  mutate(abx_episode = cumsum(c(1,diff(obsvn)>=7)),
-         abx_episode_max=max(abx_episode))
+  mutate(abx_episode = cumsum(c(1,diff(obsvn)>=7))) %>%
+  select (-c(obsvn, date1, date, day, temp_blank)) 
 names(dat2)
 head(dat2)
-dat2$abx_episode_max
+dat2$abx_episode
 
 # visualize
 hist(dat2$abx_episode)
