@@ -37,6 +37,7 @@ library(dplyr)
 library(reshape2)
 library(broom)
 library(tidyverse)
+library(xtable)
 
 # **************************************************************************** #
 # *****      l             load data: abx_mod_04Apr18.rdata       
@@ -45,6 +46,7 @@ library(tidyverse)
 load(file="abx_mod_01May18.rdata")
 head(dat3)
 names(dat3)
+table(dat3$redcap_repeat_instrument.x)
 
 # check
 range(dat3$gest_age_wk, na.rm=T)
@@ -54,7 +56,7 @@ hist(dat3$baby_birth_wt_gr)
 table(is.na(dat3$baby_dob))
 range(dat3$abx_episode, na.rm=T)
 hist(dat3$abx_episode)
-range(dat3$days2_baby_meds)
+range(dat3$days2_baby_meds, na.rm=T)
 hist(dat3$days2_baby_meds)
 
 # **************************************************************************** #
@@ -63,14 +65,17 @@ hist(dat3$days2_baby_meds)
 # **************************************************************************** # 
 
 # before
-length(unique(dat3$part_id)) #13950
+length(unique(dat3$part_id)) #16684
 
 dat4=dat3 %>%
   group_by(part_id) %>%
-  filter(gest_age_wk>=37, gest_age_wk<=42, baby_birth_wt_gr>2000, is.na(baby_dob)==F, is.na(mod)==F,
-         days2_baby_meds<17)   
+  filter(gest_age_wk>=37, gest_age_wk<=42, baby_birth_wt_gr>2000, is.na(baby_dob)==F, is.na(mod)==F)   
 
-names(dat4)
+names(dat3)
+
+# no longitudinal: 5612
+# one year dummy: 703
+# one year & 2 wk
 
 # check
 length(unique(dat4$part_id)) 
@@ -80,15 +85,15 @@ length(unique(dat4$part_id))
 
 range(dat4$gest_age_wk, na.rm=T)
 hist(dat4$gest_age_wk)
-range(dat3$baby_birth_wt_gr) 
+range(dat4$baby_birth_wt_gr, na.rm=T) 
 hist(dat4$baby_birth_wt_gr)
-range(dat4$days2_baby_meds)
+range(dat4$days2_baby_meds, na.rm=T)
 hist(dat4$days2_baby_meds)
 table(is.na(dat3$baby_dob))
-table(dat3$mod)
+table(dat4$mod)
 
 # how many participants in analysis?
-dat3 %>%
+dat4 %>%
   group_by(mod) %>%
   summarize(count=n_distinct(part_id),
             abx_mean=mean(abx_episode, na.rm=T),
@@ -113,14 +118,14 @@ table(dat2_df$delivery_mode)
 # [10] Vaginal&_Breech 
 
 # Mean abx_episodes for entire cohort 
-summarize(dat2_df, abx_mean_epi=mean(abx_episode, na.rm=T)) # 2.08
+summarize(dat2_df, abx_mean_epi=mean(abx_episode, na.rm=T)) # 1.90
 
 # Compute variable with highest rank abx_episodes for each participant
 # within each wellness visits category
 dat3_df=dat2_df %>%
   group_by(part_id, wellness.visit_cats) %>%
   mutate(abx_max=last(abx_episode)) %>%
-  select(part_id,wellness.visit, wellness.visit_cats,mod,baby_birth_wt_gr,gest_wk,days2_baby_meds,abx_episode,abx_max)
+  select(part_id,wellness.visit, wellness.visit_cats,mod,baby_birth_wt_gr,gest_wk,days2_baby_meds,abx_episode,abx_max, days2_baby_wellvisit)
 
 # WELLNESS CATS
 #-------------
@@ -504,3 +509,5 @@ results_well_cont.final=results_well_cont %>%
   select(variable,p_value,t_value,mean_csec,mean_vag,time_point)
 now=Sys.Date(); today=format(now, format="%d%b%y")
 write.csv(results_well_cont.final, file=paste0(out.dir,"MOD_ABX_well_cont_ttest_",today,".csv"), row.names=F)
+newobject=xtable(results_well_cont.final)
+print.xtable(newobject, type="latex", file="test_01May18.tex")
