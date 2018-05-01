@@ -4,7 +4,7 @@
 # **************************************************************************** #
 
 # Author:      Dominick Lemas 
-# Date:        April 30, 2018 
+# Date:        May 01, 2018 
 # IRB:
 # Description: Data management for baby abx, mode of delivery and mom demography
 #              data extracted from RedCap. 
@@ -41,11 +41,11 @@ library(dplyr)
 library(reshape2)
 
 # **************************************************************************** #
-# ****  UFHealthEarlyLifeExp_DATA_2_Infant_ABX_MOD_Mom_Visits_018-03-18_1152.csv                                              
+# ****  UFHealthEarlyLifeExp_DATA_2018-05-01_1303.csv                                              
 # **************************************************************************** # 
 
 # Read Data
-data.file.name="UFHealthEarlyLifeExp_DATA_2_Infant_ABX_MOD_Mom_Visits_018-03-18_1152.csv";data.file.name
+data.file.name="UFHealthEarlyLifeExp_DATA_2018-05-01_1303.csv";data.file.name
 data.file.path=paste0(data.dir,"\\",data.file.name);data.file.path
 ufhealth.abx<- read.csv(data.file.path,na.strings=c("","NA"));ufhealth.abx
 
