@@ -243,7 +243,7 @@ table(dat.abx.ALL.sort_03$redcap_repeat_instrument)
 # table(dat.abx.ALL.sort_03$Classification)  # worked
 # table(dat.abx.ALL.sort_03$redcap_repeat_instrument.x)
 
-dim(dat.abx.ALL.sort_03)
+dim(dat.abx.ALL.sort_03)  # 343359     33
 
 # **************************************************************************** #
 # ********      Format gestational age variables: gest_age_wk                                              
@@ -317,21 +317,50 @@ dim(dat.abx.ALL.sort)  # 343359     39
 dat.s2=dat.abx.ALL.sort
 names(dat.s2)
 
-# compute episode variable
-head(dat.s2)
-dat2=dat.s2 %>%
+# drop out non-antibiotics
+#-------------------------
+unique(dat.s2$baby_meds)
+table(dat.s2$abx_class)
+dat.s3=dat.s2[dat.s2$abx_class != "Drop", ]
+str(dat.s3)
+head(dat.s3)
+table(dat.s3$abx_class)
+dat.s3[1:30, 9:11]
+
+# compute episode_total variable
+#-------------------------------
+head(dat.s3)
+dat2=dat.abx.ALL.sort %>%
   group_by(part_id) %>%
   mutate(date = as.Date(baby_med_date, format="%m/%d/%Y")) %>%
   mutate(date1=first(date)) %>%
   mutate(obsvn=date-date1) %>%
-  mutate(abx_episode = cumsum(c(1,diff(obsvn)>=7))) %>%
+  mutate(abx_episode_total = cumsum(c(1,diff(obsvn)>=10))) %>%
   select (-c(obsvn, date1, date, day, temp_blank)) 
 names(dat2)
 head(dat2)
-dat2$abx_episode
+dat2$abx_episode_total
+range(dat2$abx_episode_total, na.rm=T)
+
+# compute narrow variable (start here)
+head(dat2)
+dat3=dat2 %>%
+  group_by(part_id) %>%
+  mutate(date = as.Date(baby_med_date, format="%m/%d/%Y")) %>%
+  mutate(date1=first(date)) %>%
+  mutate(obsvn=date-date1) %>%
+  mutate(abx_episode_total = cumsum(c(1,diff(obsvn)>=10))) %>%
+  select (-c(obsvn, date1, date, day, temp_blank)) 
+names(dat2)
+head(dat2)
+dat2$abx_episode_total
+range(dat2$abx_episode_total, na.rm=T)
+
+
+# compute broad variable
 
 # visualize
-hist(dat2$abx_episode)
+hist(dat2$abx_episode_total)
 range(dat2$abx_episode)
 
 # **************************************************************************** #
