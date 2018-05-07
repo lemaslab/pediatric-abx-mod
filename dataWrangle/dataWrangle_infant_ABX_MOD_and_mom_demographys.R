@@ -195,38 +195,34 @@ table(dat.abx.ALL.sort$redcap_repeat_instrument)
 # 0                   64248  
 
 # read ABX Classification data
-data.file.name="abx_medication_names\\abx_classification_18Mar18_v2_.xlsx";data.file.name
+data.file.name="abx_medication_names\\abx_classification_06May18_v3.xlsx";data.file.name
 
 # abx.op- data
-abx.op=read_xlsx(paste(misc.dir,data.file.name,sep=""), sheet = "abx.op", range = NULL, col_names = TRUE,
-                 col_types = NULL, na = "", trim_ws = TRUE, skip = 0);abx.op
-
-# abx.ip- data
-abx.ip=read_xlsx(paste(misc.dir,data.file.name,sep=""), sheet = "abx.ip", range = NULL, col_names = TRUE,
-                 col_types = NULL, na = "", trim_ws = TRUE, skip = 0);abx.ip
-# combine data
-abx.class=bind_rows(abx.op,abx.ip, .id = NULL)
-abx.class2=abx.class %>%
-  rename(baby_meds=Abx.op)
-names(abx.class2)
-table(abx.class2$redcap_repeat_instrument)
+abx.names=read_xlsx(paste(misc.dir,data.file.name,sep=""), sheet = "abx.combined.5-6-18", range = NULL, col_names = TRUE,
+                 col_types = NULL, na = "", trim_ws = TRUE, skip = 0);abx.names
+names(abx.names)
+# what is the count for op/ip
+table(abx.names$redcap_repeat_instrument)
 # baby_antibiotics_ip baby_antibiotics_rx 
 # 53                  82 
 
-length(abx.class2$baby_meds) #135
-length(unique(abx.class2$baby_meds)) # 102  (need to know where these observations went)
-table(abx.class2$Classification)
-# Broad      Drop Macrolide    Narrow 
-# 59        24         8        44 
+length(abx.names$baby_meds) #135
+length(unique(abx.names$baby_meds)) # 102  (need to know where these observations went)
+which(duplicated(abx.names$baby_meds)) # dropped duplicates
+
+table(abx.names$classification)
+# Broad     Drop   Narrow 
+# 59        24     44 
 
 # Merge Variables into dataframe
-abx.name=abx.class2[2:5]
+abx.name=abx.names[2:5]
 dat.abx.ALL.sort_02=left_join(dat.abx.ALL.sort, abx.name, by = c("baby_meds"))
+names(dat.abx.ALL.sort_02)
 
 # drop duplicate variables and rename
 dat.abx.ALL.sort_03=dat.abx.ALL.sort_02 %>% 
   select (-c(redcap_repeat_instrument.y)) %>%
-  rename(abx_name=Abx.Name, abx_class=Classification, redcap_repeat_instrument=redcap_repeat_instrument.x)
+  rename(redcap_repeat_instrument=redcap_repeat_instrument.x)
 table(dat.abx.ALL.sort_03$redcap_repeat_instrument)
 
 # notes: condense list of abx in excel file. ensure only contains 
@@ -320,12 +316,15 @@ names(dat.s2)
 # drop out non-antibiotics
 #-------------------------
 unique(dat.s2$baby_meds)
-table(dat.s2$abx_class)
-dat.s3=dat.s2[dat.s2$abx_class != "Drop", ]
+table(dat.s2$classification)
+    # Broad   Drop Narrow 
+    # 12768  10043 120050
+dat.s3=dat.s2[dat.s2$classification != "Drop", ]
 str(dat.s3)
 head(dat.s3)
-table(dat.s3$abx_class)
-dat.s3[1:30, 9:11]
+table(dat.s3$classification)  # droped only the "dropped"
+    # Broad Narrow 
+    # 12768 120050
 
 # compute episode_total variable
 #-------------------------------
@@ -348,6 +347,7 @@ dat3=dat2 %>%
   group_by(part_id) %>%
   mutate(date = as.Date(baby_med_date, format="%m/%d/%Y")) %>%
   mutate(date1=first(date)) %>%
+  mutate(data.narrow=if_else(classification=="Narrow",date1, NA))
   mutate(obsvn=date-date1) %>%
   mutate(abx_episode_total = cumsum(c(1,diff(obsvn)>=10))) %>%
   select (-c(obsvn, date1, date, day, temp_blank)) 
@@ -355,6 +355,9 @@ names(dat2)
 head(dat2)
 dat2$abx_episode_total
 range(dat2$abx_episode_total, na.rm=T)
+
+names(dat3)
+dat3[1:20,c(1,33,37:40)]
 
 
 # compute broad variable
