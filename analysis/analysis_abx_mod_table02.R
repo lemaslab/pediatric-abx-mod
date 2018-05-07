@@ -4,7 +4,7 @@
 # **************************************************************************** #
 
 # Author:      Dominick Lemas 
-# Date:        May 01, 2018 
+# Date:        May 07, 2018 
 # IRB:
 # Description: Analysis of abx and mode-of-delivery EHR data 
 # Data: C:\Users\djlemas\Dropbox (UFL)\02_Projects\UFHEALTH\RedCap\rdata
@@ -43,21 +43,24 @@ library(xtable)
 # *****      l             load data: abx_mod_04Apr18.rdata       
 # **************************************************************************** # 
 
-load(file="abx_mod_01May18.rdata")
-head(dat3)
-names(dat3)
-table(dat3$redcap_repeat_instrument.x)
+load(file="abx_mod_07May18.rdata")
+head(dat6); dim(dat6)
+names(dat6)
+table(dat6$redcap_repeat_instrument)
+
+# rename data
+dat.new=dat6
 
 # check
-range(dat3$gest_age_wk, na.rm=T)
-hist(dat3$gest_age_wk)
-range(dat3$baby_birth_wt_gr, na.rm=T) 
-hist(dat3$baby_birth_wt_gr)
-table(is.na(dat3$baby_dob))
-range(dat3$abx_episode, na.rm=T)
-hist(dat3$abx_episode)
-range(dat3$days2_baby_meds, na.rm=T)
-hist(dat3$days2_baby_meds)
+range(dat.new$gest_age_wk, na.rm=T)
+hist(dat.new$gest_age_wk)
+range(dat.new$baby_birth_wt_gr, na.rm=T) 
+hist(dat.new$baby_birth_wt_gr)
+table(is.na(dat.new$baby_dob))
+range(dat.new$abx_episode, na.rm=T)
+hist(dat.new$abx_episode)
+range(dat.new$days2_baby_meds, na.rm=T)
+hist(dat.new$days2_baby_meds)
 
 # **************************************************************************** #
 # ***** subset the data:gest_age_wk>=37, gest_age_wk<=42, baby_birth_wt_gr>2000, 
@@ -65,39 +68,111 @@ hist(dat3$days2_baby_meds)
 # **************************************************************************** # 
 
 # before
-length(unique(dat3$part_id)) #16684
+length(unique(dat.new$part_id)) # 7667
 
-dat4=dat3 %>%
+dat.sub=dat.new %>%
   group_by(part_id) %>%
-  filter(gest_age_wk>=37, gest_age_wk<=42, baby_birth_wt_gr>2000, is.na(baby_dob)==F, is.na(mod)==F)   
+  filter(gest_age_wk>=37, gest_age_wk<=42, baby_birth_wt_gr>2500, is.na(baby_dob)==F, is.na(mod)==F)   
 
-names(dat3)
+names(dat.sub)
+length(unique(dat.sub$part_id)) # 2520
 
-# no longitudinal: 5612
-# one year dummy: 703
-# one year & 2 wk
 
-# check
-length(unique(dat4$part_id)) 
-    # 5129 with 500 gr
-    # 5117 with 2000 gr
-    # 4976 with 2000 gr and 2wk visit
 
-range(dat4$gest_age_wk, na.rm=T)
-hist(dat4$gest_age_wk)
-range(dat4$baby_birth_wt_gr, na.rm=T) 
-hist(dat4$baby_birth_wt_gr)
-range(dat4$days2_baby_meds, na.rm=T)
-hist(dat4$days2_baby_meds)
-table(is.na(dat3$baby_dob))
-table(dat4$mod)
+range(dat.sub$gest_age_wk, na.rm=T)
+hist(dat.sub$gest_age_wk)
+range(dat.sub$baby_birth_wt_gr, na.rm=T) 
+hist(dat.sub$baby_birth_wt_gr)
+range(dat.sub$days2_baby_meds, na.rm=T)
+hist(dat.sub$days2_baby_meds)
+table(is.na(dat.sub$baby_dob))
+table(dat.sub$mod)
+range(dat.sub$abx_episode_broad, na.rm=T)
+range(dat.sub$abx_episode_narrow, na.rm=T)
+range(dat.sub$abx_episode_total, na.rm=T)
+
+# **************************************************************************** #
+# *****      Longitudinal Cutt-points                                              
+# **************************************************************************** # 
+
+# subset by 2 WEEK wellness visits
+#---------------------------------
+df.one.mo=dat.sub %>%
+  group_by(part_id) %>%
+  filter(any(two_wk_dummy==T))
+dim(df.one.yr)
+length(unique(df.one.mo$part_id)) #1977
 
 # how many participants in analysis?
-dat4 %>%
+df.one.mo %>%
   group_by(mod) %>%
   summarize(count=n_distinct(part_id),
-            abx_mean=mean(abx_episode, na.rm=T),
-            abx_sd=sd(abx_episode, na.rm=T)) 
+            abx_mean=mean(abx_episode_total, na.rm=T),
+            abx_sd=sd(abx_episode_total, na.rm=T),
+            abx_broad_mean=mean(abx_episode_broad, na.rm=T),
+            abx_broad_sd=sd(abx_episode_broad, na.rm=T),
+            abx_narrow_mean=mean(abx_episode_narrow, na.rm=T),
+            abx_narrow_sd=sd(abx_episode_narrow, na.rm=T)) 
+
+# subset by 2 WEEK (1 visit) & 1 YEAR (2+ visit) wellness visits
+#---------------------------------
+df.one.yr=dat.sub %>%
+  group_by(part_id) %>%
+  filter(any(two_wk_dummy==T & sum(one_year_dummy==T, na.rm=T)>=2))
+dim(df.one.yr)
+length(unique(df.one.yr$part_id)) # 1853
+
+# how many participants in analysis?
+df.one.yr %>%
+  group_by(mod) %>%
+  summarize(count=n_distinct(part_id),
+            abx_mean=mean(abx_episode_total, na.rm=T),
+            abx_sd=sd(abx_episode_total, na.rm=T),
+            abx_broad_mean=mean(abx_episode_broad, na.rm=T),
+            abx_broad_sd=sd(abx_episode_broad, na.rm=T),
+            abx_narrow_mean=mean(abx_episode_narrow, na.rm=T),
+            abx_narrow_sd=sd(abx_episode_narrow, na.rm=T)) 
+
+
+# subset by 2 WEEK (1 visit), 1 yr wellness & 2 year wellness
+#---------------------------------
+df.two.yr=dat.sub %>%
+  group_by(part_id) %>%
+  filter(any(two_wk_dummy==T & sum(one_year_dummy==T, na.rm=T)>=1 & sum(two_year_dummy==T, na.rm=T)>=1))
+dim(df.two.yr)
+length(unique(df.two.yr$part_id)) # 1403
+
+# how many participants in analysis?
+df.two.yr %>%
+  group_by(mod) %>%
+  summarize(count=n_distinct(part_id),
+            abx_mean=mean(abx_episode_total, na.rm=T),
+            abx_sd=sd(abx_episode_total, na.rm=T),
+            abx_broad_mean=mean(abx_episode_broad, na.rm=T),
+            abx_broad_sd=sd(abx_episode_broad, na.rm=T),
+            abx_narrow_mean=mean(abx_episode_narrow, na.rm=T),
+            abx_narrow_sd=sd(abx_episode_narrow, na.rm=T)) 
+
+
+# subset by 2 WEEK (1 visit), 1 yr wellness, 2 year wellness, 3 yr wellness
+#---------------------------------
+df.three.yr=dat.sub %>%
+  group_by(part_id) %>%
+  filter(any(two_wk_dummy==T & sum(one_year_dummy==T, na.rm=T)>=1 & sum(two_year_dummy==T, na.rm=T)>=1) 
+         & sum(three_year_dummy==T, na.rm=T)>=1)
+dim(df.three.yr)
+length(unique(df.three.yr$part_id)) # 947
+
+# how many participants in analysis?
+df.three.yr %>%
+  group_by(mod) %>%
+  summarize(count=n_distinct(part_id),
+            abx_mean=mean(abx_episode_total, na.rm=T),
+            abx_sd=sd(abx_episode_total, na.rm=T),
+            abx_broad_mean=mean(abx_episode_broad, na.rm=T),
+            abx_broad_sd=sd(abx_episode_broad, na.rm=T),
+            abx_narrow_mean=mean(abx_episode_narrow, na.rm=T),
+            abx_narrow_sd=sd(abx_episode_narrow, na.rm=T)) 
 
 # **************************************************************************** #
 # *****      subset according to medication order                                              
