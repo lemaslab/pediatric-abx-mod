@@ -212,7 +212,7 @@ which(duplicated(abx.names$baby_meds)) # dropped duplicates
 
 table(abx.names$classification)
 # Broad     Drop   Narrow 
-# 59        24     44 
+# 41        20     41 
 
 # Merge Variables into dataframe
 abx.name=abx.names[2:5]
@@ -224,22 +224,7 @@ dat.abx.ALL.sort_03=dat.abx.ALL.sort_02 %>%
   select (-c(redcap_repeat_instrument.y)) %>%
   rename(redcap_repeat_instrument=redcap_repeat_instrument.x)
 table(dat.abx.ALL.sort_03$redcap_repeat_instrument)
-
-# notes: condense list of abx in excel file. ensure only contains 
-# unique entires (~102 should be the number) that are classified as 
-# either broad/narrow. We will then re-do merge and workout ways to 
-# validate our merge. 
-
-# now=Sys.Date(); today=format(now, format="%d%b%y")
-# write.table(test, file="test_broad.csv", sep=";", row.names=F)
-
-# # drop out non-abx  (## DOUBLE CHECK, looks like too much loss of observations)
-# dat.abx.ALL.sort_03=dat.abx.ALL.sort_02 %>%
-#   filter(Classification %in% c("Broad", "Macrolide", "Narrow"))
-# table(dat.abx.ALL.sort_03$Classification)  # worked
-# table(dat.abx.ALL.sort_03$redcap_repeat_instrument.x)
-
-dim(dat.abx.ALL.sort_03)  # 343359     33
+dim(dat.abx.ALL.sort_03)  # 276021     33
 
 # **************************************************************************** #
 # ********      Format gestational age variables: gest_age_wk                                              
@@ -317,14 +302,14 @@ names(dat.s2)
 #-------------------------
 unique(dat.s2$baby_meds)
 table(dat.s2$classification)
-    # Broad   Drop Narrow 
-    # 12768  10043 120050
+    # Broad   Drop   Narrow 
+    # 6754    5127   63642
 dat.s3=dat.s2[dat.s2$classification != "Drop", ]
 str(dat.s3)
 head(dat.s3)
 table(dat.s3$classification)  # droped only the "dropped"
     # Broad Narrow 
-    # 12768 120050
+    # 6754  63642
 
 # compute episode_total variable
 #-------------------------------
@@ -339,32 +324,46 @@ dat2=dat.abx.ALL.sort %>%
 names(dat2)
 head(dat2)
 dat2$abx_episode_total
-range(dat2$abx_episode_total, na.rm=T)
+range(dat2$abx_episode_total, na.rm=T) # 1-33
 
 # compute narrow variable (start here)
 head(dat2)
+dat2$data.narrow2=NA
+dat2$baby_med_date
 dat3=dat2 %>%
   group_by(part_id) %>%
-  mutate(date = as.Date(baby_med_date, format="%m/%d/%Y")) %>%
-  mutate(date1=first(date)) %>%
-  mutate(data.narrow=if_else(classification=="Narrow",date1, NA))
-  mutate(obsvn=date-date1) %>%
-  mutate(abx_episode_total = cumsum(c(1,diff(obsvn)>=10))) %>%
-  select (-c(obsvn, date1, date, day, temp_blank)) 
-names(dat2)
-head(dat2)
-dat2$abx_episode_total
-range(dat2$abx_episode_total, na.rm=T)
-
-names(dat3)
-dat3[1:20,c(1,33,37:40)]
-
+  mutate(date = as.Date(baby_med_date, format="%m/%d/%Y",origin="1970-01-01")) %>%
+  mutate(date1=as.character(first(date))) %>%
+  mutate(data.narrow2=ifelse(classification=="Narrow", date1 , data.narrow2)) %>%
+  mutate(data.narrow=as.Date(data.narrow2, format="%Y-%m-%d")) %>%
+  mutate(obsvn=date-data.narrow) %>%
+  mutate(abx_episode_narrow = ifelse(classification=="Narrow", cumsum(c(1,diff(obsvn)>=10)), NA)) %>%
+  select (-c(obsvn, date1, date, data.narrow, data.narrow2)) 
+dat3$abx_episode_narrow
+range(dat3$abx_episode_narrow, na.rm=T) # 1-10
 
 # compute broad variable
+head(dat3)
+dat3$baby_med_date
+dat3$data.broad2=NA
+dat4=dat3 %>%
+  group_by(part_id) %>%
+  mutate(date = as.Date(baby_med_date, format="%m/%d/%Y",origin="1970-01-01")) %>%
+  mutate(date1=as.character(first(date))) %>%
+  mutate(data.broad2=ifelse(classification=="Broad", date1 , data.broad2)) %>%
+  mutate(data.broad=as.Date(data.broad2, format="%Y-%m-%d")) %>%
+  mutate(obsvn=date-data.broad) %>%
+  mutate(abx_episode_broad = ifelse(classification=="Broad", cumsum(c(1,diff(obsvn)>=10)), NA)) %>%
+  select (-c(obsvn, date1, date, data.broad, data.broad2)) 
+names(dat4)
+dat4$abx_episode_broad
+range(dat4$abx_episode_broad, na.rm=T)
 
 # visualize
-hist(dat2$abx_episode_total)
-range(dat2$abx_episode)
+hist(dat4$abx_episode_total)
+hist(dat4$abx_episode_narrow)
+hist(dat4$abx_episode_broad)
+
 
 # **************************************************************************** #
 # *****      Wellness Visit Variables (with mode of delivery)                                              
@@ -377,118 +376,127 @@ range(dat2$abx_episode)
 # https://www.healthychildren.org/English/family-life/health-management/Pages/Well-Child-Care-A-Check-Up-for-Success.aspx 
 
 # time variable (intervals)
-dat2$gest_wk
-range(dat2$days2_baby_meds, na.rm=T)
-dat2$wellness.visit=NA
+dat4$gest_wk
+range(dat4$days2_baby_wellvisit, na.rm=T)
+dat4$wellness_visit=NA
 
 # 3 days variable (0-3 days)
-dat2$wellness.visit=ifelse(dat2$days2_baby_meds<=3,"t.3_days", dat2$wellness.visit)  
+dat4$wellness_visit=ifelse(dat4$days2_baby_wellvisit<=3,"t.3_days", dat4$wellness_visit)  
 
 # 2 weeks Variable (14 days)
-dat2$wellness.visit=ifelse(dat2$days2_baby_meds>3 & dat2$days2_baby_meds<=14,"t.2_wks", dat2$wellness.visit)  
+dat4$wellness_visit=ifelse(dat4$days2_baby_wellvisit>3 & dat4$days2_baby_wellvisit<=14,"t.2_wks", dat4$wellness_visit)  
 
 # 1 month Variable (15-30 days)
-dat2$wellness.visit=ifelse(dat2$days2_baby_meds>14 & dat2$days2_baby_meds<=30,"t.1_mo", dat2$wellness.visit)
+dat4$wellness_visit=ifelse(dat4$days2_baby_wellvisit>14 & dat4$days2_baby_wellvisit<=30,"t.1_mo", dat4$wellness_visit)
 
 # 2 month Variable (31-60 days)
-dat2$wellness.visit=ifelse(dat2$days2_baby_meds>30 & dat2$days2_baby_meds<=60,"t.2_mo", dat2$wellness.visit)
+dat4$wellness_visit=ifelse(dat4$days2_baby_wellvisit>30 & dat4$days2_baby_wellvisit<=60,"t.2_mo", dat4$wellness_visit)
 
 # 4 month Variable (61-120 days)
-dat2$wellness.visit=ifelse(dat2$days2_baby_meds>60 & dat2$days2_baby_meds<=120,"t.4_mo", dat2$wellness.visit)
+dat4$wellness_visit=ifelse(dat4$days2_baby_wellvisit>60 & dat4$days2_baby_wellvisit<=120,"t.4_mo", dat4$wellness_visit)
 
 # 6 month Variable (121-180 days)
-dat2$wellness.visit=ifelse(dat2$days2_baby_meds>120 & dat2$days2_baby_meds<=180,"t.6_mo", dat2$wellness.visit)
+dat4$wellness_visit=ifelse(dat4$days2_baby_wellvisit>120 & dat4$days2_baby_wellvisit<=180,"t.6_mo", dat4$wellness_visit)
 
 # 9 month Variable (181-270 days)
-dat2$wellness.visit=ifelse(dat2$days2_baby_meds>181 & dat2$days2_baby_meds<=270,"t.9_mo", dat2$wellness.visit)
+dat4$wellness_visit=ifelse(dat4$days2_baby_wellvisit>181 & dat4$days2_baby_wellvisit<=270,"t.9_mo", dat4$wellness_visit)
 
 # 12 month Variable (271-365 days)
-dat2$wellness.visit=ifelse(dat2$days2_baby_meds>271 & dat2$days2_baby_meds<=365,"t.12_mo", dat2$wellness.visit)
+dat4$wellness_visit=ifelse(dat4$days2_baby_wellvisit>271 & dat4$days2_baby_wellvisit<=365,"t.12_mo", dat4$wellness_visit)
 
 # 15 months variable (366-450 days)
-dat2$wellness.visit=ifelse(dat2$days2_baby_meds>366 & dat2$days2_baby_meds<=450,"t.15_mo", dat2$wellness.visit)
+dat4$wellness_visit=ifelse(dat4$days2_baby_wellvisit>366 & dat4$days2_baby_wellvisit<=450,"t.15_mo", dat4$wellness_visit)
 
 # 18 month variable (451-540 days)
-dat2$wellness.visit=ifelse(dat2$days2_baby_meds>451 & dat2$days2_baby_meds<=540,"t.18_mo", dat2$wellness.visit)
+dat4$wellness_visit=ifelse(dat4$days2_baby_wellvisit>451 & dat4$days2_baby_wellvisit<=540,"t.18_mo", dat4$wellness_visit)
 
 # 2 year variable (540-730 days)
-dat2$wellness.visit=ifelse(dat2$days2_baby_meds>540 & dat2$days2_baby_meds<=730,"t.2_yr", dat2$wellness.visit)
+dat4$wellness_visit=ifelse(dat4$days2_baby_wellvisit>540 & dat4$days2_baby_wellvisit<=730,"t.2_yr", dat4$wellness_visit)
 
 # 2.5 year variable (731-910 days)
-dat2$wellness.visit=ifelse(dat2$days2_baby_meds>731 & dat2$days2_baby_meds<=910,"t.2.5_yr", dat2$wellness.visit)
+dat4$wellness_visit=ifelse(dat4$days2_baby_wellvisit>731 & dat4$days2_baby_wellvisit<=910,"t.2.5_yr", dat4$wellness_visit)
 
 # 3 year variable (911-1095 days)
-dat2$wellness.visit=ifelse(dat2$days2_baby_meds>911 & dat2$days2_baby_meds<=1095,"t.3_yr", dat2$wellness.visit)
+dat4$wellness_visit=ifelse(dat4$days2_baby_wellvisit>911 & dat4$days2_baby_wellvisit<=1095,"t.3_yr", dat4$wellness_visit)
 
 # 4 year variable (1096-1460 days)
-dat2$wellness.visit=ifelse(dat2$days2_baby_meds>1096 & dat2$days2_baby_meds<=1460,"t.4_yr", dat2$wellness.visit)
+dat4$wellness_visit=ifelse(dat4$days2_baby_wellvisit>1096 & dat4$days2_baby_wellvisit<=1460,"t.4_yr", dat4$wellness_visit)
 
 # 5 year variable (1461-1825 days)
-dat2$wellness.visit=ifelse(dat2$days2_baby_meds>1461,"t.5_yr", dat2$wellness.visit)
+dat4$wellness_visit=ifelse(dat4$days2_baby_wellvisit>1461,"t.5_yr", dat4$wellness_visit)
 
 # order the factor levels
-dat2$wellness.visit=as.factor(dat2$wellness.visit)
-dat2$wellness.visit <- factor(dat2$wellness.visit, levels = c("t.3_days","t.2_wks","t.1_mo","t.2_mo","t.4_mo","t.6_mo","t.9_mo","t.12_mo","t.15_mo",
+dat4$wellness_visit=as.factor(dat4$wellness_visit)
+dat4$wellness_visit <- factor(dat4$wellness_visit, levels = c("t.3_days","t.2_wks","t.1_mo","t.2_mo","t.4_mo","t.6_mo","t.9_mo","t.12_mo","t.15_mo",
                                                 "t.18_mo","t.2_yr","t.2.5_yr","t.3_yr","t.4_yr", "t.5_yr"))
-levels(dat2$wellness.visit)
+levels(dat4$wellness_visit)
 
 # need to define some broad categories (0-6 months, 6-12 months, ect)
 
 # Condense time variables into 2-3 buckets
 # time variable (intervals)
-dat2$wellness.visit_cats=NA
+dat4$wellness_visit_cats=NA
 
 # 0-6 months (0-180 days)
-dat2$wellness.visit_cats=ifelse(dat2$days2_baby_meds<=180,"t.<6mo", dat2$wellness.visit_cats)  
+dat4$wellness_visit_cats=ifelse(dat4$days2_baby_wellvisit<=180,"t.<6mo", dat4$wellness_visit_cats)  
 
 # 6-12 months (181-365 days)
-dat2$wellness.visit_cats=ifelse(dat2$days2_baby_meds>180 & dat2$days2_baby_meds<=365,"t.6_12mo", dat2$wellness.visit_cats) 
+dat4$wellness_visit_cats=ifelse(dat4$days2_baby_wellvisit>180 & dat4$days2_baby_wellvisit<=365,"t.6_12mo", dat4$wellness_visit_cats) 
 
 # 12-24 months (366-730 days)
-dat2$wellness.visit_cats=ifelse(dat2$days2_baby_meds>365 & dat2$days2_baby_meds<=730,"t.12_24mo", dat2$wellness.visit_cats) 
+dat4$wellness_visit_cats=ifelse(dat4$days2_baby_wellvisit>365 & dat4$days2_baby_wellvisit<=730,"t.12_24mo", dat4$wellness_visit_cats) 
 
 # 24-36 months (731-1095 days)
-dat2$wellness.visit_cats=ifelse(dat2$days2_baby_meds>730 & dat2$days2_baby_meds<=1095,"t.24_36mo", dat2$wellness.visit_cats) 
+dat4$wellness_visit_cats=ifelse(dat4$days2_baby_wellvisit>730 & dat4$days2_baby_wellvisit<=1095,"t.24_36mo", dat4$wellness_visit_cats) 
 
 # >36 months (1096 days)
-dat2$wellness.visit_cats=ifelse(dat2$days2_baby_meds>1095,"t.>36mo", dat2$wellness.visit_cats) 
+dat4$wellness_visit_cats=ifelse(dat4$days2_baby_wellvisit>1095,"t.>36mo", dat4$wellness_visit_cats) 
 
 # what are the current ordering of factors?
-levels(as.factor(dat2$wellness.visit_cats))
+levels(as.factor(dat4$wellness_visit_cats))
 
 # order the factor levels
-dat2$wellness.visit_cats=as.factor(dat2$wellness.visit_cats)
-levels(dat2$wellness.visit_cats)
-dat2$wellness.visit_cats <- factor(dat2$wellness.visit_cats, levels = c("t.<6mo","t.6_12mo","t.12_24mo", 
+dat4$wellness_visit_cats=as.factor(dat4$wellness_visit_cats)
+levels(dat4$wellness_visit_cats)
+dat4$wellness_visit_cats <- factor(dat4$wellness_visit_cats, levels = c("t.<6mo","t.6_12mo","t.12_24mo", 
                                                                         "t.24_36mo","t.>36mo"))
+table(dat4$wellness_visit_cats)
 
 # **************************************************************************** #
-# *****      Longitudinal Cutt-points                                              
+# *****      Longitudinal Variables                                              
 # **************************************************************************** # 
 
 # NOTE: what are reasonable cutt-offs.
 
-range(dat2$days2_baby_meds, na.rm=T)
-hist(dat2$days2_baby_meds)
-range(dat2$days2_baby_wellvisit, na.rm=T)
-hist(dat2$days2_baby_wellvisit)
+range(dat4$days2_baby_meds, na.rm=T)
+hist(dat4$days2_baby_meds)
+range(dat4$days2_baby_wellvisit, na.rm=T)
+hist(dat4$days2_baby_wellvisit)
 
+names(dat4)
+dim(dat4)  # 276021     41
+length(unique(dat4$part_id))  # 16684
+
+# limit to only participants with ANY wellness visits
+dat5=dat4 %>%
+  group_by(part_id) %>%
+  filter(any(redcap_repeat_instrument=="baby_wellvisit"))
+
+dim(dat5) # 197901     41
+length(unique(dat5$part_id))  # 7667
 
 # 2week dummy
-dat3=dat2 %>%
-  mutate(two_wk_dummy=ifelse(days2_baby_wellvisit<=17,1,0),
-         one_yr_dummy=ifelse(days2_baby_wellvisit>=358 & days2_baby_wellvisit<=372,1,0),
-         two_yr_dummy=ifelse(days2_baby_wellvisit>=716 & days2_baby_wellvisit<=744,1,0),
-         three_yr_dummy=ifelse(days2_baby_wellvisit>=1081,1,0))
-
-table(dat3$two_wk_dummy)
-table(dat3$one_yr_dummy)
-table(dat3$two_yr_dummy)
-table(dat3$three_yr_dummy)
+dat6=dat5 %>%
+  group_by(part_id) %>%
+  mutate(two_wk_dummy=ifelse(days2_baby_wellvisit<30,TRUE,FALSE),
+         one_year_dummy=ifelse(days2_baby_wellvisit<365 & days2_baby_wellvisit>=30,TRUE,FALSE),
+         two_year_dummy=ifelse(days2_baby_wellvisit<730 & days2_baby_wellvisit>=365,TRUE,FALSE),
+         three_year_dummy=ifelse(days2_baby_wellvisit<1095 & days2_baby_wellvisit>=730,TRUE,FALSE),
+         three_year_plus=ifelse(days2_baby_wellvisit>=1095,TRUE,FALSE))
 
 # **************************************************************************** #
 # *****      Export data                                              
 # **************************************************************************** # 
 now=Sys.Date(); today=format(now, format="%d%b%y")
-save(dat3, file=paste0(out.dir,"abx_mod_",today,".rdata"))
+save(dat6, file=paste0(out.dir,"abx_mod_",today,".rdata"))
 

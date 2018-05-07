@@ -66,6 +66,44 @@ range(dat3$baby_birth_wt_gr)
 length(unique(dat3$part_id)) # 5025
 
 # **************************************************************************** #
+# *****      Longitudinal Cutt-points                                              
+# **************************************************************************** # 
+
+# subset by 2 WEEK wellness visits
+#---------------------------------
+df.one.yr=dat6 %>%
+  group_by(part_id) %>%
+  filter(any(two_wk_dummy==T))
+dim(df.one.yr)
+length(unique(df.one.yr$part_id)) #5708
+
+# subset by 2 WEEK (1 visit) & 1 YEAR (2+ visit) wellness visits
+#---------------------------------
+df.one.yr=dat6 %>%
+  group_by(part_id) %>%
+  filter(any(two_wk_dummy==T & sum(one_year_dummy==T, na.rm=T)>=2))
+dim(df.one.yr)
+length(unique(df.one.yr$part_id)) # 5188
+
+# subset by 2 WEEK (1 visit), 1 yr wellness & 2 year wellness
+#---------------------------------
+df.two.yr=dat6 %>%
+  group_by(part_id) %>%
+  filter(any(two_wk_dummy==T & sum(one_year_dummy==T, na.rm=T)>=1 & sum(two_year_dummy==T, na.rm=T)>=1))
+dim(df.two.yr)
+length(unique(df.two.yr$part_id)) # 3307
+
+# subset by 2 WEEK (1 visit), 1 yr wellness, 2 year wellness, 3 yr wellness
+#---------------------------------
+df.three.yr=dat6 %>%
+  group_by(part_id) %>%
+  filter(any(two_wk_dummy==T & sum(one_year_dummy==T, na.rm=T)>=1 & sum(two_year_dummy==T, na.rm=T)>=1) 
+         & sum(three_year_dummy==T, na.rm=T)>=1)
+dim(df.three.yr)
+length(unique(df.three.yr$part_id)) # 1737
+
+
+# **************************************************************************** #
 # *****      formatt/subset the data: single observations                                              
 # **************************************************************************** # 
 
