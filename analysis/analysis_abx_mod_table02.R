@@ -197,56 +197,53 @@ table(dat.sort$baby_mar_action)
 # [13] STOPPED                  GIVEN BY OTHER           SEE ALTERNATIVE  
 
 # NOte: we created "GIVEN_RX" to make sure we get abx_rx (outpatient visits)
-dat.new=dat.abx.ALL.sort # %>%
-#   filter(baby_mar_action %in% c("GIVEN", "GIVEN BY OTHER", "GIVEN_RX"))
+dat.new=dat.sort %>%
+   filter(baby_mar_action %in% c("GIVEN", "GIVEN BY OTHER", "GIVEN_RX"))
 
 unique(dat.new$baby_mar_action)
-table(dat.new$redcap_repeat_instrument.x)
-
-# NOTE: limiting to "GIVEN", "GIVEN BY OTHER"
-# resulted in 62987 observations (dropped 7380 entries)
-
-length(unique(dat.new$part_id)) # 16684
-
-
+length(unique(dat.new$part_id)) # 1853 (1 yr, 124 lost)
 
 # **************************************************************************** #
 # *****      Summarize the data set: wellness_cats first then wellness.visit second                                              
 # **************************************************************************** # 
 
 # create a tibble
-dat2_df=tbl_df(dat3)
+dat2_df=tbl_df(dat.new)
 dat2_df
 
 # what is status of cs/vaginal
 unique(dat2_df$delivery_mode)
 table(dat2_df$delivery_mode)
 
-# [1] Vaginal&_Spontaneous_Delivery (23206) 
-#  C-Section&_Low_Transverse     Vaginal&_Vacuum_(Extractor)  
-# [4] C-Section&_Unspecified        C-Section&_Low_Vertical       Vaginal&_Forceps             
-# [7] VBAC&_Spontaneous             Vertical_C-Section            C-Section&_Classical         
-# [10] Vaginal&_Breech 
-
+# [1] Vaginal&_Spontaneous_Delivery Vaginal&_Vacuum_(Extractor)  
+# [3] C-Section&_Low_Transverse     C-Section&_Low_Vertical      
+# [5] C-Section&_Unspecified        Vertical_C-Section           
+# [7] Vaginal&_Forceps              C-Section&_Classical         
+# [9] VBAC&_Spontaneous             Vaginal&_Breech 
+ 
+names(dat2_df)
 # Mean abx_episodes for entire cohort 
-summarize(dat2_df, abx_mean_epi=mean(abx_episode, na.rm=T)) # 1.90
+summarize(dat2_df, abx_mean_epi=mean(abx_episode_total, na.rm=T)) # 2.1
 
 # Compute variable with highest rank abx_episodes for each participant
 # within each wellness visits category
 dat3_df=dat2_df %>%
-  group_by(part_id, wellness.visit_cats) %>%
-  mutate(abx_max=last(abx_episode)) %>%
-  select(part_id,wellness.visit, wellness.visit_cats,mod,baby_birth_wt_gr,gest_wk,days2_baby_meds,abx_episode,abx_max, days2_baby_wellvisit)
+  group_by(part_id, wellness_visit_cats) %>%
+  mutate(abx_max=last(abx_episode_total)) %>%
+  select(part_id,wellness_visit, wellness_visit_cats,mod,baby_birth_wt_gr,gest_wk,days2_baby_meds,abx_episode_total,abx_max, days2_baby_wellvisit)
+dat3_df$abx_episode_total
+head(dat3_df);names(dat3_df)
+dat3_df[1:20,c(1,2,7)]
 
 # WELLNESS CATS
 #-------------
 #  Descriptive look abx_episode according to wellness-cats and mod
 wellness.abx_cats_table02=dat3_df %>%
-  group_by(wellness.visit_cats, mod) %>% 
+  group_by(wellness_visit_cats, mod) %>% 
   summarise(count = n(),                                   # total count
             count.unique = n_distinct(part_id),            # count of unique participants
-            abx_epi_mean=round(mean(abx_episode, na.rm=T),2),       # mean abx_episode
-            abx_epi_sd=round(sd(abx_episode, na.rm=T),2),           # sd abx_episode
+            abx_epi_mean=round(mean(abx_episode_total, na.rm=T),2),       # mean abx_episode
+            abx_epi_sd=round(sd(abx_episode_total, na.rm=T),2),           # sd abx_episode
             abx_max_mean=round(mean(abx_max, na.rm=T),2),           # mean abx_episode_max
             abx_max_sd=round(sd(abx_max, na.rm=T),2));              # sd abx_episode_max
 
