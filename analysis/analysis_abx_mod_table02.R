@@ -77,8 +77,6 @@ dat.sub=dat.new %>%
 names(dat.sub)
 length(unique(dat.sub$part_id)) # 2520
 
-
-
 range(dat.sub$gest_age_wk, na.rm=T)
 hist(dat.sub$gest_age_wk)
 range(dat.sub$baby_birth_wt_gr, na.rm=T) 
@@ -95,12 +93,12 @@ range(dat.sub$abx_episode_total, na.rm=T)
 # *****      Longitudinal Cutt-points                                              
 # **************************************************************************** # 
 
-# subset by 2 WEEK wellness visits
+# subset by 1 MONTH wellness visits
 #---------------------------------
 df.one.mo=dat.sub %>%
   group_by(part_id) %>%
   filter(any(two_wk_dummy==T))
-dim(df.one.yr)
+dim(df.one.mo)
 length(unique(df.one.mo$part_id)) #1977
 
 # how many participants in analysis?
@@ -114,13 +112,13 @@ df.one.mo %>%
             abx_narrow_mean=mean(abx_episode_narrow, na.rm=T),
             abx_narrow_sd=sd(abx_episode_narrow, na.rm=T)) 
 
-# subset by 2 WEEK (1 visit) & 1 YEAR (2+ visit) wellness visits
+# subset by 1 MONTH (1 visit) & 1 YEAR (2+ visit) wellness visits
 #---------------------------------
 df.one.yr=dat.sub %>%
   group_by(part_id) %>%
   filter(any(two_wk_dummy==T & sum(one_year_dummy==T, na.rm=T)>=2))
 dim(df.one.yr)
-length(unique(df.one.yr$part_id)) # 1853
+length(unique(df.one.yr$part_id)) # 1853, loss of 124 people
 
 # how many participants in analysis?
 df.one.yr %>%
@@ -134,13 +132,13 @@ df.one.yr %>%
             abx_narrow_sd=sd(abx_episode_narrow, na.rm=T)) 
 
 
-# subset by 2 WEEK (1 visit), 1 yr wellness & 2 year wellness
+# subset by 1 MONTH, 1 yr wellness & 2 year wellness
 #---------------------------------
 df.two.yr=dat.sub %>%
   group_by(part_id) %>%
   filter(any(two_wk_dummy==T & sum(one_year_dummy==T, na.rm=T)>=1 & sum(two_year_dummy==T, na.rm=T)>=1))
 dim(df.two.yr)
-length(unique(df.two.yr$part_id)) # 1403
+length(unique(df.two.yr$part_id)) # 1403, loss of 450 people
 
 # how many participants in analysis?
 df.two.yr %>%
@@ -154,7 +152,7 @@ df.two.yr %>%
             abx_narrow_sd=sd(abx_episode_narrow, na.rm=T)) 
 
 
-# subset by 2 WEEK (1 visit), 1 yr wellness, 2 year wellness, 3 yr wellness
+# subset by 1 MONTH, 1 yr wellness, 2 year wellness, 3 yr wellness
 #---------------------------------
 df.three.yr=dat.sub %>%
   group_by(part_id) %>%
@@ -175,21 +173,28 @@ df.three.yr %>%
             abx_narrow_sd=sd(abx_episode_narrow, na.rm=T)) 
 
 # **************************************************************************** #
-# *****      subset according to medication order                                              
+# *****      subset according to medication order (maybe run before episode calc)                                             
 # **************************************************************************** # 
 
-names(dat.abx.ALL.sort)
-unique(dat.abx.ALL.sort$baby_mar_action)
+# possible data
+df.one.mo  # 1977
+df.one.yr  # 1853
+df.two.yr  # 1403
+df.three.yr # 947
+
+# rename
+dat.sort=df.one.yr
+
+names(dat.sort)
+unique(dat.sort$baby_mar_action)
+table(dat.sort$baby_mar_action)
 
 # these are codes from "abx_ip" encounters
-# [1] GIVEN                      <NA>                       GIVEN BY OTHER            
-# [4] DUE                        MISSED                     CANCELED ENTRY            
-# [7] START/GIVEN                HELD                       IV STOP                   
-# [10] NEW BAG                    MAR HOLD                   GIVEN-1ST DOSE EDUCATION  
-# [13] IV RESUME                  NEW SYRINGE/CARTRIDGE      NEW BAG-1ST DOSE EDUCATION
-# [16] STOPPED                    PENDING                    RESTARTED                 
-# [19] BOLUS                      DRUG LEVEL(S) DUE          IV PAUSE                  
-# [22] RETURN TO CABINET          SEE ALTERNATIVE 
+# [1] <NA>                     GIVEN_RX                 GIVEN                   
+# [4] DUE                      MISSED                   HELD                    
+# [7] IV STOP                  CANCELED ENTRY           NEW BAG                 
+# [10] GIVEN-1ST DOSE EDUCATION START/GIVEN              NEW SYRINGE/CARTRIDGE   
+# [13] STOPPED                  GIVEN BY OTHER           SEE ALTERNATIVE  
 
 # NOte: we created "GIVEN_RX" to make sure we get abx_rx (outpatient visits)
 dat.new=dat.abx.ALL.sort # %>%
