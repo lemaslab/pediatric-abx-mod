@@ -4,7 +4,7 @@
 # **************************************************************************** #
 
 # Author:      Dominick Lemas 
-# Date:        May 01, 2018 
+# Date:        June 19, 2018 
 # IRB:
 # Description: Data management for baby abx, mode of delivery and mom demography
 #              data extracted from RedCap. 
@@ -41,11 +41,11 @@ library(dplyr)
 library(reshape2)
 
 # **************************************************************************** #
-# ****  UFHealthEarlyLifeExp_DATA_2018-05-01_1303.csv                                              
+# ****  UFHealthEarlyLifeExp_DATA_2018-06-19_1510.csv                                              
 # **************************************************************************** # 
 
 # Read Data
-data.file.name="UFHealthEarlyLifeExp_DATA_2018-05-01_1303.csv";data.file.name
+data.file.name="UFHealthEarlyLifeExp_DATA_2018-06-19_1510.csv";data.file.name
 data.file.path=paste0(data.dir,"\\",data.file.name);data.file.path
 ufhealth.abx<- read.csv(data.file.path,na.strings=c("","NA"));ufhealth.abx
 
@@ -184,7 +184,6 @@ table(dat.abx.ALL.sort$redcap_repeat_instrument)
 
 # unique list of infant abx ip
 abx.op=unique(dat.abx.ALL.sort$baby_meds);abx.op
-abx.ip=unique(dat.abx.ALL.sort$baby_med_ip);abx.ip
 
 # what are the counts/observations for "abx_ip" and "abx_rx"
 unique(dat.abx.ALL.sort$redcap_repeat_instrument)
@@ -204,11 +203,11 @@ names(abx.names)
 # what is the count for op/ip
 table(abx.names$redcap_repeat_instrument)
 # baby_antibiotics_ip baby_antibiotics_rx 
-# 53                  82 
+# 20                  82 
 
-length(abx.names$baby_meds) #135
-length(unique(abx.names$baby_meds)) # 102  (need to know where these observations went)
-which(duplicated(abx.names$baby_meds)) # dropped duplicates
+length(abx.names$baby_meds) #102
+length(unique(abx.names$baby_meds)) # 102  
+which(duplicated(abx.names$baby_meds)) # 0 dropped duplicates
 
 table(abx.names$classification)
 # Broad     Drop   Narrow 
@@ -252,6 +251,7 @@ new2=new1 %>%
 # recode variables
 dat.abx.ALL.sort=new2
 dat.abx.ALL.sort$gest_wk
+dat.abx.ALL.sort$gest_age_wk
 unique(dat.abx.ALL.sort$delivery_mode) # how many unique entries for MOD; 22 (below)
 
 # condense down to binary (vaginal/c-section)
@@ -324,7 +324,7 @@ dat2=dat.abx.ALL.sort %>%
 names(dat2)
 head(dat2)
 dat2$abx_episode_total
-range(dat2$abx_episode_total, na.rm=T) # 1-33
+range(dat2$abx_episode_total, na.rm=T) # 1-33 episodes
 
 # compute narrow variable (start here)
 head(dat2)
@@ -340,7 +340,7 @@ dat3=dat2 %>%
   mutate(abx_episode_narrow = ifelse(classification=="Narrow", cumsum(c(1,diff(obsvn)>=10)), NA)) %>%
   select (-c(obsvn, date1, date, data.narrow, data.narrow2)) 
 dat3$abx_episode_narrow
-range(dat3$abx_episode_narrow, na.rm=T) # 1-10
+range(dat3$abx_episode_narrow, na.rm=T) # 1-10 episodes
 
 # compute broad variable
 head(dat3)
@@ -357,7 +357,7 @@ dat4=dat3 %>%
   select (-c(obsvn, date1, date, data.broad, data.broad2)) 
 names(dat4)
 dat4$abx_episode_broad
-range(dat4$abx_episode_broad, na.rm=T)
+range(dat4$abx_episode_broad, na.rm=T) # 1-2 episodes
 
 # visualize
 hist(dat4$abx_episode_total)
@@ -366,7 +366,7 @@ hist(dat4$abx_episode_broad)
 
 
 # **************************************************************************** #
-# *****      Wellness Visit Variables (with mode of delivery)                                              
+# *****      Wellness Visit  Category Variables                                         
 # **************************************************************************** # 
 
 # Notes on Wellness Visit (https://ufhealth.org/well-child-visits), 
@@ -376,64 +376,9 @@ hist(dat4$abx_episode_broad)
 # https://www.healthychildren.org/English/family-life/health-management/Pages/Well-Child-Care-A-Check-Up-for-Success.aspx 
 
 # time variable (intervals)
-dat4$gest_wk
-range(dat4$days2_baby_wellvisit, na.rm=T)
-dat4$wellness_visit=NA
+names(dat4)
+range(dat4$days2_baby_wellvisit, na.rm=T) # 1 1816
 
-# 3 days variable (0-3 days)
-dat4$wellness_visit=ifelse(dat4$days2_baby_wellvisit<=3,"t.3_days", dat4$wellness_visit)  
-
-# 2 weeks Variable (14 days)
-dat4$wellness_visit=ifelse(dat4$days2_baby_wellvisit>3 & dat4$days2_baby_wellvisit<=14,"t.2_wks", dat4$wellness_visit)  
-
-# 1 month Variable (15-30 days)
-dat4$wellness_visit=ifelse(dat4$days2_baby_wellvisit>14 & dat4$days2_baby_wellvisit<=30,"t.1_mo", dat4$wellness_visit)
-
-# 2 month Variable (31-60 days)
-dat4$wellness_visit=ifelse(dat4$days2_baby_wellvisit>30 & dat4$days2_baby_wellvisit<=60,"t.2_mo", dat4$wellness_visit)
-
-# 4 month Variable (61-120 days)
-dat4$wellness_visit=ifelse(dat4$days2_baby_wellvisit>60 & dat4$days2_baby_wellvisit<=120,"t.4_mo", dat4$wellness_visit)
-
-# 6 month Variable (121-180 days)
-dat4$wellness_visit=ifelse(dat4$days2_baby_wellvisit>120 & dat4$days2_baby_wellvisit<=180,"t.6_mo", dat4$wellness_visit)
-
-# 9 month Variable (181-270 days)
-dat4$wellness_visit=ifelse(dat4$days2_baby_wellvisit>181 & dat4$days2_baby_wellvisit<=270,"t.9_mo", dat4$wellness_visit)
-
-# 12 month Variable (271-365 days)
-dat4$wellness_visit=ifelse(dat4$days2_baby_wellvisit>271 & dat4$days2_baby_wellvisit<=365,"t.12_mo", dat4$wellness_visit)
-
-# 15 months variable (366-450 days)
-dat4$wellness_visit=ifelse(dat4$days2_baby_wellvisit>366 & dat4$days2_baby_wellvisit<=450,"t.15_mo", dat4$wellness_visit)
-
-# 18 month variable (451-540 days)
-dat4$wellness_visit=ifelse(dat4$days2_baby_wellvisit>451 & dat4$days2_baby_wellvisit<=540,"t.18_mo", dat4$wellness_visit)
-
-# 2 year variable (540-730 days)
-dat4$wellness_visit=ifelse(dat4$days2_baby_wellvisit>540 & dat4$days2_baby_wellvisit<=730,"t.2_yr", dat4$wellness_visit)
-
-# 2.5 year variable (731-910 days)
-dat4$wellness_visit=ifelse(dat4$days2_baby_wellvisit>731 & dat4$days2_baby_wellvisit<=910,"t.2.5_yr", dat4$wellness_visit)
-
-# 3 year variable (911-1095 days)
-dat4$wellness_visit=ifelse(dat4$days2_baby_wellvisit>911 & dat4$days2_baby_wellvisit<=1095,"t.3_yr", dat4$wellness_visit)
-
-# 4 year variable (1096-1460 days)
-dat4$wellness_visit=ifelse(dat4$days2_baby_wellvisit>1096 & dat4$days2_baby_wellvisit<=1460,"t.4_yr", dat4$wellness_visit)
-
-# 5 year variable (1461-1825 days)
-dat4$wellness_visit=ifelse(dat4$days2_baby_wellvisit>1461,"t.5_yr", dat4$wellness_visit)
-
-# order the factor levels
-dat4$wellness_visit=as.factor(dat4$wellness_visit)
-dat4$wellness_visit <- factor(dat4$wellness_visit, levels = c("t.3_days","t.2_wks","t.1_mo","t.2_mo","t.4_mo","t.6_mo","t.9_mo","t.12_mo","t.15_mo",
-                                                "t.18_mo","t.2_yr","t.2.5_yr","t.3_yr","t.4_yr", "t.5_yr"))
-levels(dat4$wellness_visit)
-
-# need to define some broad categories (0-6 months, 6-12 months, ect)
-
-# Condense time variables into 2-3 buckets
 # time variable (intervals)
 dat4$wellness_visit_cats=NA
 
@@ -462,41 +407,90 @@ dat4$wellness_visit_cats <- factor(dat4$wellness_visit_cats, levels = c("t.<6mo"
                                                                         "t.24_36mo","t.>36mo"))
 table(dat4$wellness_visit_cats)
 
+# well visit dummy
+dat5=dat4 %>%
+  group_by(part_id) %>%
+  mutate(two_wk_well_dummy=ifelse(days2_baby_wellvisit<30,TRUE,FALSE),
+         one_year_well_dummy=ifelse(days2_baby_wellvisit<365 & days2_baby_wellvisit>=30,TRUE,FALSE),
+         two_year_well_dummy=ifelse(days2_baby_wellvisit<730 & days2_baby_wellvisit>=365,TRUE,FALSE),
+         three_year_well_dummy=ifelse(days2_baby_wellvisit<1095 & days2_baby_wellvisit>=730,TRUE,FALSE),
+         three_year_well_plus=ifelse(days2_baby_wellvisit>=1095,TRUE,FALSE))
+
+# check (counts are not unique participants)
+range(dat5$days2_baby_wellvisit, na.rm=T)
+table(dat5$two_wk_well_dummy)
+table(dat5$one_year_well_dummy)
+table(dat5$two_year_well_dummy)
+table(dat5$three_year_well_dummy)
+table(dat5$three_year_well_plus)
+
 # **************************************************************************** #
-# *****      Longitudinal Variables                                              
+# *****      Antibiotics Category Variables                                              
 # **************************************************************************** # 
 
-# NOTE: what are reasonable cutt-offs.
+range(dat5$days2_baby_meds, na.rm=T) # -2 1827
+hist(dat5$days2_baby_meds)
+dat5$baby_abx_cats=NA
 
-range(dat4$days2_baby_meds, na.rm=T)
-hist(dat4$days2_baby_meds)
-range(dat4$days2_baby_wellvisit, na.rm=T)
-hist(dat4$days2_baby_wellvisit)
+# 0-6 months (0-180 days)
+dat5$baby_abx_cats=ifelse(dat5$days2_baby_meds<=180,"t.<6mo", dat5$baby_abx_cats)  
 
-names(dat4)
-dim(dat4)  # 276021     41
-length(unique(dat4$part_id))  # 16684
+# 6-12 months (181-365 days)
+dat5$baby_abx_cats=ifelse(dat5$days2_baby_meds>180 & dat5$days2_baby_meds<=365,"t.6_12mo", dat5$baby_abx_cats) 
+
+# 12-24 months (366-730 days)
+dat5$baby_abx_cats=ifelse(dat5$days2_baby_meds>365 & dat5$days2_baby_meds<=730,"t.12_24mo", dat5$baby_abx_cats) 
+
+# 24-36 months (731-1095 days)
+dat5$baby_abx_cats=ifelse(dat5$days2_baby_meds>730 & dat5$days2_baby_meds<=1095,"t.24_36mo", dat5$baby_abx_cats) 
+
+# >36 months (1096 days)
+dat5$baby_abx_cats=ifelse(dat5$days2_baby_meds>1095,"t.>36mo", dat5$baby_abx_cats) 
+
+# what are the current ordering of factors?
+levels(as.factor(dat5$baby_abx_cats))
+
+# order the factor levels
+dat5$baby_abx_cats=as.factor(dat5$baby_abx_cats)
+levels(dat5$baby_abx_cats)
+dat5$baby_abx_cats <- factor(dat5$baby_abx_cats, levels = c("t.<6mo","t.6_12mo","t.12_24mo", 
+                                                                        "t.24_36mo","t.>36mo"))
+# what is the break out
+table(dat5$baby_abx_cats)
+
+# abx dummy
+dat6=dat5 %>%
+  group_by(part_id) %>%
+  mutate(two_wk_abx_dummy=ifelse(days2_baby_meds<30,TRUE,FALSE),
+         one_year_abx_dummy=ifelse(days2_baby_meds<365 & days2_baby_meds>=30,TRUE,FALSE),
+         two_year_abx_dummy=ifelse(days2_baby_meds<730 & days2_baby_meds>=365,TRUE,FALSE),
+         three_year_abx_dummy=ifelse(days2_baby_meds<1095 & days2_baby_meds>=730,TRUE,FALSE),
+         three_year_abx_plus=ifelse(days2_baby_meds>=1095,TRUE,FALSE))
+
+# check (counts are not unique participants)
+range(dat6$days2_baby_meds, na.rm=T)
+table(dat6$two_wk_abx_dummy)
+table(dat6$one_year_abx_dummy)
+table(dat6$two_year_abx_dummy)
+table(dat6$three_year_abx_dummy)
+table(dat6$three_year_abx_plus)
 
 # limit to only participants with ANY wellness visits
-dat5=dat4 %>%
+dat7=dat6 %>%
   group_by(part_id) %>%
   filter(any(redcap_repeat_instrument=="baby_wellvisit"))
 
-dim(dat5) # 197901     41
-length(unique(dat5$part_id))  # 7667
+# before cut
+dim(dat6) # 276021     51
+length(unique(dat6$part_id))  # 16684 unique participants
 
-# 2week dummy
-dat6=dat5 %>%
-  group_by(part_id) %>%
-  mutate(two_wk_dummy=ifelse(days2_baby_wellvisit<30,TRUE,FALSE),
-         one_year_dummy=ifelse(days2_baby_wellvisit<365 & days2_baby_wellvisit>=30,TRUE,FALSE),
-         two_year_dummy=ifelse(days2_baby_wellvisit<730 & days2_baby_wellvisit>=365,TRUE,FALSE),
-         three_year_dummy=ifelse(days2_baby_wellvisit<1095 & days2_baby_wellvisit>=730,TRUE,FALSE),
-         three_year_plus=ifelse(days2_baby_wellvisit>=1095,TRUE,FALSE))
+# after cut
+dim(dat7) # 197901     51
+length(unique(dat7$part_id))  # 7667 unique participants
 
 # **************************************************************************** #
 # *****      Export data                                              
 # **************************************************************************** # 
 now=Sys.Date(); today=format(now, format="%d%b%y")
-save(dat6, file=paste0(out.dir,"abx_mod_",today,".rdata"))
+save(dat7, file=paste0(out.dir,"abx_mod_",today,".rdata"))
 

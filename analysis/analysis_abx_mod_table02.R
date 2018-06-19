@@ -4,7 +4,7 @@
 # **************************************************************************** #
 
 # Author:      Dominick Lemas 
-# Date:        May 07, 2018 
+# Date:        June 19, 2018 
 # IRB:
 # Description: Analysis of abx and mode-of-delivery EHR data 
 # Data: C:\Users\djlemas\Dropbox (UFL)\02_Projects\UFHEALTH\RedCap\rdata
@@ -43,13 +43,13 @@ library(xtable)
 # *****      l             load data: abx_mod_04Apr18.rdata       
 # **************************************************************************** # 
 
-load(file="abx_mod_07May18.rdata")
-head(dat6); dim(dat6)
-names(dat6)
-table(dat6$redcap_repeat_instrument)
+load(file="abx_mod_19Jun18.rdata")
+head(dat7); dim(dat7)
+names(dat7)
+table(dat7$redcap_repeat_instrument)
 
 # rename data
-dat.new=dat6
+dat.new=dat7
 
 # check
 range(dat.new$gest_age_wk, na.rm=T)
@@ -64,18 +64,19 @@ hist(dat.new$days2_baby_meds)
 
 # **************************************************************************** #
 # ***** subset the data:gest_age_wk>=37, gest_age_wk<=42, baby_birth_wt_gr>2000, 
-#                       is.na(baby_dob)==F, is.na(mod)==F, one_yr_dummy==1)                                            
+#                       is.na(baby_dob)==F, is.na(mod)==F)                                            
 # **************************************************************************** # 
 
 # before
 length(unique(dat.new$part_id)) # 7667
+names(dat.new)
 
 dat.sub=dat.new %>%
   group_by(part_id) %>%
   filter(gest_age_wk>=37, gest_age_wk<=42, baby_birth_wt_gr>2500, is.na(baby_dob)==F, is.na(mod)==F)   
 
 names(dat.sub)
-length(unique(dat.sub$part_id)) # 2520
+length(unique(dat.sub$part_id)) # 4163
 
 range(dat.sub$gest_age_wk, na.rm=T)
 hist(dat.sub$gest_age_wk)
@@ -93,16 +94,15 @@ range(dat.sub$abx_episode_total, na.rm=T)
 # *****      Longitudinal Cutt-points                                              
 # **************************************************************************** # 
 
-# subset by 1 MONTH wellness visits
+# subset by 2 WEEK wellness visits
 #---------------------------------
-df.one.mo=dat.sub %>%
+df.2wk=dat.sub %>%
   group_by(part_id) %>%
-  filter(any(two_wk_dummy==T))
-dim(df.one.mo)
-length(unique(df.one.mo$part_id)) #1977
+  filter(any(two_wk_well_dummy==T))
+length(unique(df.2wk$part_id)) # 3406
 
 # how many participants in analysis?
-df.one.mo %>%
+df.2wk %>%
   group_by(mod) %>%
   summarize(count=n_distinct(part_id),
             abx_mean=mean(abx_episode_total, na.rm=T),
@@ -112,13 +112,12 @@ df.one.mo %>%
             abx_narrow_mean=mean(abx_episode_narrow, na.rm=T),
             abx_narrow_sd=sd(abx_episode_narrow, na.rm=T)) 
 
-# subset by 1 MONTH (1 visit) & 1 YEAR (2+ visit) wellness visits
+# subset by 2 WEEK (1 visit) & 1 YEAR (2+ visit) wellness visits
 #---------------------------------
 df.one.yr=dat.sub %>%
   group_by(part_id) %>%
-  filter(any(two_wk_dummy==T & sum(one_year_dummy==T, na.rm=T)>=2))
-dim(df.one.yr)
-length(unique(df.one.yr$part_id)) # 1853, loss of 124 people
+  filter(any(two_wk_well_dummy==T & sum(one_year_well_dummy==T, na.rm=T)>=2))
+length(unique(df.one.yr$part_id)) # 3094, loss of 312 people
 
 # how many participants in analysis?
 df.one.yr %>%
@@ -136,9 +135,8 @@ df.one.yr %>%
 #---------------------------------
 df.two.yr=dat.sub %>%
   group_by(part_id) %>%
-  filter(any(two_wk_dummy==T & sum(one_year_dummy==T, na.rm=T)>=1 & sum(two_year_dummy==T, na.rm=T)>=1))
-dim(df.two.yr)
-length(unique(df.two.yr$part_id)) # 1403, loss of 450 people
+  filter(any(two_wk_well_dummy==T & sum(one_year_well_dummy==T, na.rm=T)>=1 & sum(two_year_well_dummy==T, na.rm=T)>=1))
+length(unique(df.two.yr$part_id)) # 1957, loss of 1449 people
 
 # how many participants in analysis?
 df.two.yr %>%
@@ -156,10 +154,9 @@ df.two.yr %>%
 #---------------------------------
 df.three.yr=dat.sub %>%
   group_by(part_id) %>%
-  filter(any(two_wk_dummy==T & sum(one_year_dummy==T, na.rm=T)>=1 & sum(two_year_dummy==T, na.rm=T)>=1) 
-         & sum(three_year_dummy==T, na.rm=T)>=1)
-dim(df.three.yr)
-length(unique(df.three.yr$part_id)) # 947
+  filter(any(two_wk_well_dummy==T & sum(one_year_well_dummy==T, na.rm=T)>=1 & sum(two_year_well_dummy==T, na.rm=T)>=1) 
+         & sum(three_year_well_dummy==T, na.rm=T)>=1)
+length(unique(df.three.yr$part_id)) # 1020
 
 # how many participants in analysis?
 df.three.yr %>%
@@ -177,10 +174,10 @@ df.three.yr %>%
 # **************************************************************************** # 
 
 # possible data
-df.one.mo  # 1977
-df.one.yr  # 1853
-df.two.yr  # 1403
-df.three.yr # 947
+df.2wk     # 3406
+df.one.yr  # 3094
+df.two.yr  # 1957
+df.three.yr # 1020
 
 # rename
 dat.sort=df.one.yr
@@ -223,14 +220,14 @@ table(dat2_df$delivery_mode)
  
 names(dat2_df)
 # Mean abx_episodes for entire cohort 
-summarize(dat2_df, abx_mean_epi=mean(abx_episode_total, na.rm=T)) # 2.1
+summarize(dat2_df, abx_mean_epi=mean(abx_episode_total, na.rm=T)) # 1.94
 
 # Compute variable with highest rank abx_episodes for each participant
 # within each wellness visits category
 dat3_df=dat2_df %>%
-  group_by(part_id, wellness_visit_cats) %>%
+  group_by(part_id, baby_abx_cats) %>%
   mutate(abx_max=last(abx_episode_total)) %>%
-  select(part_id,wellness_visit, wellness_visit_cats,mod,baby_birth_wt_gr,gest_wk,days2_baby_meds,abx_episode_total,abx_max, days2_baby_wellvisit)
+  select(part_id,wellness_visit_cats,baby_abx_cats,mod,baby_birth_wt_gr,gest_wk,days2_baby_meds,abx_episode_total,abx_max, days2_baby_wellvisit)
 dat3_df$abx_episode_total
 head(dat3_df);names(dat3_df)
 dat3_df[1:20,c(1,2,7)]
@@ -239,7 +236,7 @@ dat3_df[1:20,c(1,2,7)]
 #-------------
 #  Descriptive look abx_episode according to wellness-cats and mod
 wellness.abx_cats_table02=dat3_df %>%
-  group_by(wellness_visit_cats, mod) %>% 
+  group_by(baby_abx_cats, mod) %>% 
   summarise(count = n(),                                   # total count
             count.unique = n_distinct(part_id),            # count of unique participants
             abx_epi_mean=round(mean(abx_episode_total, na.rm=T),2),       # mean abx_episode
