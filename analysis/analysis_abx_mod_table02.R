@@ -48,6 +48,9 @@ head(dat7); dim(dat7)
 names(dat7)
 table(dat7$redcap_repeat_instrument)
 
+# quick diagnostics
+length(unique(dat7$part_id)) # 7667
+
 # rename data
 dat.new=dat7
 
@@ -57,13 +60,13 @@ hist(dat.new$gest_age_wk)
 range(dat.new$baby_birth_wt_gr, na.rm=T) 
 hist(dat.new$baby_birth_wt_gr)
 table(is.na(dat.new$baby_dob))
-range(dat.new$abx_episode, na.rm=T)
-hist(dat.new$abx_episode)
+range(dat.new$abx_episode_total, na.rm=T)
+hist(dat.new$abx_episode_total)
 range(dat.new$days2_baby_meds, na.rm=T)
 hist(dat.new$days2_baby_meds)
 
 # **************************************************************************** #
-# ***** subset the data:gest_age_wk>=37, gest_age_wk<=42, baby_birth_wt_gr>2000, 
+# ***** subset the data:gest_age_wk>=37, gest_age_wk<=42, baby_birth_wt_gr>2500, 
 #                       is.na(baby_dob)==F, is.na(mod)==F)                                            
 # **************************************************************************** # 
 

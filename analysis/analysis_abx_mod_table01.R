@@ -49,7 +49,7 @@ names(dat7)
 length(unique(dat7$part_id)) # 7667
 
 # **************************************************************************** #
-# ***** subset the data: gest_age (wk) >37 & <42, birth_wt (gr) >500                                               
+# ***** subset the data: gest_age (wk) >37 & <42, birth_wt (gr) >2500                                               
 # **************************************************************************** # 
 
 # check before subsetting
@@ -59,12 +59,12 @@ length(unique(dat7$part_id)) # 7667 people
 
 dat3=dat7 %>%
   group_by(part_id) %>%
-  filter(gest_age_wk>=37, gest_age_wk<=42, baby_birth_wt_gr>500, is.na(baby_dob)==F, is.na(mod)==F)   
+  filter(gest_age_wk>=37, gest_age_wk<=42, baby_birth_wt_gr>2500, is.na(baby_dob)==F, is.na(mod)==F)   
 
 # check
 range(dat3$gest_age_wk)
 range(dat3$baby_birth_wt_gr)
-length(unique(dat3$part_id)) # 4384 people
+length(unique(dat3$part_id)) # 4163 people
 
 # **************************************************************************** #
 # *****      Longitudinal Cutt-points                                              
@@ -75,21 +75,21 @@ length(unique(dat3$part_id)) # 4384 people
 df.2wk=dat3 %>%
   group_by(part_id) %>%
   filter(any(two_wk_well_dummy==T))
-length(unique(df.2wk$part_id)) #3581 people
+length(unique(df.2wk$part_id)) #3406 people
 
 # subset by 2 WEEK (1 visit) & 1 YEAR (2+ visit) wellness visits
 #---------------------------------
 df.one.yr=dat3 %>%
   group_by(part_id) %>%
   filter(any(two_wk_well_dummy==T & sum(one_year_well_dummy==T, na.rm=T)>=2))
-length(unique(df.one.yr$part_id)) # 3250 people
+length(unique(df.one.yr$part_id)) # 3094 people
 
 # subset by 2 WEEK (1 visit), 1 yr wellness & 2 year wellness
 #---------------------------------
 df.two.yr=dat3 %>%
   group_by(part_id) %>%
   filter(any(two_wk_well_dummy==T & sum(one_year_well_dummy==T, na.rm=T)>=1 & sum(two_year_well_dummy==T, na.rm=T)>=1))
-length(unique(df.two.yr$part_id)) # 2047 people
+length(unique(df.two.yr$part_id)) # 1957 people
 
 # subset by 2 WEEK (1 visit), 1 yr wellness, 2 year wellness, 3 yr wellness
 #---------------------------------
@@ -97,7 +97,7 @@ df.three.yr=dat3 %>%
   group_by(part_id) %>%
   filter(any(two_wk_well_dummy==T & sum(one_year_well_dummy==T, na.rm=T)>=1 & sum(two_year_well_dummy==T, na.rm=T)>=1) 
          & sum(three_year_well_dummy==T, na.rm=T)>=1)
-length(unique(df.three.yr$part_id)) # 1062
+length(unique(df.three.yr$part_id)) # 1020
 
 
 # **************************************************************************** #
@@ -108,15 +108,17 @@ length(unique(df.three.yr$part_id)) # 1062
 
 # create table
 names(dat3)
+length(unique(dat3$part_id)) # 4163 people
 range(dat3$redcap_repeat_instance)
 
 dat4=dat3 %>%
   filter(redcap_repeat_instance==1)
+length(unique(dat4$part_id)) # 4163 people
 
 # check
 range(dat4$gest_age_wk)
 range(dat4$baby_birth_wt_gr)
-length(unique(dat4$part_id)) # 4384
+length(unique(dat4$part_id)) # 4163 people
 
 head(dat4)
 names(dat4)
@@ -124,13 +126,18 @@ dat4$abx_episode_total
 
 # https://stackoverflow.com/questions/34587317/using-dplyr-to-create-summary-proportion-table-with-several-categorical-factor-v
 
+
+
 # Categorical data: ALL
 #-----------------
-
+length(unique(dat4$part_id))
 dat5 <- melt(dat4, measure.vars=c("baby_race","baby_ethnicity","mom_ethnicity_link", "mom_race_link","abx_episode_total","abx_episode_narrow","abx_episode_broad","wellness_visit_cats","baby_abx_cats"))
+length(unique(dat4$part_id))
 res.all <- dat5 %>%
+  select(part_id,variable,value) %>%
   group_by(variable, value) %>%
-  summarise (n = n()) %>%
+  na.omit() %>%
+  summarise (n = n_distinct(part_id)) %>%
   mutate(freq = n / sum(n));res.all
 
 #make an 'export' variable
@@ -144,11 +151,21 @@ write.csv(res.all, file=paste0(out.dir,"abx_mod_table01_cat_ALL_",today,".csv"),
 # Categorical data: MOD
 #-----------------
 
+length(unique(dat4$part_id))
 dat5 <- melt(dat4, measure.vars=c("baby_race","baby_ethnicity","mom_ethnicity_link", "mom_race_link","abx_episode_total","abx_episode_narrow","abx_episode_broad","wellness_visit_cats","baby_abx_cats"))
 res <- dat5 %>%
+  select(part_id,mod,variable,value) %>%
   group_by(mod, variable, value) %>%
-  summarise (n = n()) %>%
+  na.omit() %>%
+  summarise (n = n_distinct(part_id)) %>%
   mutate(freq = n / sum(n));res
+
+#
+res <- dat5 %>%
+  select(part_id,mod,variable,value) %>%
+  group_by(mod) %>%
+  na.omit() %>%
+  summarise (n = n_distinct(part_id)) # cs: 1225, vg: 2938
 
 #make an 'export' variable
 res$export <- with(res, sprintf("%i (%.1f%%)", n, freq*100))
@@ -179,7 +196,9 @@ write.csv(output, file=paste0(out.dir,"abx_mod_table01_cat_",today,".csv"), row.
 # Continuous data: ALL
 #-----------------
 names(dat4)
+length(unique(dat4$part_id))
 dat6 <- melt(dat4, measure.vars=c("days2_baby_meds","baby_birth_wt_gr","gest_age_wk", "baby_nicu_los","abx_episode_total","abx_episode_narrow","abx_episode_broad"))
+length(unique(dat6$part_id))
 
 res.all=dat6 %>%
   group_by(variable) %>%
