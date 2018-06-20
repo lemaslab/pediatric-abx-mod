@@ -183,7 +183,7 @@ df.two.yr  # 1957
 df.three.yr # 1020
 
 # rename
-dat.sort=df.one.yr
+dat.sort=dat.sub
 
 names(dat.sort)
 unique(dat.sort$baby_mar_action)
@@ -201,7 +201,7 @@ dat.new=dat.sort %>%
    filter(baby_mar_action %in% c("GIVEN", "GIVEN BY OTHER", "GIVEN_RX"))
 
 unique(dat.new$baby_mar_action)
-length(unique(dat.new$part_id)) # 1853 (1 yr, 124 lost)
+length(unique(dat.new$part_id)) # 1853 (1 yr, 124 lost); # 4163 (all data with general criteria)
 
 # **************************************************************************** #
 # *****      Summarize the data set: wellness_cats first then wellness.visit second                                              
@@ -223,7 +223,9 @@ table(dat2_df$delivery_mode)
  
 names(dat2_df)
 # Mean abx_episodes for entire cohort 
-summarize(dat2_df, abx_mean_epi=mean(abx_episode_total, na.rm=T)) # 1.94
+summarize(dat2_df, abx_total_mean=mean(abx_episode_total, na.rm=T),
+                  abx_broad_mean=mean(abx_episode_broad, na.rm=T),
+                  abx_episode_narrow=mean(abx_episode_narrow, na.rm=T)) # 1.94
 
 # Compute variable with highest rank abx_episodes for each participant
 # within each wellness visits category
@@ -231,9 +233,10 @@ dat3_df=dat2_df %>%
   group_by(part_id, baby_abx_cats) %>%
   mutate(abx_max=last(abx_episode_total)) %>%
   select(part_id,wellness_visit_cats,baby_abx_cats,mod,baby_birth_wt_gr,gest_wk,days2_baby_meds,abx_episode_total,abx_max, days2_baby_wellvisit)
+
 dat3_df$abx_episode_total
 head(dat3_df);names(dat3_df)
-dat3_df[1:20,c(1,2,7)]
+# dat3_df[1:20,c(1,2,7)]
 
 # WELLNESS CATS
 #-------------
@@ -249,24 +252,12 @@ wellness.abx_cats_table02=dat3_df %>%
 
 # make an 'export' variable
 wellness.abx_cats_table02$abx_mean_export <- with(wellness.abx_cats_table02, sprintf("%g (%.1f%%)", abx_epi_mean, abx_epi_sd))
-wellness.abx_cats_table02$abx_max_export <- with(wellness.abx_cats_table02, sprintf("%g (%.1f%%)", abx_max_mean, abx_max_sd))
+# wellness.abx_cats_table02$abx_max_export <- with(wellness.abx_cats_table02, sprintf("%g (%.1f%%)", abx_max_mean, abx_max_sd))
 
 # export
 now=Sys.Date(); today=format(now, format="%d%b%y")
 write.csv(wellness.abx_cats_table02, file=paste0(out.dir,"table02\\abx_mod_table02_cat",today,".csv"), row.names=F)
 
-
-# WELLNESS LOTS OF CATS
-#----------------------
-# Descriptive look abx_episode according to wellness and mod
-wellness.abx2=dat3_df %>%
-  group_by(wellness.visit, mod) %>%
-  summarise(count = n(),                                    # total count
-            count.unique = n_distinct(part_id),             # count of unique participants
-            abx_epi_mean=mean(abx_episode, na.rm=T),        # mean abx_episode
-            abx_epi_sd=sd(abx_episode, na.rm=T),            # sd abx_episode
-            abx_max_mean=mean(abx_max, na.rm=T),            # mean abx_episode_max
-            abx_max_sd=sd(abx_max, na.rm=T));wellness.abx2  # sd abx_episode_max
 
 # **************************************************************************** #
 # *****      Analysis of MOD and abx_episode/ days2_abx                                              
@@ -280,7 +271,7 @@ wellness.abx2=dat3_df %>%
 #  ALL TIME POINTS
 # t-test: abx_episode and days2_baby_med ~ mod
 out.all=dat3_df %>% ungroup() %>%
-  select(days2_baby_meds, abx_episode, mod) %>%
+  select(days2_baby_meds, abx_episode_total, mod) %>%
   gather(key = variable, value = value, -mod) %>%
   group_by(mod, variable) %>% 
   summarise(value = list(value)) %>% 
@@ -295,9 +286,9 @@ out.all=dat3_df %>% ungroup() %>%
 #  TIME POINT: 0-6 months 
 # t-test: abx_episode and days2_baby_med ~ mod
 out.6mo=dat3_df %>% ungroup() %>%
-  select(days2_baby_meds, abx_episode, mod, wellness.visit_cats) %>%
-  filter(wellness.visit_cats=="t.<6mo") %>% 
-  gather(key = variable, value = value, -mod, -wellness.visit_cats) %>%
+  select(days2_baby_meds, abx_episode_total, mod, baby_abx_cats) %>%
+  filter(baby_abx_cats=="t.<6mo") %>% 
+  gather(key = variable, value = value, -mod, -baby_abx_cats) %>%
   group_by(mod, variable) %>% 
   summarise(value = list(value)) %>% 
   spread(mod, value) %>% 
@@ -311,9 +302,9 @@ out.6mo=dat3_df %>% ungroup() %>%
 #  TIME POINT: t.6_12months 
 # t-test: abx_episode and days2_baby_med ~ mod
 out.6_12mo=dat3_df %>% ungroup() %>%
-  select(days2_baby_meds, abx_episode, mod, wellness.visit_cats) %>%
-  filter(wellness.visit_cats=="t.6_12mo") %>% 
-  gather(key = variable, value = value, -mod, -wellness.visit_cats) %>%
+  select(days2_baby_meds, abx_episode_total, mod, baby_abx_cats) %>%
+  filter(baby_abx_cats=="t.6_12mo") %>% 
+  gather(key = variable, value = value, -mod, -baby_abx_cats) %>%
   group_by(mod, variable) %>% 
   summarise(value = list(value)) %>% 
   spread(mod, value) %>% 
@@ -327,9 +318,9 @@ out.6_12mo=dat3_df %>% ungroup() %>%
 #  TIME POINT: t.12_24months 
 # t-test: abx_episode and days2_baby_med ~ mod
 out.12_24mo=dat3_df %>% ungroup() %>%
-  select(days2_baby_meds, abx_episode, mod, wellness.visit_cats) %>%
-  filter(wellness.visit_cats=="t.12_24mo") %>% 
-  gather(key = variable, value = value, -mod, -wellness.visit_cats) %>%
+  select(days2_baby_meds, abx_episode_total, mod, baby_abx_cats) %>%
+  filter(baby_abx_cats=="t.12_24mo") %>% 
+  gather(key = variable, value = value, -mod, -baby_abx_cats) %>%
   group_by(mod, variable) %>% 
   summarise(value = list(value)) %>% 
   spread(mod, value) %>% 
@@ -343,9 +334,9 @@ out.12_24mo=dat3_df %>% ungroup() %>%
 #  TIME POINT: t.24_36months 
 # t-test: abx_episode and days2_baby_med ~ mod
 out.24_36mo=dat3_df %>% ungroup() %>%
-  select(days2_baby_meds, abx_episode, mod, wellness.visit_cats) %>%
-  filter(wellness.visit_cats=="t.24_36mo") %>% 
-  gather(key = variable, value = value, -mod, -wellness.visit_cats) %>%
+  select(days2_baby_meds, abx_episode_total, mod, baby_abx_cats) %>%
+  filter(baby_abx_cats=="t.24_36mo") %>% 
+  gather(key = variable, value = value, -mod, -baby_abx_cats) %>%
   group_by(mod, variable) %>% 
   summarise(value = list(value)) %>% 
   spread(mod, value) %>% 
@@ -359,9 +350,9 @@ out.24_36mo=dat3_df %>% ungroup() %>%
 #  TIME POINT: t.>36months 
 # t-test: abx_episode and days2_baby_med ~ mod
 out.36mo=dat3_df %>% ungroup() %>%
-  select(days2_baby_meds, abx_episode, mod, wellness.visit_cats) %>%
-  filter(wellness.visit_cats=="t.>36mo") %>% 
-  gather(key = variable, value = value, -mod, -wellness.visit_cats) %>%
+  select(days2_baby_meds, abx_episode_total, mod, baby_abx_cats) %>%
+  filter(baby_abx_cats=="t.>36mo") %>% 
+  gather(key = variable, value = value, -mod, -baby_abx_cats) %>%
   group_by(mod, variable) %>% 
   summarise(value = list(value)) %>% 
   spread(mod, value) %>% 
