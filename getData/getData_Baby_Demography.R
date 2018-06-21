@@ -18,9 +18,9 @@
 # location="Dominick";location
 
 # Directory Locations
-work.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\raw_data\\",sep="");work.dir
-data.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\raw_data\\",sep="");data.dir
-out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\IRB\\UF\\UFHealth\\redcap_import\\03_redcap_import_Jan18\\",sep="");out.dir
+work.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\02_Projects\\UFHEALTH\\RedCap\\redcap_import\\raw_data\\",sep="");work.dir
+data.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\02_Projects\\UFHEALTH\\RedCap\\redcap_import\\raw_data\\",sep="");data.dir
+out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\02_Projects\\UFHEALTH\\RedCap\\redcap_import\\redcap_import_June18\\",sep="");out.dir
 
 # Set Working Directory
 setwd(work.dir)
@@ -40,7 +40,7 @@ library(dplyr)
 # **************************************************************************** #      
 
 # file parameters
-n_max=10000
+n_max=1000000
 data.file.name="Baby.xlsx";data.file.name
 
 # **************************************************************************** #
@@ -647,4 +647,71 @@ for (i in 1:length(chunks))
 
 # clear slate
 rm(baby.abx, dat, newdata,chunks, newdata2, newdata3, dt, dt3, dt4, dt5)
+
+# **************************************************************************** #
+# ***************                mom_baby                                               
+# **************************************************************************** #
+
+# mom_baby
+#-----------------
+# rows: 16649
+# cols: 5
+# unique id: 15998
+# repeat: 537
+# ICD9/10: NA
+
+# read data
+mom.baby=read_xlsx(paste0(data.dir,data.file.name), sheet = "Mom-Baby", range = NULL, col_names = TRUE,
+                   col_types = NULL, na = "", trim_ws = TRUE, skip = 0, n_max = Inf,
+                   guess_max = min(1000, n_max));mom.baby
+
+# data
+dat=mom.baby
+
+# rename
+newdata=rename(dat, part_id = `Baby-Id`,baby_gender=`Baby Gender`,mom_id2=`Mom-Id`,mom_age_delivery=`Mom Age`,payer="Payer");newdata
+names(newdata); head(newdata)
+
+# unique ID? Some moms had multiple babies in data set
+length(unique(newdata$part_id)) # 16649
+length(newdata$part_id)         # 16649
+names(newdata); head(newdata)
+
+# sort
+# dont need to sort. no dates
+
+# redcap_repeat_instrument
+newdata3=newdata
+newdata3$redcap_repeat_instrument="baby_demography"
+names(newdata3); head(newdata3)
+
+# create "redcap_repeat_instance" variable
+dt3=newdata3            
+dt3$redcap_repeat_instance=1
+
+# redcap_event_name
+dt3$redcap_event_name="visit_1_arm_1"
+
+# order columns for export
+col.names=names(dt3);col.names
+col.first=c("part_id","redcap_repeat_instrument","redcap_repeat_instance","redcap_event_name");col.first
+col.next=subset(col.names, !(col.names%in%col.first));col.next
+colFixed=append(col.first, col.next, after=length(col.first));colFixed
+dt4=setcolorder(dt3, colFixed)
+names(dt4);head(dt4)
+dt5=dt4
+
+# export data
+#-------------
+batchSize=10000; # number of rows in single output file
+data.file.name.export=as.character(dt5[2,2]);data.file.name.export
+
+chunks=split(dt5, floor(0:(nrow(dt5)-1)/batchSize))
+for (i in 1:length(chunks))
+{ # second loop
+  write.table(chunks[[i]],paste0(out.dir,data.file.name.export,i,'.csv'),row.names=F, sep=";")
+} # end second loop
+
+# clear slate
+rm(mom.baby, dat, newdata,chunks, newdata2, newdata3, dt, dt3, dt4, dt5)
 
