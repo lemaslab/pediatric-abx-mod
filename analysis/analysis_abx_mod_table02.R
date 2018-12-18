@@ -4,10 +4,10 @@
 # **************************************************************************** #
 
 # Author:      Dominick Lemas 
-# Date:        June 19, 2018 
+# Date:        December 18, 2018 
 # IRB:
 # Description: Analysis of abx and mode-of-delivery EHR data 
-# Data: C:\Users\djlemas\Dropbox (UFL)\02_Projects\UFHEALTH\RedCap\rdata
+# Data: C:\Users\djlemas\Dropbox (UFL)\02_Projects\UFHEALTH\tables\table03
 
 # **************************************************************************** #
 # ***************                Directory Variables           *************** #
@@ -18,8 +18,8 @@
 # location="Dominick";location
 
 # Directory Locations
-work.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\02_Projects\\UFHEALTH\\RedCap\\rdata\\",sep="");work.dir
-data.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\02_Projects\\UFHEALTH\\RedCap\\rdata\\",sep="");data.dir
+work.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\02_Projects\\UFHEALTH\\tables\\table03\\",sep="");work.dir
+data.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\02_Projects\\UFHEALTH\\tables\\table03\\",sep="");data.dir
 out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\02_Projects\\UFHEALTH\\tables\\",sep="");out.dir
 
 # Set Working Directory
@@ -30,23 +30,26 @@ list.files()
 # ***************                Library                       *************** #
 # **************************************************************************** #
 
-# library(readxl)
-library(data.table)
-library(tidyr)
+library(readxl)
 library(dplyr)
-library(reshape2)
-library(broom)
-library(tidyverse)
-library(xtable)
 
 # **************************************************************************** #
-# *****      l             load data: abx_mod_04Apr18.rdata       
+# *****      load data: Antibiotic Prescriptions by Year_18dEC18.xlsx       
 # **************************************************************************** # 
 
-load(file="abx_mod_19Jun18.rdata")
-head(dat7); dim(dat7)
-names(dat7)
-table(dat7$redcap_repeat_instrument)
+
+# read data
+n_max=1000000
+data.file.name="Antibiotic Prescriptions by Year_18dEC18.xlsx";data.file.name
+
+
+abx=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "TABLE2", range = NULL, col_names = TRUE,
+                   col_types = NULL, na = "NA", trim_ws = TRUE, skip = 0, n_max = Inf,
+                   guess_max = min(1000, n_max));abx
+
+# data
+dat=abx
+
 
 # quick diagnostics
 length(unique(dat7$part_id)) # 7667
