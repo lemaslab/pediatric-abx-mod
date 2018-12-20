@@ -38,7 +38,6 @@ library(qwraps2)
 # *****      load data: Antibiotic Prescriptions by Year_18dEC18.xlsx       
 # **************************************************************************** # 
 
-
 # read data
 n_max=1000000
 data.file.name="Antibiotic Prescriptions by Year_18DEC18.xlsx";data.file.name
@@ -58,13 +57,6 @@ dat %>%
   select(Frequency,`ATC-General-lev2`) %>%
   group_by(`ATC-General-lev2`) %>%
   summarize(n = n()) %>%
-  n_perc(n)
-
-# abx counts by ATC Groups
-dat %>%
-  select(Frequency,`ATC-General-lev2`) %>%
-  group_by(`ATC-General-lev2`) %>%
-  summarize(n = n()) %>%
   mutate(freq= n/sum(n)*100)
   
 # abx counts/freq by ATC Groups by age
@@ -73,6 +65,7 @@ dat %>%
   group_by(year,`ATC-General-lev2`) %>%
   summarize(n = n()) %>%
   mutate(freq= n/sum(n)*100)
+
 
 # https://cran.r-project.org/web/packages/qwraps2/vignettes/summary-statistics.html
 
@@ -89,6 +82,9 @@ These formulae are passed through dplyr::summarize_ to generate the table.
 The names are important, as they are used to label row groups and row names 
 in the table.
 
+# Level 2 comparisons
+#--------------------
+
 dat.table=dat %>%
   select(year, Frequency,`ATC-General-lev2`) %>%
   group_by(`ATC-General-lev2`,year)
@@ -97,8 +93,29 @@ our_summary1 <-
   list("ATC-code" =
          list("J01A" = ~ qwraps2::n_perc0(`ATC-General-lev2` == "J01A"),
               "J01C" = ~ qwraps2::n_perc0(`ATC-General-lev2` == "J01C"),
-              "J01D" = ~ qwraps2::n_perc0(`ATC-General-lev2` == "J01D")
+              "J01D" = ~ qwraps2::n_perc0(`ATC-General-lev2` == "J01D"),
+              "J01E" = ~ qwraps2::n_perc0(`ATC-General-lev2` == "J01E"),
+              "J01F" = ~ qwraps2::n_perc0(`ATC-General-lev2` == "J01F"),
+              "J01X" = ~ qwraps2::n_perc0(`ATC-General-lev2` == "J01X"),
+              "J04A" = ~ qwraps2::n_perc0(`ATC-General-lev2` == "J04A")
               )
+  )
+
+summary_table(dat.table, our_summary1)
+summary_table(dplyr::group_by(dat.table, year), our_summary1)
+
+# Level 3 comparisons
+#--------------------
+
+dat.table=dat %>%
+  select(year, Frequency,`ATC-General-lev3`) %>%
+  group_by(`ATC-General-lev3`,year)
+
+our_summary1 <-
+  list("ATC-code" =
+         list("J01CA" = ~ qwraps2::n_perc0(`ATC-General-lev3` == "J01CA"),
+              "J01CE" = ~ qwraps2::n_perc0(`ATC-General-lev3` == "J01CE")
+         )
   )
 
 summary_table(dat.table, our_summary1)
