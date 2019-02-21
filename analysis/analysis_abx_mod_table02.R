@@ -64,8 +64,11 @@ length(unique(df$Baby_Id))
 table(df$abx_episode)
 hist(table(df$abx_episode))
 
-# need ggplot histogram for paper. 
+# need ggplot histogram for paper. 4,024 in denominator.
 start here
+
+970/4024 # 0.24105
+240/4024 # 0.05964
 
 # 1     2   3   4   5   6   7   8   9  10  11  12 
 # 970 240  79  37  18  10   7   6   2   2   2   2
