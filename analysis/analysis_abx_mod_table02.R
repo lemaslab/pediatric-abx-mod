@@ -6,7 +6,7 @@
 # Author:      Dominick Lemas 
 # Date:        December 18, 2018 
 # IRB:
-# Description: Analysis of abx and mode-of-delivery EHR data 
+# Description: Analysis of abx data EHR data 
 # Data: C:\Users\djlemas\Dropbox (UFL)\02_Projects\UFHEALTH\tables\table03
 
 # **************************************************************************** #
@@ -14,8 +14,7 @@
 # **************************************************************************** #
 
 # Computer
-# location="djlemas";location
-# location="Dominick";location
+location="djlemas";location
 
 # Directory Locations
 work.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\02_Projects\\UFHEALTH\\tables\\table03\\",sep="");work.dir
@@ -51,6 +50,25 @@ abx=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "TABLE2", range = N
 # diagnostics
 dat=abx
 dim(dat)
+
+# how many participants
+length(unique(dat$Baby_Id))  # 970 infants with at least 1 abx
+df=dat%>%
+  select(Baby_Id, abx_episode)%>%
+  group_by(abx_episode, Baby_Id)%>%
+  tally() 
+
+# how many unique abx-episodes: 1-12 in 970 people
+unique(df$abx_episode)
+length(unique(df$Baby_Id))
+table(df$abx_episode)
+hist(table(df$abx_episode))
+
+# need ggplot histogram for paper. 
+start here
+
+# 1     2   3   4   5   6   7   8   9  10  11  12 
+# 970 240  79  37  18  10   7   6   2   2   2   2
 
 
 # abx counts by ATC Groups
