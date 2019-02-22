@@ -31,7 +31,7 @@ list.files()
 
 library(readxl)
 library(dplyr)
-library(qwraps2)
+library(ggplot2)
 
 # **************************************************************************** #
 # *****      load data: Antibiotic Prescriptions by Year_18dEC18.xlsx       
@@ -55,7 +55,7 @@ length(unique(dat$Baby_Id))  # 970 infants with at least 1 abx
 df=dat%>%
   select(Baby_Id, abx_episode)%>%
   group_by(abx_episode, Baby_Id)%>%
-  tally() 
+  count() 
 
 # how many unique abx-episodes: 1-12 in 970 people
 unique(df$abx_episode)
@@ -64,7 +64,16 @@ table(df$abx_episode)
 hist(table(df$abx_episode))
 
 # need ggplot histogram for paper. 4,024 in denominator.
-start here
+ggplot(data=df, aes(x=abx_episode)) +
+  geom_histogram(fill="#880011", binwidth=1, bin=12) + 
+  stat_bin(binwidth = 1, col = "black")   
+
+ggplot(data=df, aes(x=factor(df$abx_episode))) + 
+  geom_bar() +
+  geom_text(stat='count', aes(label=..count..), vjust=-1) +
+  xlab("Number of Antibiotic Episodes") + ylab("Number of Infants")
+
+
 
 970/4024 # 0.24105
 240/4024 # 0.05964
