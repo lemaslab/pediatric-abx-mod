@@ -14,8 +14,7 @@
 # **************************************************************************** #
 
 # Computer
-# location="djlemas";location
-# location="Dominick";location
+location="djlemas";location
 
 # Directory Locations
 work.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\02_Projects\\UFHEALTH\\RedCap\\rdata\\",sep="");work.dir
