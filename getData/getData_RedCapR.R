@@ -14,8 +14,6 @@
 # **************************************************************************** #
 
 library(keyringr)
-library(REDCapR)
-library(httr)
 library(redcapAPI)
 
 # Get Redcap API Token
