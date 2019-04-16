@@ -39,7 +39,7 @@ library(ggplot2)
 
 # read data
 n_max=1000000
-data.file.name="Antibiotic Prescriptions by Year_18DEC18.xlsx";data.file.name
+data.file.name="Antibiotic Prescriptions by Year_18dEC18.xlsx";data.file.name
 
 
 abx=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "TABLE2", range = NULL, col_names = TRUE,
@@ -155,4 +155,3 @@ summary_table(dplyr::group_by(dat.table, year), our_summary1)
 # on how to convert to tables.
 # http://www.schussman.com/article/convert-latex-tables-to-word
 
-# looks like it is starting to work. Need to check numbers and find output.
