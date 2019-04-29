@@ -73,8 +73,26 @@ ggplot(data=df, aes(x=factor(df$abx_episode))) +
   geom_text(stat='count', aes(label=..count..), vjust=-1) +
   xlab("Number of Antibiotic Episodes") + ylab("Number of Infants")
 
+library(forcats)
 
+# revise
+df$abx_episode=as.character(df$abx_episode)
+levels(df$abx_episode)
+df$abx_episode_4=fct_collapse(df$abx_episode, one="1",two="2",three="3", four=c("4","5","6","7","8","9","10","11","12"))
+levels(df$abx_episode_4)
+# order levels
+df1=df%>%
+mutate(abx_episode_4 = factor(abx_episode_4, 
+                             levels = c("one", 
+                                        "two", 
+                                        "three",
+                                        "four")))
 
+ggplot(data=df1, aes(x=factor(df1$abx_episode_4))) + 
+geom_bar() +
+geom_text(stat='count', aes(label=..count..), vjust=-1) +
+xlab("Number of Antibiotic Episodes") + ylab("Number of Infants")
+       
 970/4024 # 0.24105
 240/4024 # 0.05964
 
