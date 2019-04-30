@@ -65,3 +65,5 @@ ggplot(dat, aes(x=months, y=CMF, col=csection)) + geom_line()+
   theme_minimal()+
   xlab("Postnatal Age in Years") + ylab("Mean Antibiotic Episodes")+
   scale_color_discrete(name="Mode of Delivery",labels=c("Vaginal Delivery", "Cesarean Section"))
+
+

@@ -32,6 +32,8 @@ list.files()
 library(readxl)
 library(dplyr)
 library(ggplot2)
+library(forcats)
+
 
 # **************************************************************************** #
 # *****      load data: fig1_infant_abx_count_V1_14Mar19.csv      
@@ -46,13 +48,36 @@ counts<- read.csv(data.file.path);counts
 dat=counts
 dim(dat)
 
+# revise to include fewer categories
+dat$abx_episode=as.factor(dat$abx_episode)
+
+dat$abx_episode_4=fct_collapse(dat$abx_episode, 
+                               zero="0", 
+                               one="1", 
+                               two="2",
+                               three="3", 
+                               four=c("4","5","6","7","8","9","10","11","12"))
+levels(dat$abx_episode_4)
+# order levels
+df1=dat%>%
+  mutate(abx_episode_4 = factor(abx_episode_4, 
+                                levels = c("zero",
+                                           "one", 
+                                           "two", 
+                                           "three",
+                                           "four")))%>%
+  group_by(abx_episode_4) %>%
+  summarize(percent_4 = round(sum(percent),1))%>%
+  mutate(abx_episode_4=fct_recode(abx_episode_4, "0"="zero", "1"="one","2"="two",
+                                  "3"="three","4+"="four"))
+
 # how many participants
-sum(dat$frequency) # 4024
+sum(df1$frequency) # 4024
 
 # plot abx episode number by participant count number.
-ggplot(data=dat, aes(x=abx_episode, y=percent)) +
+ggplot(data=df1, aes(x=abx_episode_4, y=percent_4)) +
   geom_bar(stat="identity")+
-  geom_text(aes(label=percent), vjust=-0.3, size=3.5)+
+  geom_text(aes(label=percent_4), vjust=-0.3, size=3.5)+
   theme_minimal()+
   xlab("Number of Antibiotic Episodes") + ylab("Percentage")
 
