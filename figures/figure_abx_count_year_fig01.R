@@ -4,7 +4,7 @@
 # **************************************************************************** #
 
 # Author:      Dominick Lemas 
-# Date:        March 14, 2019 
+# Date:        June 27, 2019 
 # IRB:
 # Description: Count of Abx by year for paper #1
 # Data: C:\Users\djlemas\Dropbox (UFL)\02_Projects\UFHEALTH\figures
@@ -40,8 +40,8 @@ library(forcats)
 # **************************************************************************** # 
 
 # read data
-data.file.name="fig1_infant_abx_count_V1_14Mar19.csv";data.file.name
-data.file.path=paste0(data.dir,"\\",data.file.name);data.file.path
+data.file.name="fig1_infant_abx_count_V2_27June19.csv";data.file.name
+data.file.path=paste0(data.dir,data.file.name);data.file.path
 counts<- read.csv(data.file.path);counts
 
 # diagnostics
@@ -70,9 +70,8 @@ df1=dat%>%
   summarize(percent_4 = round(sum(percent),1))%>%
   mutate(abx_episode_4=fct_recode(abx_episode_4, "0"="zero", "1"="one","2"="two",
                                   "3"="three","4+"="four"))
-
-# how many participants
-sum(df1$frequency) # 4024
+# quick check
+sum(df1$percent_4) # 99.9
 
 # plot abx episode number by participant count number.
 ggplot(data=df1, aes(x=abx_episode_4, y=percent_4)) +
@@ -80,4 +79,6 @@ ggplot(data=df1, aes(x=abx_episode_4, y=percent_4)) +
   geom_text(aes(label=percent_4), vjust=-0.3, size=3.5)+
   theme_minimal()+
   xlab("Number of Antibiotic Episodes") + ylab("Percentage")
+ggsave("fig1_infant_abx_count_V2.png")
+list.files()
 
