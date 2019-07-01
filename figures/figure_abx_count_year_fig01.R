@@ -13,13 +13,10 @@
 # ***************                Directory Variables           *************** #
 # **************************************************************************** #
 
-# Computer
-location="djlemas";location
-
 # Directory Locations
-work.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\02_Projects\\UFHEALTH\\figures\\",sep="");work.dir
-data.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\02_Projects\\UFHEALTH\\figures\\",sep="");data.dir
-out.dir=paste("C:\\Users\\",location,"\\Dropbox (UFL)\\02_Projects\\UFHEALTH\\figures\\",sep="");out.dir
+work.dir=paste(Sys.getenv("USERPROFILE"),"\\Dropbox (UFL)\\02_Projects\\UFHEALTH\\figures\\",sep="");work.dir
+data.dir=paste(Sys.getenv("USERPROFILE"),"\\Dropbox (UFL)\\02_Projects\\UFHEALTH\\figures\\",sep="");data.dir
+out.dir=paste(Sys.getenv("USERPROFILE"),"\\Dropbox (UFL)\\02_Projects\\UFHEALTH\\figures\\",sep="");out.dir
 
 # Set Working Directory
 setwd(work.dir)
@@ -33,7 +30,6 @@ library(readxl)
 library(dplyr)
 library(ggplot2)
 library(forcats)
-
 
 # **************************************************************************** #
 # *****      load data: fig1_infant_abx_count_V1_14Mar19.csv      
@@ -67,18 +63,21 @@ df1=dat%>%
                                            "three",
                                            "four")))%>%
   group_by(abx_episode_4) %>%
-  summarize(percent_4 = round(sum(percent),1))%>%
+  summarize(percent_4 = format(round(sum(percent),1),nsmall=1))%>%
   mutate(abx_episode_4=fct_recode(abx_episode_4, "0"="zero", "1"="one","2"="two",
                                   "3"="three","4+"="four"))
+
+
 # quick check
-sum(df1$percent_4) # 99.9
+sum(as.numeric(df1$percent_4)) # 99.9
 
 # plot abx episode number by participant count number.
-ggplot(data=df1, aes(x=abx_episode_4, y=percent_4)) +
+ggplot(data=df1, aes(x=abx_episode_4, y=as.numeric(percent_4))) +
   geom_bar(stat="identity")+
   geom_text(aes(label=percent_4), vjust=-0.3, size=3.5)+
   theme_minimal()+
+  scale_y_continuous(limits=c(0, 100))+
   xlab("Number of Antibiotic Episodes") + ylab("Percentage")
-ggsave("fig1_infant_abx_count_V2.png")
+ggsave("fig1_infant_abx_count_V3.png")
 list.files()
 
