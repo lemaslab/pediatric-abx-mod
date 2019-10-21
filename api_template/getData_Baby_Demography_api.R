@@ -51,8 +51,15 @@ exportRecords(rcon)
 # Pull data set 
 #-------------
 
+# fancy informatics way of getting records of interest                                          
+test=seq(1,10,1)
+test2=paste0("Baby-000",test)
+
+
 # variables of interest
 desired_fields_v1=c("part_id", "baby_dob", "baby_gender")
+
+# records of interest
 desired_records_v1=c("Baby-0001", "Baby-0002", "Baby-0003",
                      "Baby-0004", "Baby-0005", "Baby-0006",
                      "Baby-0007", "Baby-0008", "Baby-0009",
@@ -61,7 +68,11 @@ desired_records_v1=c("Baby-0001", "Baby-0002", "Baby-0003",
                      "Baby-0016", "Baby-0017", "Baby-0018",
                      "Baby-0019", "Baby-0020", "Baby-0021",
                      "Baby-0022", "Baby-0023", "Baby-0024",
-                     "Baby-0025", "Baby-0026", "Baby-0027",
+                     "Baby-0025", "Baby-0026", "Baby-0027")
+
+
+
+                                       
 "Baby-0028",
 "Baby-0029",
 "Baby-0030",
