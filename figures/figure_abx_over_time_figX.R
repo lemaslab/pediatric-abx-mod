@@ -46,6 +46,8 @@ abx=read_xlsx(paste(data.dir,data.file.name,sep=""), sheet = "RawDataAntibioticP
                    col_types = NULL, na = "NA", trim_ws = TRUE, skip = 0, n_max = Inf,
                    guess_max = min(1000, n_max));abx
 
+abx$year=as.factor(abx$year)
 
-
-
+abx %>%
+  group_by(year, classification) %>%
+  count()
