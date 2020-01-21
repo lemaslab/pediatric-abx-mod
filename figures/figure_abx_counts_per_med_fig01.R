@@ -63,6 +63,7 @@ new=abx %>%
   # check
   length(unique(new$Baby_Id)) # 970
   table(new$abx_max)          # DONE!
+  4024-970
   
 # COMPLETE NARROW ANALYSIS
 
@@ -83,8 +84,9 @@ new.narrow=narrow %>%
   # check 
   length(unique(new.narrow$Baby_Id))
   table(new.narrow$abx_narrow_max)          # DONE!
+  4024-761
   
-# COMPLETE NARROW ANALYSIS
+# COMPLETE BROAD ANALYSIS
   
   broad=abx %>%
     select(Baby_Id, year, Medication, classification, abx_time) %>%

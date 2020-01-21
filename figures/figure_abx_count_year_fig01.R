@@ -3,10 +3,11 @@
 # ***************                Project Overview              *************** #
 # **************************************************************************** #
 
-# Author:      Dominick Lemas 
-# Date:        June 27, 2019 
-# IRB:
-# Description: Count of Abx by year for paper #1
+# Author:             Dominick Lemas 
+# START  Date:        June 27, 2019
+# REVISE Date:        January 21, 2020
+# IRB:                IRB201601899:UFHealth Early Life Exposures and Pediatric Outcomes	
+# Description: REVISE: Count of Abx per medication type for paper #1
 # Data: C:\Users\djlemas\Dropbox (UFL)\02_Projects\UFHEALTH\figures
 
 # **************************************************************************** #
@@ -32,11 +33,24 @@ library(ggplot2)
 library(forcats)
 
 # **************************************************************************** #
-# *****      load data: fig1_infant_abx_count_V1_14Mar19.csv      
+# *****   REVISED SUBMISSION:   load data: fig1_infant_abx_count_V3_21Jan20.csv  
 # **************************************************************************** # 
 
 # read data
-data.file.name="fig1_infant_abx_count_V2_27June19.csv";data.file.name
+data.file.name="fig1_infant_abx_count_V3_21Jan20.csv";data.file.name
+data.file.path=paste0(data.dir,data.file.name);data.file.path
+counts<- read.csv(data.file.path);counts
+
+# need to create figure 1
+
+
+
+# **************************************************************************** #
+# *****   FIRST SUBMISSION:   load data: fig1_infant_abx_count_V1_14Mar19.csv  
+# **************************************************************************** # 
+
+# read data
+data.file.name="fig1_infant_abx_count_V1_14Mar19.csv";data.file.name
 data.file.path=paste0(data.dir,data.file.name);data.file.path
 counts<- read.csv(data.file.path);counts
 
