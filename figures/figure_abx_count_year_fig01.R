@@ -51,33 +51,33 @@ dat=counts
 dim(dat)
 str(dat)
 
-# revise to include fewer categories
-dat$abx_episode=as.factor(dat$abx_episode)
-dat$abx_percent=dat$frequency/4024
+# format data
 
 dat.n=dat %>% 
-  mutate(abx_episode_4=fct_collapse(dat$abx_episode, 
+  mutate(class_order=ordered(classification, levels = c("total", "narrow", "broad"))) %>%
+  mutate(abx_episode_4=fct_collapse(abx_episode, 
                                zero="0", 
                                one="1", 
                                two="2",
                                three="3", 
-                               four=c("4"))) %>%
-  mutate(abx_percent=frequency/4024)
+                               four="4")) %>%
+  mutate(abx_percent=round((frequency/4024)*100, 1))
 
-levels(dat$abx_episode_4)
+# plot abx episode number by participant count number.
+ggplot(data=dat.n, aes(x=abx_episode_4, y=as.numeric(abx_percent))) +
+  geom_bar(stat="identity")+
+  geom_text(aes(label=abx_percent), vjust=-0.3, size=3.5)+
+  theme_minimal()+
+  scale_y_continuous(limits=c(0, 100))+
+  xlab("Number of Antibiotic Episodes") + ylab("Percentage")
+ggsave("fig1_infant_abx_count_V3.png")
+list.files()
 
-# order levels
-df1=dat%>%
-  mutate(abx_episode_4 = factor(abx_episode_4, 
-                                levels = c("zero",
-                                           "one", 
-                                           "two", 
-                                           "three",
-                                           "four")))%>%
-  group_by(abx_episode_4) %>%
-  summarize(percent_4 = format(round(sum(percent),1),nsmall=1))%>%
-  mutate(abx_episode_4=fct_recode(abx_episode_4, "0"="zero", "1"="one","2"="two",
-                                  "3"="three","4+"="four"))
+plot <- ggplot(dat.n, aes(abx_episode_4, frequency, fill=class_order))
+plot <- plot + geom_bar(stat = "identity", position = 'dodge') + geom_text(aes(label=frequency), vjust=-0.3, size=3.5)
+plot <- plot + theme_minimal() + scale_y_continuous(limits=c(0, 100)) + xlab("Number of Antibiotic Episodes") + ylab("Percentage")
+plot
+
 
 # **************************************************************************** #
 # *****   FIRST SUBMISSION:   load data: fig1_infant_abx_count_V1_14Mar19.csv  
