@@ -43,7 +43,38 @@ counts<- read.csv(data.file.path);counts
 
 # need to create figure 1
 
+# diagnostics
+dat=counts
+dim(dat)
+str(dat)
 
+# revise to include fewer categories
+dat$abx_episode=as.factor(dat$abx_episode)
+dat$abx_percent=dat$frequency/4024
+
+dat.n=dat %>% 
+  mutate(abx_episode_4=fct_collapse(dat$abx_episode, 
+                               zero="0", 
+                               one="1", 
+                               two="2",
+                               three="3", 
+                               four=c("4"))) %>%
+  mutate(abx_percent=frequency/4024)
+
+levels(dat$abx_episode_4)
+
+# order levels
+df1=dat%>%
+  mutate(abx_episode_4 = factor(abx_episode_4, 
+                                levels = c("zero",
+                                           "one", 
+                                           "two", 
+                                           "three",
+                                           "four")))%>%
+  group_by(abx_episode_4) %>%
+  summarize(percent_4 = format(round(sum(percent),1),nsmall=1))%>%
+  mutate(abx_episode_4=fct_recode(abx_episode_4, "0"="zero", "1"="one","2"="two",
+                                  "3"="three","4+"="four"))
 
 # **************************************************************************** #
 # *****   FIRST SUBMISSION:   load data: fig1_infant_abx_count_V1_14Mar19.csv  
