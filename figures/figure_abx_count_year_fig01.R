@@ -54,14 +54,23 @@ str(dat)
 # format data
 
 dat.n=dat %>% 
-  mutate(class_order=ordered(classification, levels = c("total", "narrow", "broad"))) %>%
+  mutate(class_order=ordered(classification, levels = c("total", "narrow", "broad")),
+         abx_episode=as.factor(abx_episode)) %>%
   mutate(abx_episode_4=fct_collapse(abx_episode, 
                                zero="0", 
                                one="1", 
                                two="2",
                                three="3", 
                                four="4")) %>%
-  mutate(abx_percent=round((frequency/4024)*100, 1))
+  mutate(abx_percent=round((frequency/4024)*100, 1)) %>%
+  mutate(abx_per_char=format(abx_percent, nsmall = 1)) %>%
+  mutate(percent_count=paste0(abx_per_char,"% (",frequency,")"))
+
+# plot
+ggplot(dat.n, aes(x = classification, y = frequency, fill = abx_episode, label = frequency)) +
+  geom_bar(stat = "identity") +
+  geom_text(size = 3, position = position_stack(vjust = 0.5))
+
 
 # plot abx episode number by participant count number.
 ggplot(data=dat.n, aes(x=abx_episode_4, y=as.numeric(abx_percent))) +
@@ -70,13 +79,10 @@ ggplot(data=dat.n, aes(x=abx_episode_4, y=as.numeric(abx_percent))) +
   theme_minimal()+
   scale_y_continuous(limits=c(0, 100))+
   xlab("Number of Antibiotic Episodes") + ylab("Percentage")
-ggsave("fig1_infant_abx_count_V3.png")
-list.files()
+g + theme_minimal() + scale_y_continuous(limits=c(0, 100)) + xlab("Number of Antibiotic Episodes") + ylab("Percentage")
 
-plot <- ggplot(dat.n, aes(abx_episode_4, frequency, fill=class_order))
-plot <- plot + geom_bar(stat = "identity", position = 'dodge') + geom_text(aes(label=frequency), vjust=-0.3, size=3.5)
-plot <- plot + theme_minimal() + scale_y_continuous(limits=c(0, 100)) + xlab("Number of Antibiotic Episodes") + ylab("Percentage")
-plot
+
+
 
 
 # **************************************************************************** #
@@ -84,7 +90,12 @@ plot
 # **************************************************************************** # 
 
 # read data
-data.file.name="fig1_infant_abx_count_V1_14Mar19.csv";data.file.name
+data.fgsave("fig1_infant_abx_count_V3.png")
+list.files()
+
+plot <- ggplot(dat.n, aes(abx_episode_4, frequency, fill=class_order))
+plot <- plot + geom_bar(stat = "identity", position = 'dodge') + geom_text(aes(label=frequency), vjust=-0.3, size=3.5)
+plot <- plotile.name="fig1_infant_abx_count_V1_14Mar19.csv";data.file.name
 data.file.path=paste0(data.dir,data.file.name);data.file.path
 counts<- read.csv(data.file.path);counts
 
