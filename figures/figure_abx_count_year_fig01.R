@@ -36,6 +36,9 @@ library(forcats)
 # *****   REVISED SUBMISSION:   load data: fig1_infant_abx_count_V3_21Jan20.csv  
 # **************************************************************************** # 
 
+# https://stackoverflow.com/questions/34913196/create-stack-bar-with-counts-and-fill-group-levels-in-the-same-graph
+# https://plotnine.readthedocs.io/en/stable/tutorials/miscellaneous-show-counts-and-percentages-for-bar-plots.html
+
 # read data
 data.file.name="fig1_infant_abx_count_V3_21Jan20.csv";data.file.name
 data.file.path=paste0(data.dir,data.file.name);data.file.path
