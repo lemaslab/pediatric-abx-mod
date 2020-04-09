@@ -5,7 +5,7 @@ import commons
 keywords = ['feed', 'feeding', 'fed', 'breast', 'breastfeed', 'breastfeeding',
             'breastfed', 'breast-feed', 'breast-feeding', 'breast-fed',
             'bottle-feed', 'bottle-feeding', 'bottle-fed', 'bottle', 'nurse',
-            'nursing', 'nursed']
+            'nursing', 'nursed', 'lactate', 'lactation']
 
 if __name__ == '__main__':
     files = pre_processing.retrievefiles('.txt')

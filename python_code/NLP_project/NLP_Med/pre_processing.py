@@ -5,6 +5,9 @@ import os
 from tkinter import filedialog
 from nltk import pos_tag
 ##############################################################################
+def reDuction(patients, filenames):
+    r = re.compile(r'Baby-[0-9]+')
+    f = open(patients, 'r')
 
 
 def filefrompath(path, filenames):

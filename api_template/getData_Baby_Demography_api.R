@@ -40,14 +40,14 @@ print(redcap_ehr)
 rcon <- redcapConnection(url=uri, token=redcap_ehr)
 
 # list of instruments
-exportInstruments(rcon)
+#exportInstruments(rcon)
 
 # list of events
-exportEvents(rcon)
+#exportEvents(rcon)
 
 # list records
-exportRecords(rcon)
-
+#exportRecords(rcon)
+#?exportRecords
 # Pull data set 
 #-------------
 
@@ -122,13 +122,15 @@ baby <- redcap_read(
   redcap_uri = uri, 
   token      = redcap_ehr, 
   fields     = desired_fields_v1,
-  records = desired_records_v1
 )$data
 
 # explore the data
 head(baby)
 str(baby)
-
+# ?str
 # format data
 baby$baby_dob=as.Date(baby$baby_dob)
     
+baby$baby_dob
+
+tail(baby)

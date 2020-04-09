@@ -102,6 +102,10 @@ class QueryDatabase:
                         if i not in Indexes:
                             Indexes.append(i)
                         break
+                    elif elem[t] == 'NA':
+                        if i not in Indexes:
+                            Indexes.append(i)
+                        break
 
         for index in sorted(Indexes, reverse=True):
             del df[index]
