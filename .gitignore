@@ -2,3 +2,6 @@
 .Rhistory
 .RData
 .Ruserdata
+nbs/
+data/
+check/
