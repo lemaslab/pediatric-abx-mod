@@ -3,17 +3,18 @@ import operator
 import string
 
 from nltk.corpus import stopwords
-from pre_processing import filefrompath
 ##############################################################################
 
-def clean_vocab(List):
+def clean_vocab(List, stop_words=True, alpha=True):
     # print(List)
     tokens = List.split(' ')
     table = str.maketrans('', '', string.punctuation)
     tokens = [word.translate(table) for word in tokens]
-    tokens = [word for word in tokens if word.isalpha()]
-    stop_words = set(stopwords.words('english'))
-    tokens = [word for word in tokens if word not in stop_words]
+    if alpha is True:
+        tokens = [word for word in tokens if word.isalpha()]
+    if stop_words is True:
+        stop_words = set(stopwords.words('english'))
+        tokens = [word for word in tokens if word not in stop_words]
     tokens = [word for word in tokens if len(word) > 1]
     # print(tokens)
     return tokens

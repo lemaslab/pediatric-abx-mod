@@ -5,18 +5,18 @@ import os
 from tkinter import filedialog
 from nltk import pos_tag
 ##############################################################################
-def reDuction(patients, filenames):
-    r = re.compile(r'Baby-[0-9]+')
-    f = open(patients, 'r')
 
 
-def filefrompath(path, filenames):
-    print(filenames)
-    # regex = re.compile("^C:(.+)\/([^\/]+)$")
-    # file = re.match(regex, path)
-    # print(path)
-    filenames.append(path)
-    return filenames
+def reDuction(items, paths):
+    files = []
+    for item in items:
+        regex = re.compile(item)
+        for path in paths:
+            if re.search(regex, path):
+                files.append(path)
+            else:
+                continue
+    return files
 
 def retrievefiles(filetype, path=None):
 
