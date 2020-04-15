@@ -1,13 +1,16 @@
 import re
 import operator
 import string
+import commons
+from keras.preprocessing.text import Tokenizer
 
 from nltk.corpus import stopwords
 ##############################################################################
 
-def clean_vocab(List, stop_words=True, alpha=True):
-    # print(List)
-    tokens = List.split(' ')
+
+def clean_doc(doc, stop_words=True, alpha=True):
+
+    tokens = doc.split()
     table = str.maketrans('', '', string.punctuation)
     tokens = [word.translate(table) for word in tokens]
     if alpha is True:
@@ -16,8 +19,8 @@ def clean_vocab(List, stop_words=True, alpha=True):
         stop_words = set(stopwords.words('english'))
         tokens = [word for word in tokens if word not in stop_words]
     tokens = [word for word in tokens if len(word) > 1]
-    # print(tokens)
     return tokens
+
 
 def bagging(files):
     vocab = {}
@@ -46,6 +49,12 @@ def filter_and_reduce(dict, minimum):
     tokens = [key for key, value in tokens if not value <= minimum]
     return tokens
 
+
+def tokenize_doc(path, vocab):
+    doc = commons.load_doc(path)
+    tokens = clean_doc(doc)
+    tokens = [word for word in tokens if word in vocab]
+    return ' '.join(tokens)
 
 
 

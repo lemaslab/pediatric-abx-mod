@@ -1,9 +1,10 @@
 import numpy as np
 import tkinter as tk
+import os
 
 from tkinter import filedialog
 
-def read_doc(filename):
+def load_doc(filename):
     file = open(filename, 'r')
     text = file.read()
     file.close()
@@ -16,7 +17,7 @@ def save_list(List, filename):
     file.write(data)
     file.close()
 
-def read_npy(path=None):
+def load_npy(path=None):
     if path is None:
         root = tk.Tk()
         root.withdraw()
@@ -26,17 +27,29 @@ def read_npy(path=None):
     return data
 
 
+def retrieve_files(filetype, directory=None):
+
+    if directory is None:
+        root = tk.Tk()
+        root.withdraw()
+        directory = filedialog.askdirectory()
+
+    working_files = list()
+    for root, dirs, files in os.walk(directory):
+        for file in files:
+            if file.endswith(filetype):
+                working_files.append(str(directory + '/' + file))
+    return working_files
+
+
 # create regex to find pat id
 # use regex to match filenames from tkinter
 # put matched items into new list
 # save list to text file
 
 if __name__ == "__main__":
-    np_data = read_npy()
+    np_data = load_npy()
     print(np_data)
-
-
-
 
 
 

@@ -1,8 +1,6 @@
-import tkinter as tk
 import re
-import os
+import bow
 
-from tkinter import filedialog
 from nltk import pos_tag
 ##############################################################################
 
@@ -18,28 +16,14 @@ def reDuction(items, paths):
                 continue
     return files
 
-def retrievefiles(filetype, path=None):
-
-    if path is None:
-        root = tk.Tk()
-        root.withdraw()
-        path = filedialog.askdirectory()
-
-    working_files = []
-    for root, dirs, files in os.walk(path):
-        for file in files:
-            if file.endswith(filetype):
-                working_files.append(str(path + '/' + file))
-    return working_files
-
 
 def reduce(files, keywords):
-    reduced_files = []
+    reduced_files = list()
     for file in files:
         marker = False
         with open(file, 'r') as f:
             s_tokenize = f.readlines()
-            w_tokenize = []
+            w_tokenize = list()
 
             for i, sent in enumerate(s_tokenize):
                 s_tokenize[i] = sent.lstrip()
@@ -56,4 +40,13 @@ def reduce(files, keywords):
             if marker is True:
                 reduced_files.append(file)
     return reduced_files
+
+
+def process_docs(paths, vocab):
+    lines = list()
+    for path in paths:
+        line = bow.tokenize_doc(path, vocab)
+        lines.append(line)
+    return lines
+
 
