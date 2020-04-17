@@ -1,0 +1,56 @@
+---
+title: "Data Inventory"
+author: "Xinsong Du"
+date: "April 17, 2020"
+output:
+  html_document:
+    highlight: tango
+    theme: spacelab
+    toc: yes
+    toc_float: yes
+  pdf_document:
+    toc: yes
+  word_document:
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# api to redcap data
+dat.redcap=c("A","B")
+
+# open dropbox data
+dat.dropbox=c("A","B","C")
+
+
+```
+
+## R Markdown
+
+This is an R Markdown document. This is the decription of the report with some details. <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+
+#Data Inventory- Delivery
+
+# | Tables        | dat.redcap           | dat.dropbox  |
+# | ------------- |:-------------:| -----:|
+# | v1      | dat.redcap[[1]] | 
+# | v2      | centered      |   
+# | V3      | are neat      |    
+
+
+```
+
+## Including Plots
+
+You can also embed values from the data into text, for example: the values in dat.redcap are: `dat.redcap[[1]]`
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
