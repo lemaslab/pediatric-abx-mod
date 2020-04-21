@@ -1,0 +1,259 @@
+
+```{r check baby weight}
+# redcap id name
+redcap_id_name <- quote("part_id")
+# redcap field name
+redcap_col_name <- quote("baby_birth_wt_gr")
+# dropbox id name
+dropbox_id_name <- quote("Baby-Id")
+# dropbox file name
+dropbox_file_location <- quote("../data/Baby.xlsx")
+# dropbox sheet name
+dropbox_sheet_name <- quote("Baby")
+# dropbox column name
+dropbox_col_name <- quote("Birth Weight (grams)")
+
+# sort redcap data by baby ids
+data_redcap <- arrange(data_redcap, get(redcap_id_name))
+
+# load data from dropbox
+data_dropbox <- read_excel(eval(dropbox_file_location), sheet=eval(dropbox_sheet_name))
+
+# sort dropbox data by baby ids
+data_dropbox <- arrange(data_dropbox, get(dropbox_id_name))
+```
+
+## check baby weight
+| Item                          | Value                                                                                                         |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------- |
+| dropbox_file_location          | `r  dropbox_file_location`                                                                                    |
+| dropbox_sheet_name             | `r dropbox_sheet_name`                                                                                        |
+| redcap_field_name              | `r redcap_col_name`                                                                                           |
+| dropbox_col_name               | `r dropbox_col_name`                                                                                          |
+| redcap_col_name                | `r redcap_col_name`                                                                                           |
+| number_of_id_in_dropbox        | `r nrow(data_dropbox)`                                                                                        |
+| number_of_id_in_redcap         | `r nrow(data_redcap)`                                                                                         |
+| number_of_unique_id_dropbox    | `r nrow(unique(select(data_dropbox, eval(dropbox_id_name))))`                                                 |
+| number_of_unique_id_redcap     | `r nrow(unique(select(data_redcap, eval(redcap_id_name))))`                                                   |
+| number_of_unique_value_dropbox | `r nrow(unique(select(data_dropbox, eval(dropbox_col_name))))`                                                |
+| number_of_unique_value_redcap  | `r nrow(unique(select(data_redcap, eval(redcap_col_name))))`                                                  |
+| var_type_dropbox               | `r typeof(select(data_dropbox, eval(dropbox_col_name))[,,1][1])`                                              |
+| var_type_redcap                | `r typeof(select(data_redcap, eval(redcap_col_name))[,,1][1])`                                                |
+| redcap_data_correct            | `r check_data(data_dropbox, data_redcap, dropbox_id_name, redcap_id_name, dropbox_col_name, redcap_col_name)` |
+| difference_description         | NA                                                                                                            |
+
+```{r check baby delivery mode}
+# redcap id name
+redcap_id_name <- quote("part_id")
+# redcap field name
+redcap_col_name <- quote("delivery_mode")
+# dropbox id name
+dropbox_id_name <- quote("Baby-Id")
+# dropbox file name
+dropbox_file_location <- quote("../data/Baby.xlsx")
+# dropbox sheet name
+dropbox_sheet_name <- quote("Baby")
+# dropbox column name
+dropbox_col_name <- quote("Delivery_Mode")
+
+# sort redcap data by baby ids
+data_redcap <- arrange(data_redcap, get(redcap_id_name))
+
+# load data from dropbox
+data_dropbox <- read_excel(eval(dropbox_file_location), sheet=eval(dropbox_sheet_name))
+
+# sort dropbox data by baby ids
+data_dropbox <- arrange(data_dropbox, get(dropbox_id_name))
+```
+
+## check baby delivery mode
+| Item                          | Value                                                                                                         |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------- |
+| dropbox_file_location          | `r  dropbox_file_location`                                                                                    |
+| dropbox_sheet_name             | `r dropbox_sheet_name`                                                                                        |
+| redcap_field_name              | `r redcap_col_name`                                                                                           |
+| dropbox_col_name               | `r dropbox_col_name`                                                                                          |
+| redcap_col_name                | `r redcap_col_name`                                                                                           |
+| number_of_id_in_dropbox        | `r nrow(data_dropbox)`                                                                                        |
+| number_of_id_in_redcap         | `r nrow(data_redcap)`                                                                                         |
+| number_of_unique_id_dropbox    | `r nrow(unique(select(data_dropbox, eval(dropbox_id_name))))`                                                 |
+| number_of_unique_id_redcap     | `r nrow(unique(select(data_redcap, eval(redcap_id_name))))`                                                   |
+| number_of_unique_value_dropbox | `r nrow(unique(select(data_dropbox, eval(dropbox_col_name))))`                                                |
+| number_of_unique_value_redcap  | `r nrow(unique(select(data_redcap, eval(redcap_col_name))))`                                                  |
+| var_type_dropbox               | `r typeof(select(data_dropbox, eval(dropbox_col_name))[,,1][1])`                                              |
+| var_type_redcap                | `r typeof(select(data_redcap, eval(redcap_col_name))[,,1][1])`                                                |
+| redcap_data_correct            | `r check_data(data_dropbox, data_redcap, dropbox_id_name, redcap_id_name, dropbox_col_name, redcap_col_name)` |
+| difference_description         | NA                                                                                                            |
+
+```{r check baby admit date}
+# redcap id name
+redcap_id_name <- quote("part_id")
+# redcap field name
+redcap_col_name <- quote("baby_admit_date")
+# dropbox id name
+dropbox_id_name <- quote("Baby-Id")
+# dropbox file name
+dropbox_file_location <- quote("../data/Baby.xlsx")
+# dropbox sheet name
+dropbox_sheet_name <- quote("Baby")
+# dropbox column name
+dropbox_col_name <- quote("Admit Date")
+
+# sort redcap data by baby ids
+data_redcap <- arrange(data_redcap, get(redcap_id_name))
+
+# load data from dropbox
+data_dropbox <- read_excel(eval(dropbox_file_location), sheet=eval(dropbox_sheet_name))
+
+# sort dropbox data by baby ids
+data_dropbox <- arrange(data_dropbox, get(dropbox_id_name))
+```
+
+## check admit date
+| Item                          | Value                                                                                                         |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------- |
+| dropbox_file_location          | `r  dropbox_file_location`                                                                                    |
+| dropbox_sheet_name             | `r dropbox_sheet_name`                                                                                        |
+| redcap_field_name              | `r redcap_col_name`                                                                                           |
+| dropbox_col_name               | `r dropbox_col_name`                                                                                          |
+| redcap_col_name                | `r redcap_col_name`                                                                                           |
+| number_of_id_in_dropbox        | `r nrow(data_dropbox)`                                                                                        |
+| number_of_id_in_redcap         | `r nrow(data_redcap)`                                                                                         |
+| number_of_unique_id_dropbox    | `r nrow(unique(select(data_dropbox, eval(dropbox_id_name))))`                                                 |
+| number_of_unique_id_redcap     | `r nrow(unique(select(data_redcap, eval(redcap_id_name))))`                                                   |
+| number_of_unique_value_dropbox | `r nrow(unique(select(data_dropbox, eval(dropbox_col_name))))`                                                |
+| number_of_unique_value_redcap  | `r nrow(unique(select(data_redcap, eval(redcap_col_name))))`                                                  |
+| var_type_dropbox               | `r typeof(select(data_dropbox, eval(dropbox_col_name))[,,1][1])`                                              |
+| var_type_redcap                | `r typeof(select(data_redcap, eval(redcap_col_name))[,,1][1])`                                                |
+| redcap_data_correct            | `r check_data(data_dropbox, data_redcap, dropbox_id_name, redcap_id_name, dropbox_col_name, redcap_col_name)` |
+| difference_description         | NA                                                                                                            |
+
+```{r check baby admit source}
+# redcap id name
+redcap_id_name <- quote("part_id")
+# redcap field name
+redcap_col_name <- quote("baby_admit_source")
+# dropbox id name
+dropbox_id_name <- quote("Baby-Id")
+# dropbox file name
+dropbox_file_location <- quote("../data/Baby.xlsx")
+# dropbox sheet name
+dropbox_sheet_name <- quote("Baby")
+# dropbox column name
+dropbox_col_name <- quote("Admit Source")
+# pull data from RedCap
+
+# sort redcap data by baby ids
+data_redcap <- arrange(data_redcap, get(redcap_id_name))
+
+# load data from dropbox
+data_dropbox <- read_excel(eval(dropbox_file_location), sheet=eval(dropbox_sheet_name))
+
+# sort dropbox data by baby ids
+data_dropbox <- arrange(data_dropbox, get(dropbox_id_name))
+```
+
+## check baby admit source
+| Item                          | Value                                                                                                         |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------- |
+| dropbox_file_location          | `r  dropbox_file_location`                                                                                    |
+| dropbox_sheet_name             | `r dropbox_sheet_name`                                                                                        |
+| redcap_field_name              | `r redcap_col_name`                                                                                           |
+| dropbox_col_name               | `r dropbox_col_name`                                                                                          |
+| redcap_col_name                | `r redcap_col_name`                                                                                           |
+| number_of_id_in_dropbox        | `r nrow(data_dropbox)`                                                                                        |
+| number_of_id_in_redcap         | `r nrow(data_redcap)`                                                                                         |
+| number_of_unique_id_dropbox    | `r nrow(unique(select(data_dropbox, eval(dropbox_id_name))))`                                                 |
+| number_of_unique_id_redcap     | `r nrow(unique(select(data_redcap, eval(redcap_id_name))))`                                                   |
+| number_of_unique_value_dropbox | `r nrow(unique(select(data_dropbox, eval(dropbox_col_name))))`                                                |
+| number_of_unique_value_redcap  | `r nrow(unique(select(data_redcap, eval(redcap_col_name))))`                                                  |
+| var_type_dropbox               | `r typeof(select(data_dropbox, eval(dropbox_col_name))[,,1][1])`                                              |
+| var_type_redcap                | `r typeof(select(data_redcap, eval(redcap_col_name))[,,1][1])`                                                |
+| redcap_data_correct            | `r check_data(data_dropbox, data_redcap, dropbox_id_name, redcap_id_name, dropbox_col_name, redcap_col_name)` |
+| difference_description         | NA                                                                                                            |
+
+```{r check baby gestational age}
+# redcap id name
+redcap_id_name <- quote("part_id")
+# redcap field name
+redcap_col_name <- quote("baby_gest_age")
+# dropbox id name
+dropbox_id_name <- quote("Baby-Id")
+# dropbox file name
+dropbox_file_location <- quote("../data/Baby.xlsx")
+# dropbox sheet name
+dropbox_sheet_name <- quote("Baby")
+# dropbox column name
+dropbox_col_name <- quote("Gestational_Age")
+
+# sort redcap data by baby ids
+data_redcap <- arrange(data_redcap, get(redcap_id_name))
+
+# load data from dropbox
+data_dropbox <- read_excel(eval(dropbox_file_location), sheet=eval(dropbox_sheet_name))
+
+# sort dropbox data by baby ids
+data_dropbox <- arrange(data_dropbox, get(dropbox_id_name))
+```
+
+## check baby gestational age
+| Item                          | Value                                                                                                         |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------- |
+| dropbox_file_location          | `r  dropbox_file_location`                                                                                    |
+| dropbox_sheet_name             | `r dropbox_sheet_name`                                                                                        |
+| redcap_field_name              | `r redcap_col_name`                                                                                           |
+| dropbox_col_name               | `r dropbox_col_name`                                                                                          |
+| redcap_col_name                | `r redcap_col_name`                                                                                           |
+| number_of_id_in_dropbox        | `r nrow(data_dropbox)`                                                                                        |
+| number_of_id_in_redcap         | `r nrow(data_redcap)`                                                                                         |
+| number_of_unique_id_dropbox    | `r nrow(unique(select(data_dropbox, eval(dropbox_id_name))))`                                                 |
+| number_of_unique_id_redcap     | `r nrow(unique(select(data_redcap, eval(redcap_id_name))))`                                                   |
+| number_of_unique_value_dropbox | `r nrow(unique(select(data_dropbox, eval(dropbox_col_name))))`                                                |
+| number_of_unique_value_redcap  | `r nrow(unique(select(data_redcap, eval(redcap_col_name))))`                                                  |
+| var_type_dropbox               | `r typeof(select(data_dropbox, eval(dropbox_col_name))[,,1][1])`                                              |
+| var_type_redcap                | `r typeof(select(data_redcap, eval(redcap_col_name))[,,1][1])`                                                |
+| redcap_data_correct            | `r check_data(data_dropbox, data_redcap, dropbox_id_name, redcap_id_name, dropbox_col_name, redcap_col_name)` |
+| difference_description         | NA                                                                                                            |
+
+```{r check baby NICU LOS}
+# redcap id name
+redcap_id_name <- quote("part_id")
+# redcap field name
+redcap_col_name <- quote("baby_nicu_los")
+# dropbox id name
+dropbox_id_name <- quote("Baby-Id")
+# dropbox file name
+dropbox_file_location <- quote("../data/Baby.xlsx")
+# dropbox sheet name
+dropbox_sheet_name <- quote("Baby")
+# dropbox column name
+dropbox_col_name <- quote("NICU LOS")
+
+# sort redcap data by baby ids
+data_redcap <- arrange(data_redcap, get(redcap_id_name))
+
+# load data from dropbox
+data_dropbox <- read_excel(eval(dropbox_file_location), sheet=eval(dropbox_sheet_name))
+
+# sort dropbox data by baby ids
+data_dropbox <- arrange(data_dropbox, get(dropbox_id_name))
+```
+
+## check baby NICU LOS
+| Item                          | Value                                                                                                         |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------- |
+| dropbox_file_location          | `r  dropbox_file_location`                                                                                    |
+| dropbox_sheet_name             | `r dropbox_sheet_name`                                                                                        |
+| redcap_field_name              | `r redcap_col_name`                                                                                           |
+| dropbox_col_name               | `r dropbox_col_name`                                                                                          |
+| redcap_col_name                | `r redcap_col_name`                                                                                           |
+| number_of_id_in_dropbox        | `r nrow(data_dropbox)`                                                                                        |
+| number_of_id_in_redcap         | `r nrow(data_redcap)`                                                                                         |
+| number_of_unique_id_dropbox    | `r nrow(unique(select(data_dropbox, eval(dropbox_id_name))))`                                                 |
+| number_of_unique_id_redcap     | `r nrow(unique(select(data_redcap, eval(redcap_id_name))))`                                                   |
+| number_of_unique_value_dropbox | `r nrow(unique(select(data_dropbox, eval(dropbox_col_name))))`                                                |
+| number_of_unique_value_redcap  | `r nrow(unique(select(data_redcap, eval(redcap_col_name))))`                                                  |
+| var_type_dropbox               | `r typeof(select(data_dropbox, eval(dropbox_col_name))[,,1][1])`                                              |
+| var_type_redcap                | `r typeof(select(data_redcap, eval(redcap_col_name))[,,1][1])`                                                |
+| redcap_data_correct            | `r check_data(data_dropbox, data_redcap, dropbox_id_name, redcap_id_name, dropbox_col_name, redcap_col_name)` |
+| difference_description         | NA                                                                                                            |
