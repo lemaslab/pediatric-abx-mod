@@ -6,7 +6,7 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(fig.width=12, fig.height=8, fig.path='Figs/',
+knitr::opts_chunk$set(fig.width=12, fig.height=8,
                       echo=FALSE, warning=FALSE, message=FALSE)
 ```
 
@@ -179,6 +179,10 @@ data_dropbox <- arrange(data_dropbox, get(dropbox_id_name))
 | var_type_redcap                | `r typeof(select(data_redcap, eval(redcap_col_name))[,,1][1])`                                                |
 | redcap_data_correct            | `r check_data(data_dropbox, data_redcap, dropbox_id_name, redcap_id_name, dropbox_col_name, redcap_col_name)` |
 | difference_description         | NA                                                                                                            |
+
+```{r check baby DOB}
+
+```
 
 
 ## Including Plots
