@@ -1,11 +1,13 @@
 import re
 import bow
 
+from commons import counter, timer
 from nltk import pos_tag
 ##############################################################################
 
 
-def reDuction(items, paths):
+@timer
+def re_duction(items, paths):
     files = []
     for item in items:
         regex = re.compile(item)
@@ -14,10 +16,12 @@ def reDuction(items, paths):
                 files.append(path)
             else:
                 continue
+    counter(files)
     return files
 
 
-def reduce(files, keywords):
+@timer
+def reduce_by_keywords(files, keywords):
     reduced_files = list()
     for file in files:
         marker = False
@@ -39,10 +43,11 @@ def reduce(files, keywords):
 
             if marker is True:
                 reduced_files.append(file)
+    counter(reduced_files)
     return reduced_files
 
 
-def process_docs(paths, vocab):
+def process_docs(paths, vocab, training=True):
     lines = list()
     for path in paths:
         line = bow.tokenize_doc(path, vocab)

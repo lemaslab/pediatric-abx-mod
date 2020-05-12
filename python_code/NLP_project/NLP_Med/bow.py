@@ -2,7 +2,7 @@ import re
 import operator
 import string
 import commons
-from keras.preprocessing.text import Tokenizer
+
 
 from nltk.corpus import stopwords
 ##############################################################################
@@ -33,7 +33,7 @@ def bagging(files):
                 s_tokenize[i] = sent.lstrip()
                 w_tokenize = re.findall(r"[\w'-]+|[.,!?;]", s_tokenize[i])
                 w_tokenize = ' '.join([str(elem) for elem in w_tokenize])
-            w_tokenize = clean_vocab(w_tokenize)
+            w_tokenize = clean_doc(w_tokenize)
             for i, elem in enumerate(w_tokenize):
                 if re.match("[.,!?;]", elem):
                     continue
