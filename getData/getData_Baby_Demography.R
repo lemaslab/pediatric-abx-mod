@@ -79,7 +79,7 @@ newdata2=newdata
 
 # redcap_repeat_instrument
 newdata3=newdata2
-newdata3$redcap_repeat_instrument="baby_demography"
+newdata3$redcap_repeat_instrument="participant_demographics"
 names(newdata3); head(newdata3)
 
 # create "redcap_repeat_instance" variable
